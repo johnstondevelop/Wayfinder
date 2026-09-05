@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LovinglyLost</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+
+<link rel="stylesheet" href="app-style.css">
+</head>
+<body>
+
+<div class="app">
+
+	<header class="topbar">
+		<span class="brand">Lovingly<em>Lost</em></span>
+	</header>
+	
+	<div class="layout">
+	
+		<aside class="sidebar">
+		
+			<p class="tagline">Plan a drive worth remembering. Scenic stops, golden-hour views, and routes built for two.</p>
+			
+			<div class="panel">
+				<label class="field-label" for="originInput">Starting Point</label>
+				<input type="text" id="originInput" class=" field-input" placeholder="City, address, or landmark">
+			</div>
+			
+			<div class="panel">
+				<div class="field-label-row">
+					<label class="field-label">Stops</label>
+					<button class="add-stop-btn" id="addStopBtn">+ add stop</button>
+				</div>
+				<div id="stopsList" class="stops-list"></div>
+			</div>
+			
+			<div class="panel">
+				<label class="field-label" for="daysInput">Trip Length(days)</label>
+				<input type="number" id="daysInput" class="field-input" value="1" min="1" max="30">
+			</div>
+			
+			<div class="panel toggle-panel">
+				<label class="toggle-row" for="scenicToggle">
+					<span>
+						<span class="field-label">Find Romantic Stops</span>
+						<span class="toggle-sub">Overlooks, Sunset Spots, Waterfalls, and other connecting stops along your route</span>
+					</span>
+					<input type="checkbox" id="scenicToggle" class="toggle-input" checked>
+					<span class="toggle-switch"></span>
+				</label>
+			</div>
+			
+			<button class="plan-btn" id="planBtn">Find our route</button>
+			
+			<div id="summaryPanel" class="summary-panel"></div>
+			
+		</aside>
+		
+		<main class="map-wrap">
+			<div id="map"></div>
+			<div id="mapStatus" class="map-status"></div>
+		</main>
+		
+	</div>
+	
+</div>
+
+<script type="module" src="Maptoken-categories/Main-Launch.js"></script>
+</body>
+</html>
