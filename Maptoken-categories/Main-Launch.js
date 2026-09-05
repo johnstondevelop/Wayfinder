@@ -6,7 +6,7 @@ import {
 	initMap, setOriginMarker, clearStopMarkers, addStopMarker, clearRomanticMarkers, addRomanticMarker, drawRoute, fitToCoordinates, showStatus, hideStatus
 	} from './Map.js';
 import {
-	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays
+	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces
 	} from './Routing-Location.js';
 	
 	const originInput = document.getElementById('originInput');
@@ -16,8 +16,33 @@ import {
 	const scenicToggle = document.getElementById('scenicToggle');
 	const planBtn = document.getElementById('planBtn');
 	const summaryPanel = document.getElementById('summaryPanel');
+	const originSuggestions = document.getElementById('originSuggestions');
 	
 	initMap();
+	
+	function debounce(fn, delay){
+		let timer = null;
+		return (...args) => {
+			clearTimeout(timer);
+			timer = setTimeout(() => fn(...args), delay);
+		};
+}
+
+	function renderSuggestionsList(listEl, places, onSelect){
+		listEl.innerHTML = '';
+		places.forEach(place => {
+			const item = document.createElement('li');
+			item.className = 'suggestion-item';
+			item.textContent = place.name;
+			// mousedown (not click) so this fires before the input's blur event clears the list
+			item.addEventListener('mousedown', (e) => {
+				e.preventDefault();
+				onSelect(place);
+				listEl.innerHTML = '';
+			});
+			listEl.appendChild(item);
+		});
+	};
 	
 /* ================== STOP LIST RENDERING ================ */
 function renderStops(){
@@ -25,15 +50,42 @@ function renderStops(){
 	tripState.stops.forEach(stop => {
 		const row = document.createElement('div');
 		row.className = 'stop-row';
-			
+
+		const wrap = document.createElement('div');
+		wrap.className = 'autocomplete-wrap';
+
 		const input = document.createElement('input');
 		input.type = 'text';
 		input.className = 'field-input';
 		input.placeholder = 'City, address, or landmark';
+		input.autocomplete = 'off';
 		input.value = stop.name || '';
 		input.dataset.stopId = stop.id;
 		input.addEventListener('blur', onStopInputBlur);
-			
+
+		const suggestionsList = document.createElement('ul');
+		suggestionsList.className = 'suggestions-list';
+
+		input.addEventListener('input', debounce(async () => {
+			const query = input.value.trim();
+			if (query.length < 2){
+				suggestionsList.innerHTML = '';
+				return;
+			}
+			const places = await suggestPlaces(query);
+			renderSuggestionsList(suggestionsList, places, (place) => {
+				setStopPlace(stop.id, place);
+				input.value = place.name;
+			});
+		}, 300));
+
+		input.addEventListener('blur', () => {
+			setTimeout(() => { suggestionsList.innerHTML = ''; }, 150);
+		});
+
+		wrap.appendChild(input);
+		wrap.appendChild(suggestionsList);
+
 		const removeBtn = document.createElement('button');
 		removeBtn.className = 'remove-stop-btn'
 		removeBtn.textContent = 'x';
@@ -41,8 +93,8 @@ function renderStops(){
 			removeStop(stop.id);
 			renderStops();
 		});
-			
-		row.appendChild(input);
+
+		row.appendChild(wrap);
 		row.appendChild(removeBtn);
 		stopsList.appendChild(row);
 	});
@@ -75,6 +127,25 @@ async function onStopInputBlur(e){
 		input.value = place.name;
 	}
 }
+
+
+originInput.addEventListener('input', debounce(async () => {
+	const query = originInput.value.trim();
+	if (query.length < 2){
+		originSuggestions.innerHTML = '';
+		return;
+	}
+	const places = await suggestPlaces(query);
+	renderSuggestionsList(originSuggestions, places, (place) => {
+		setOrigin(place);
+		originInput.value = place.name;
+		setOriginMarker(place.lng, place.lat);
+	});
+}, 300));
+
+originInput.addEventListener('blur', () => {
+	setTimeout(() => { originSuggestions.innerHTML = ''; }, 150);
+});
 
 originInput.addEventListener('blur', onOriginalBlur);
 stopsList.addEventListener('blur', onStopInputBlur);

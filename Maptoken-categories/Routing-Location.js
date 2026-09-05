@@ -24,6 +24,25 @@ export async function geocodePlace(query){
 	};
 }
 
+/* ============= AUTOCOMPLETE SUGGESTIONS =============== */
+// Returns up to 5 candidate places for a partially-typed query
+export async function suggestPlaces(query){
+	if (!query || query.trim().length < 2) return [];
+
+	const url = `${GEOCODE_URL}/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=5&autocomplete=true`;
+	const res = await fetch(url);
+	if (!res.ok) return [];
+
+	const data = await res.json();
+	if (!data.features) return [];
+
+	return data.features.map(f => ({
+		name: f.place_name,
+		lng: f.center[0],
+		lat: f.center[1]
+	}));
+}
+
 /* ================ DIRECTIONS ================ */
 // coordsArray: [[lng, lat], [lng, lat], ...] in visit order (origin first)
 export async function getDirections(coordsArray){
