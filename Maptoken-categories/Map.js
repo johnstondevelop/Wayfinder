@@ -31,12 +31,32 @@ function createMarkerEl(kind){
 	el.className = 'map-marker map-marker-' + kind;
 	return el;
 }
-
+function escapeHtml(str){
+	const div = document.createElement('div');
+	div.textContent = str;
+	return div.innerHTML;
+}
+function googleMapsUrl(name, address, lng, lat){
+	const query = address ? `${name}, ${address}` : `${name} @${lat},${lng}`;
+	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+function buildPopupHTML({name, address, website, lng, lat }){
+	const linkUrl = website || googleMapsUrl(name, address, lng, lat);
+	const linkLabel = website ? 'Visit Website ↗' : 'View on Google Maps ↗';
+	return `
+		<div class="popup-place">
+			<h4>${escapeHtml(name)}</h4>
+			${address ? `<p class="popup-address">${escapeHtml(address)}</p>` : ''}
+			<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="popup-link">${linkLabel}</a>
+		</div>
+	`;
+}
 export function setOriginMarker(lng, lat){
 	if (originMarker) originMarker.remove();
 	const el = createMarkerEl('origin');
 	originMarker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
 		.setLngLat([lng, lat])
+		.setPopup(new mapboxgl.Popup({offset: 18}).setHTML(buildPopupHTML({name: name || 'Starting Point', address: '', website: null, lng, lat})))
 		.addTo(map);
 	return originMarker;
 }
@@ -50,6 +70,7 @@ export function addStopMarker(lng, lat, label){
 	el.textContent = label;
 	const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
 		.setLngLat([lng, lat])
+		.setPopup(new mapboxgl.Popup({offset: 18 }).setHTML(buildPopupHTML({name: name || `Stop ${label}`, address: '', website: null, lng, lat})))
 		.addTo(map);
 	stopMarkers.push(marker);
 	return marker;
@@ -60,11 +81,11 @@ export function clearRomanticMarkers(){
 	romanticMarkers = [];
 }
 
-export function addRomanticMarker(lng, lat, name){
+export function addRomanticMarker(place){
 	const el = createMarkerEl('romantic');
 	const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom'})
-		.setLngLat([lng, lat])
-		.setPopup(new mapboxgl.Popup({ offset: 18 }).setText(name))
+		.setLngLat([place.lng, palce.lat])
+		.setPopup(new mapboxgl.Popup({ offset: 18, maxWidth: '260px' }).setHTML(buildPopupHTML(place)))
 		.addTo(map);
 	romanticMarkers.push(marker);
 	return marker;

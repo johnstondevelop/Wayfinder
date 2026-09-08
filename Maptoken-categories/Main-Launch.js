@@ -113,7 +113,7 @@ async function onOriginalBlur(){
 	if (place){
 		setOrigin(place);
 		originInput.value = place.name;
-		setOriginMarker(place.lng, place.lat);
+		setOriginMarker(place.lng, place.lat, place.name);
 	}
 }
 async function onStopInputBlur(e){
@@ -179,7 +179,7 @@ try {
 		fitToCoordinates(coords);
 		
 		clearStopMarkers();
-		tripState.stops.forEach((s, i) => addStopMarker(s.lng, s.lat, String(i + 1)));
+		tripState.stops.forEach((s, i) => addStopMarker(s.lng, s.lat, String(i + 1), s.name));
 		
 		const { totalHours, perDayHours } = balanceDays(route.durationSeconds, tripState.days);
 		addSummaryCard(
@@ -192,7 +192,7 @@ try {
 			clearRomanticMarkers();
 			const romanticStops = await findRomanticStopsAlongRoute(route.geometry);
 			
-			romanticStops.forEach(stop => addRomanticMarker(stop.lng, stop.lat, stop.name));
+			romanticStops.forEach(stop => addRomanticMarker(stop));
 			
 			if (romanticStops.length > 0){
 				addSummaryCard(

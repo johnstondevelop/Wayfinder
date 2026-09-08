@@ -94,7 +94,9 @@ async function searchCategoryNear(category, lng, lat){
 		name: f.properties.name,
 		lng: f.geometry.coordinates[0],
 		lat: f.geometry.coordinates[1],
-		category
+		category,
+		address: f.properties.full_address || f.properties.place_formatted || '',
+		website: (f.properties.metadata && f.properties.metadata.website) || null
 	}));
 }
 

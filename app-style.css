@@ -448,3 +448,26 @@ body{
 .mapboxgl-popup-tip{
 	border-top-color: var(--surface) !important;
 }
+.popup-place{
+	margin: 0 0 4px;
+	font-family:var(--serif);
+	font-style: italic;
+	font-size: 1rem;
+	color: var(--plum);
+}
+.popup-address{
+	margin: 0 0 8px;
+	font-size: .8rem;
+	color: var(--ink-soft);
+}
+.popup-link{
+	display: inline-block;
+	font-size: .82rem;
+	font-weight: 600;
+	color: var(--gold);
+	text-decoration: none;
+}
+.popup-link:hover{
+	color: var(--plum);
+	text-decoration: underline;
+}
