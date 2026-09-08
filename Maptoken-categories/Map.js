@@ -5,7 +5,9 @@ mapboxgl.accessToken = MAPBOX_TOKEN;
 let map = null;
 let originMarker = null;
 let stopMarkers = [];
-let romanticMarkers = [];
+let romanticPopup = [];
+
+const ROMANTIC_SOURCE_ID = 'romantic-points';
 
 export function initMap(){
 	map = new mapboxgl.Map({
@@ -21,9 +23,80 @@ export function initMap(){
 	map.on('load', ()=> {
 		const canvas = map.getCanvasContainer();
 		canvas.style.filter = 'sepia(12%) saturate(115%) hue-rotate(-6deg)';
+
+		map.addSource(ROMANTIC_SOURCE_ID, {
+				type: 'geojson',
+				data: {type: 'FeatureCollection', features: []},
+				cluster: true,
+				clusterMaxZoom: 13,
+				clusterRadius: 50
 		});
+
+		map.addLayer({
+				id: 'romantic-clusters',
+				type: 'circle',
+				source: ROMANTIC_SOURCE_ID,
+				filter: ['has', 'point_count'],
+				paint: {
+					'circle-color': '#D98E96',
+					'circle-radius': ['step', ['get', 'point_count'], 16, 5, 20, 15, 26],
+					'circle-stroke-width': 3,
+					'circle-stroke-color': '#FFFFFF'
+				}
+		});
+
+		map.addLayer({
+				id: 'romantic-cluster-count',
+				type: 'symbol',
+				source: ROMANTIC_SOURCE_ID,
+				filter: ['has', 'point_count'],
+				layout: {
+					'text-field': ['get', 'point_count-abbreviated'],
+					'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+					'text-size': 13
+				},
+				paint: { 'text-color': '#5C2135'}
+			});
+	
+		map.addLayer({
+			id: 'romantic-unclustered',
+			type: 'circle',
+			source: ROMANTIC_SOURCE_ID,
+			filter: ['!', ['has', 'point_count']],
+			paint: {
+				'circle-color': '#D98E96',
+				'circle-radius': 8,
+				'circle-stroke-width': 2.5,
+				'circle-stroke-color': '#FFFFFF'
+			}
+		});
+
+		map.on('click', 'romantic-clusters', (e) => {
+			const features = map.queryRenderedFeatures(e.point, {layers: ['romantic-clusters'] });
+			const clusterId = features[0].properties.cluster_id;
+			map.getSource(ROMANTIC_SOURCE_ID).getClusterExpansionZoom(clusterId, (err, zoom) => {
+				id (err) return;
+				map.easeTo({center: features[0].geometry.coordinates, zoom });
+			});
+		});
+
+		map.on('click', 'romantic-unclustered', (e) => {
+			const feature = e.features[0];
+			const coords = feature.geometry.coordinates.slice();
+			if (romanticPopup) romanticPopup.remove();
+			romanticPopup = new mapboxgl.Popup({offset: 12, maxWidth: '260px' })
+			.setLngLat(coords)
+			.setHTML(buildPopupHTML({ ...feature.properties, lng: coords[0], lat: coords[1] }))
+			.addTo(map);
+		});
+
+		['romantic-clusters', 'romantic-unclustered'].forEach(layerId => {
+			map.on('mouseenter', layerId, () => {map.getCanvas().style.cursor = 'pointer'; });
+			map.on('mouseleave', layerId, () => {map.getCanvas().style.cursor = ''; });
+		});
+	});
 		
-		return map;
+	return map;
 }
 
 function createMarkerEl(kind){
@@ -76,6 +149,23 @@ export function addStopMarker(lng, lat, label){
 	return marker;
 }
 
+export function setRomanticStops(places){
+	const source = map.getSource(ROMANTIC_SOURCE_ID);
+	if (!source) return;
+	source.setData({
+		type: 'FeatureCollection',
+		features: places.map(place => ({
+			type: 'Feature',
+			geometry: {type: 'Point', coordinates: [place.lng, place.lat] },
+			properties: {
+				name: place.name,
+				address: place.address || '',
+				website: place.website || null
+			}
+		}))
+	});
+}
+
 export function clearRomanticMarkers(){
 	romanticMarkers.forEach(m => m.remove());
 	romanticMarkers = [];
@@ -84,7 +174,7 @@ export function clearRomanticMarkers(){
 export function addRomanticMarker(place){
 	const el = createMarkerEl('romantic');
 	const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom'})
-		.setLngLat([place.lng, palce.lat])
+		.setLngLat([place.lng, place.lat])
 		.setPopup(new mapboxgl.Popup({ offset: 18, maxWidth: '260px' }).setHTML(buildPopupHTML(place)))
 		.addTo(map);
 	romanticMarkers.push(marker);

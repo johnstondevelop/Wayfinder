@@ -3,7 +3,7 @@ import {
 	tripState, addStop, removeStop, setOrigin, setStopPlace, setDays, setRomanticStops, setRoute, isReadyToPlan 
 	} from './state-and-data.js';
 import {
-	initMap, setOriginMarker, clearStopMarkers, addStopMarker, clearRomanticMarkers, addRomanticMarker, drawRoute, fitToCoordinates, showStatus, hideStatus
+	initMap, setOriginMarker, clearStopMarkers, addStopMarker, setRomanticStops, clearRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus
 	} from './Map.js';
 import {
 	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces
