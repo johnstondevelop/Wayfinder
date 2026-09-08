@@ -75,7 +75,7 @@ export function initMap(){
 			const features = map.queryRenderedFeatures(e.point, {layers: ['romantic-clusters'] });
 			const clusterId = features[0].properties.cluster_id;
 			map.getSource(ROMANTIC_SOURCE_ID).getClusterExpansionZoom(clusterId, (err, zoom) => {
-				id (err) return;
+				if (err) return;
 				map.easeTo({center: features[0].geometry.coordinates, zoom });
 			});
 		});
