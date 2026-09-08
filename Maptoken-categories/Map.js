@@ -5,7 +5,7 @@ mapboxgl.accessToken = MAPBOX_TOKEN;
 let map = null;
 let originMarker = null;
 let stopMarkers = [];
-let romanticPopup = [];
+let romanticPopup = null;
 
 const ROMANTIC_SOURCE_ID = 'romantic-points';
 
@@ -51,7 +51,7 @@ export function initMap(){
 				source: ROMANTIC_SOURCE_ID,
 				filter: ['has', 'point_count'],
 				layout: {
-					'text-field': ['get', 'point_count-abbreviated'],
+					'text-field': ['get', 'point_count_abbreviated'],
 					'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
 					'text-size': 13
 				},
@@ -124,7 +124,7 @@ function buildPopupHTML({name, address, website, lng, lat }){
 		</div>
 	`;
 }
-export function setOriginMarker(lng, lat){
+export function setOriginMarker(lng, lat, name){
 	if (originMarker) originMarker.remove();
 	const el = createMarkerEl('origin');
 	originMarker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
@@ -138,7 +138,7 @@ export function clearStopMarkers(){
 	stopMarkers = [];
 }
 
-export function addStopMarker(lng, lat, label){
+export function addStopMarker(lng, lat, label, name){
 	const el = createMarkerEl('stop');
 	el.textContent = label;
 	const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
@@ -149,7 +149,7 @@ export function addStopMarker(lng, lat, label){
 	return marker;
 }
 
-export function setRomanticStops(places){
+export function renderRomanticStops(places){
 	const source = map.getSource(ROMANTIC_SOURCE_ID);
 	if (!source) return;
 	source.setData({
@@ -164,21 +164,6 @@ export function setRomanticStops(places){
 			}
 		}))
 	});
-}
-
-export function clearRomanticMarkers(){
-	romanticMarkers.forEach(m => m.remove());
-	romanticMarkers = [];
-}
-
-export function addRomanticMarker(place){
-	const el = createMarkerEl('romantic');
-	const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom'})
-		.setLngLat([place.lng, place.lat])
-		.setPopup(new mapboxgl.Popup({ offset: 18, maxWidth: '260px' }).setHTML(buildPopupHTML(place)))
-		.addTo(map);
-	romanticMarkers.push(marker);
-	return marker;
 }
 
 export function drawRoute(geojson){

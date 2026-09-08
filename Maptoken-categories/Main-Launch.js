@@ -1,10 +1,11 @@
 import { MAPBOX_TOKEN } from './maptoken-config.js';
 import {
-	tripState, addStop, removeStop, setOrigin, setStopPlace, setDays, setRomanticStops, setRoute, isReadyToPlan 
+	tripState, addStop, removeStop, setOrigin, setStopPlace, setDays, setRomanticStops, setRoute, isReadyToPlan
 	} from './state-and-data.js';
 import {
-	initMap, setOriginMarker, clearStopMarkers, addStopMarker, setRomanticStops, clearRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus
+	initMap, setOriginMarker, clearStopMarkers, addStopMarker, renderRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus
 	} from './Map.js';
+
 import {
 	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces
 	} from './Routing-Location.js';
@@ -139,7 +140,7 @@ originInput.addEventListener('input', debounce(async () => {
 	renderSuggestionsList(originSuggestions, places, (place) => {
 		setOrigin(place);
 		originInput.value = place.name;
-		setOriginMarker(place.lng, place.lat);
+		setOriginMarker(place.lng, place.lat, place.name);
 	});
 }, 300));
 
@@ -192,15 +193,15 @@ try {
 			clearRomanticMarkers();
 			const romanticStops = await findRomanticStopsAlongRoute(route.geometry);
 			
-			romanticStops.forEach(stop => addRomanticMarker(stop));
+			renderRomanticStops(romanticStops);
 			
 			if (romanticStops.length > 0){
 				addSummaryCard(
-					'Scenic stop nearby',
+					'Scenic stops nearby',
 					`Found ${romanticStops.length} spot${romanticStops.length > 1 ? 's' : ''} worth a detour \u2014 tap the map marker to see them.`
 				);
 			} else {
-				addSummaryCard('Scenic stops nearby', 'no scenic spots turned up along this route \u2014 try a different path ora. longer route.');
+				addSummaryCard('Scenic stops nearby', 'no scenic spots turned up along this route \u2014 try a different path or a longer route.');
 			}
 			hideStatus();
 		}
