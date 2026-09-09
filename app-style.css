@@ -22,6 +22,10 @@
 *{ box-sizing: border-box; }
 html{ scroll-behavior: smooth; }
 
+html, body{
+	height: 100%;
+}
+
 body{
 	margin: 0;
 	background: var(--ivory);
@@ -36,9 +40,11 @@ body{
 
 /* ============ LAYOUT ============ */
 .app{
-	min-height: 100vh;
+	height: 100vh;
+	height: 100dvh;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
 }
 
 .topbar{
@@ -350,6 +356,18 @@ body{
 /* ============ MAP ============ */
 .map-wrap{
 	position: relative;
+	min-height: 0px;
+	padding: 20px;
+	background: var(--ivory);
+}
+.map-frame{
+	position: realtive;
+	width: 100%;
+	height: 100%;
+	border-radius: 18px;
+	overflow: hidden;
+	border: 1px solid var(--line);
+	box-shadow: 0 10px 30px rgba(42, 22, 32, 0.12);
 }
 
 #map{
@@ -388,7 +406,9 @@ body{
 		border-bottom: 1px solid var(--line);
 		max-height: 50vh;
 	}
-	#map{ min-height: 45vh; }
+	.map-wrap{
+		padding: 14px;
+	}
 }
 
 /* ============ MAP MARKERS ============ */

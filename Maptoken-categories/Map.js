@@ -96,6 +96,10 @@ export function initMap(){
 		});
 	});
 		
+	requestAnimationFrame(() => map.resize());
+	window.addEventListener('resize', () => map.resize());
+	window.addEventListener('orientationchange', () => setTimeout(() => map.resize(), 250));
+	
 	return map;
 }
 
