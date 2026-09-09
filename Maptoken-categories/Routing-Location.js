@@ -1,4 +1,4 @@
-import {MAPBOX_TOKEN, ROMANTIC_POI_CATEGORIES } from './maptoken-config.js';
+import {MAPBOX_TOKEN, ROMANTIC_POI_CATEGORIES, ROMANTIC_STOP_MAX_DISTANCE_MILES } from './maptoken-config.js';
 
 const GEOCODE_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 const DIRECTIONS_URL = 'https://api.mapbox.com/directions/v5/mapbox/driving';
@@ -100,33 +100,84 @@ async function searchCategoryNear(category, lng, lat){
 	}));
 }
 
+/* =================== DISTANCE_TO_ROUTE CHECK ======================= */
+const EARTH_RADIUS_MILES = 3958.8
+
+function toLocalXY(lng, lat, refLatRad){
+	const x = (lng * Math.PI / 180) * Math.cos(refLatRad) * EARTH_RADIUS_MILES;
+	const y = (lat * Math.PI / 180) * EARTH_RADISU_MILES;
+	return [x, y];
+}
+function pointToSegmentMiles(point, a, b){
+	const refLatRad = point[1] * Math.PI / 180;
+	const [px, py] = toLocalXY(point[0], point[1], refLatRad);
+	const [ax, ay] = toLocalXY(a[0], a[1], refLatRad);
+	const [bx, by] = toLocalXY(b[0], b[1], refLatRad);
+
+	const dx = bx - ax;
+	const dy = by-ay;
+	const lengthSq = dx * dx + dy * dy;
+
+	let t = lengthSq === 0 ? 0 : ((px - ax) * dx + (py - ay) * dy) / lengthSq;
+	t = Math.max(0, Math.min(1, t));
+
+	const closestX = ax + t * dy;
+	const closestY = ay + t * dy;
+	return Math.hypot(px - closestX, py - closestY);
+}
+
+function distanceToROuteMiles(place, routeCoords){
+	let min = Infinity;
+	for (let i = 0; i < routeCoords.length - 1; i++){
+		const d = pointToSegmentMiles([place.lng, place.lat], routeCoords[i], routeCoords[i + 1]);
+		if (d < min) min = d;
+	}
+	return min;
+}
+
 // Finds scenic/romantic stops near the route, deduped by name+location
 export async function findRomanticStopsAlongRoute(routeGeometry){
-	const samplePoints = sampleRouteCoordinates(routeGeometry, 5);
+	const samplePoints = sampleRouteCoordinates(routeGeometry, 6);
+
+	// search each sample point seperately so results stay grouped by locationm along the route
+	const perPointResults = await Promise.all(
+		samplePoints.map(async ([lng, lat]) => {
+			const searches = ROMANTIC_POI_CATEGORIES.map(category => searchCategoryNear(category, lng, lat));
+			const results = await Promise.all(searches);
+			return results.flat();
+		})
+	);
 	
-	const searches =[];
-	for (const [lng, lat] of samplePoints){
-		for (const category of ROMANTIC_POI_CATEGORIES){
-			searches.push(searchCategoryNear(category, lng, lat));
-		}
-	}
-	
-	const results = await Promise.all(searches);
-	const flat = results.flat();
-	
+	// Dedupe globally, but keep results grouped by sample point
 	const seen = new Set();
-	const deduped = [];
-	for (const place of flat){
+	const dedupedPerPoint = perPointResults.map(pointResults => {
+		const out = [];
+	
+	for (const place of pointResults){
 		const key = place.name + '|' + place.lng.toFixed(3) + '|' + place.lat.toFixed(3);
 		if (!seen.has(key)){
 			seen.add(key);
 			deduped.push(place);
 		}
+
 	}
 	
-	return deduped.slice(0, 12) //cap so map doesnt get overwhelming
-}
+	return out;//cap so map doesnt get overwhelming
+});
 
+const spread = [];
+let tookOne = true;
+while (tookOne && spread.length < 12){
+	tookOne = false;
+	for (const pointResults of dedupedPerPoint){
+		if (pointResults.length){
+			spread.push(pointResults.shift());
+			tookOne = true;
+			if (spread.length >= 12) break;
+		}
+	}
+}
+return spread;
 /* ================== DAY BALANCING ================ */
 // Splits total drive time evenly across the requested number of days
 export function balanceDays(durationSeconds, days){
@@ -136,4 +187,5 @@ export function balanceDays(durationSeconds, days){
 		totalHours: Math.round(totalHours * 10) / 10,
 		perDayHours: Math.round(perDayHours * 10)/ 10
 	};
+  }
 }

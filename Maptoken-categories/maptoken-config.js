@@ -2,6 +2,7 @@ export const MAPBOX_TOKEN = 'pk.eyJ1Ijoiam9obnN0b25kZXZlbG9wIiwiYSI6ImNtdG54MHlz
 
 export const DEFAULT_CENTER = [-98.5795, 39.8283];
 export const DEFAULT_ZOOM = 3.5;
+export const ROMANTIC_STOP_MAX_DISTANCE_MILES = 20;
 
 export const ROMANTIC_POI_CATEGORIES = ['viewpoint',
      'waterfall',
