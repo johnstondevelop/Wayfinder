@@ -156,9 +156,9 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 	
 	for (const place of pointResults){
 		const key = place.name + '|' + place.lng.toFixed(3) + '|' + place.lat.toFixed(3);
-		if (!seen.has(key) && distanceToRouteMiles(place, routeCoords) =< ROMANTIC_STOP_MAX_DISTANCE_MILES){
+		if (!seen.has(key) && distanceToRouteMiles(place, routeCoords) <= ROMANTIC_STOP_MAX_DISTANCE_MILES){
 			seen.add(key);
-			deduped.push(place);
+			out.push(place);
 		}
 
 	}
