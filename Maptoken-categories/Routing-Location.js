@@ -168,12 +168,12 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 	);
 	// Dedupe globally, but keep results grouped by sample point
 	const seen = new Set();
-	const dedupedPerPoint = perPointResults.map(pointResults => {
+	const dedupedPerPoint = perPointResults.map((pointResults, i) => {
 		const [sampleLng, sampleLat] = samplePoints[i];
 		const out = [];
 		for (const place of pointResults){
 			const key = place.name + '|' + place.lng.toFixed(3) + '|' + place.lat.toFixed(3);
-			if (!seen.has(key)) continue;
+			if (seen.has(key)) continue;
 			const distanceFromSearchPoint = haversineMiles([place.lng, place.lat], [sampleLng, sample.Lat]);
 			if (distanceFromSearchPoint > ROMANTIC_STOP_MAX_DISTANCE_MILES) continue;
 				seen.add(key);
