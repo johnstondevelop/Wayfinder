@@ -70,6 +70,17 @@ export async function getDirections(coordsArray){
 
 /* ================= ROMANTIC STOP SEARCH =================== */
 // Picks evenly-spaced points along the route line to search near
+function haversineMiles(a, b){
+	const R = 3958.8;
+	const [lng1, lat1] = a;
+	const [lng2. lat2] = b;
+	const dLat = (lat2 - lat1) * Math.PI / 180;
+	const dLng = (lng2 - lng1) * Math.PI / 180;
+	const s = Math.sin(dLat / 2) ** 2 + 
+		Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+	return 2 * R * Math.asin(Math.sqrt(s));
+
+}
 function sampleRouteCoordinates(geometry, sampleCount = 6){
 	const coords = geometry.coordinates;
 	if (coords.length <= sampleCount) return coords;
@@ -81,8 +92,8 @@ function sampleRouteCoordinates(geometry, sampleCount = 6){
 	const totalDistance = cumulative[cumulative.length - 1];
 
 	const samples = [];
-	for (let i = 0; s < sampleCount; s++){
-		const targetDistance = (totalDistance * s) / (sampleCOunt - 1);
+	for (let s = 0; s < sampleCount; s++){
+		const targetDistance = (totalDistance * s) / (sampleCount - 1);
 		let idx = cumulative.findIndex(d => d >= targetDistance);
 		if (idx === -1) idx = coords.length - 1;
 		samples.push(coords[idx]);
