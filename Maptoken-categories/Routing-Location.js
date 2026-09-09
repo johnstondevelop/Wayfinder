@@ -157,7 +157,6 @@ function distanceToRouteMiles(place, routeCoords){
 // Finds scenic/romantic stops near the route, deduped by name+location
 export async function findRomanticStopsAlongRoute(routeGeometry){
 	const samplePoints = sampleRouteCoordinates(routeGeometry, 6);
-	const routeCoords = routeGeometry.coordinates;
 
 	// search each sample point seperately so results stay grouped by locationm along the route
 	const perPointResults = await Promise.all(
@@ -167,33 +166,31 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 			return results.flat();
 		})
 	);
-	
 	// Dedupe globally, but keep results grouped by sample point
 	const seen = new Set();
 	const dedupedPerPoint = perPointResults.map(pointResults => {
+		const [sampleLng, sampleLat] = samplePoints[i];
 		const out = [];
-	
-	for (const place of pointResults){
-		const key = place.name + '|' + place.lng.toFixed(3) + '|' + place.lat.toFixed(3);
-		if (!seen.has(key) && distanceToRouteMiles(place, routeCoords) <= ROMANTIC_STOP_MAX_DISTANCE_MILES){
-			seen.add(key);
-			out.push(place);
+		for (const place of pointResults){
+			const key = place.name + '|' + place.lng.toFixed(3) + '|' + place.lat.toFixed(3);
+			if (!seen.has(key)) continue;
+			const distanceFromSearchPoint = haversineMiles([place.lng, place.lat], [sampleLng, sample.Lat]);
+			if (distanceFromSearchPoint > ROMANTIC_STOP_MAX_DISTANCE_MILES) continue;
+				seen.add(key);
+				out.push(place);
 		}
-
-	}
-	
 	return out;//cap so map doesnt get overwhelming
 });
 
 const spread = [];
 let tookOne = true;
-while (tookOne && spread.length < 12){
+while (tookOne && spread.length < 120){
 	tookOne = false;
 	for (const pointResults of dedupedPerPoint){
 		if (pointResults.length){
 			spread.push(pointResults.shift());
 			tookOne = true;
-			if (spread.length >= 12) break;
+			if (spread.length >= 120) break;
 		}
 	}
 }
