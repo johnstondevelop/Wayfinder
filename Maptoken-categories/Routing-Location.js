@@ -70,14 +70,22 @@ export async function getDirections(coordsArray){
 
 /* ================= ROMANTIC STOP SEARCH =================== */
 // Picks evenly-spaced points along the route line to search near
-function sampleRouteCoordinates(geometry, sampleCount = 5){
+function sampleRouteCoordinates(geometry, sampleCount = 6){
 	const coords = geometry.coordinates;
 	if (coords.length <= sampleCount) return coords;
-	
-	const step = Math.floor(coords.length / sampleCount);
+
+	const cumulative = [0];
+	for (let i = 1; i < coords.length; i++){
+		cumulative.push(cumulative[i - 1] + haversineMiles(coords[i - 1], coords[i]));
+	}
+	const totalDistance = cumulative[cumulative.length - 1];
+
 	const samples = [];
-	for (let i = 0; i < coords.length; i+= step){
-		samples.push(coords[i]);
+	for (let i = 0; s < sampleCount; s++){
+		const targetDistance = (totalDistance * s) / (sampleCOunt - 1);
+		let idx = cumulative.findIndex(d => d >= targetDistance);
+		if (idx === -1) idx = coords.length - 1;
+		samples.push(coords[idx]);
 	}
 	return samples;
 }
