@@ -82,7 +82,7 @@ function sampleRouteCoordinates(geometry, sampleCount = 5){
 	return samples;
 }
 
-async function searchCategoryNear(category, lng, lat){
+async function  searchCategoryNear(category, lng, lat){
 	const url = `${SEARCH_CATEGORY_URL}/${encodeURIComponent(category)}?proximity=${lng},${lat}&limit=3&access_token=${MAPBOX_TOKEN}`;
 	const res = await fetch(url);
 	if (!res.ok) return [];
@@ -105,7 +105,7 @@ const EARTH_RADIUS_MILES = 3958.8
 
 function toLocalXY(lng, lat, refLatRad){
 	const x = (lng * Math.PI / 180) * Math.cos(refLatRad) * EARTH_RADIUS_MILES;
-	const y = (lat * Math.PI / 180) * EARTH_RADISU_MILES;
+	const y = (lat * Math.PI / 180) * EARTH_RADIUS_MILES;
 	return [x, y];
 }
 function pointToSegmentMiles(point, a, b){
@@ -121,12 +121,12 @@ function pointToSegmentMiles(point, a, b){
 	let t = lengthSq === 0 ? 0 : ((px - ax) * dx + (py - ay) * dy) / lengthSq;
 	t = Math.max(0, Math.min(1, t));
 
-	const closestX = ax + t * dy;
+	const closestX = ax + t * dx;
 	const closestY = ay + t * dy;
 	return Math.hypot(px - closestX, py - closestY);
 }
 
-function distanceToROuteMiles(place, routeCoords){
+function distanceToRouteMiles(place, routeCoords){
 	let min = Infinity;
 	for (let i = 0; i < routeCoords.length - 1; i++){
 		const d = pointToSegmentMiles([place.lng, place.lat], routeCoords[i], routeCoords[i + 1]);
@@ -138,6 +138,7 @@ function distanceToROuteMiles(place, routeCoords){
 // Finds scenic/romantic stops near the route, deduped by name+location
 export async function findRomanticStopsAlongRoute(routeGeometry){
 	const samplePoints = sampleRouteCoordinates(routeGeometry, 6);
+	const routeCoords = routeGeometry.coordinates;
 
 	// search each sample point seperately so results stay grouped by locationm along the route
 	const perPointResults = await Promise.all(
@@ -155,7 +156,7 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 	
 	for (const place of pointResults){
 		const key = place.name + '|' + place.lng.toFixed(3) + '|' + place.lat.toFixed(3);
-		if (!seen.has(key)){
+		if (!seen.has(key) && distanceToRouteMiles(place, routeCoords) =< ROMANTIC_STOP_MAX_DISTANCE_MILES){
 			seen.add(key);
 			deduped.push(place);
 		}
@@ -178,6 +179,7 @@ while (tookOne && spread.length < 12){
 	}
 }
 return spread;
+}
 /* ================== DAY BALANCING ================ */
 // Splits total drive time evenly across the requested number of days
 export function balanceDays(durationSeconds, days){
@@ -188,4 +190,4 @@ export function balanceDays(durationSeconds, days){
 		perDayHours: Math.round(perDayHours * 10)/ 10
 	};
   }
-}
+
