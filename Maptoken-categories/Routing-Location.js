@@ -73,7 +73,7 @@ export async function getDirections(coordsArray){
 function haversineMiles(a, b){
 	const R = 3958.8;
 	const [lng1, lat1] = a;
-	const [lng2. lat2] = b;
+	const [lng2, lat2] = b;
 	const dLat = (lat2 - lat1) * Math.PI / 180;
 	const dLng = (lng2 - lng1) * Math.PI / 180;
 	const s = Math.sin(dLat / 2) ** 2 + 
