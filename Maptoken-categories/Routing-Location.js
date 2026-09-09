@@ -174,7 +174,7 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 		for (const place of pointResults){
 			const key = place.name + '|' + place.lng.toFixed(3) + '|' + place.lat.toFixed(3);
 			if (seen.has(key)) continue;
-			const distanceFromSearchPoint = haversineMiles([place.lng, place.lat], [sampleLng, sample.Lat]);
+			const distanceFromSearchPoint = haversineMiles([place.lng, place.lat], [sampleLng, sampleLat]);
 			if (distanceFromSearchPoint > ROMANTIC_STOP_MAX_DISTANCE_MILES) continue;
 				seen.add(key);
 				out.push(place);
