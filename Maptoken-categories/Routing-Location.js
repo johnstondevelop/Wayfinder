@@ -156,7 +156,7 @@ function distanceToRouteMiles(place, routeCoords){
 
 // Finds scenic/romantic stops near the route, deduped by name+location
 export async function findRomanticStopsAlongRoute(routeGeometry){
-	const samplePoints = sampleRouteCoordinates(routeGeometry, 6);
+	const samplePoints = sampleRouteCoordinates(routeGeometry, 10);
 
 	// search each sample point seperately so results stay grouped by locationm along the route
 	const perPointResults = [];
