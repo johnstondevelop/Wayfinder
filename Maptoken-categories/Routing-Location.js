@@ -101,10 +101,22 @@ function sampleRouteCoordinates(geometry, sampleCount = 6){
 	return samples;
 }
 
-async function  searchCategoryNear(category, lng, lat){
+/* async function  searchCategoryNear(category, lng, lat){
 	const url = `${SEARCH_CATEGORY_URL}/${encodeURIComponent(category)}?proximity=${lng},${lat}&limit=3&access_token=${MAPBOX_TOKEN}`;
 	const res = await fetch(url);
-	if (!res.ok) return [];
+	if (!res.ok) return []; */
+
+	export const searchStats = { total: 0, failed: 0, rateLimited: 0 };
+
+	async function searchCategoryNear(category, lng, lat){
+		const url = `${SEARCH_CATEGORY_URL}/${encodeURIComponent(category)}?proximity=${lng},${lat}&limit=3&access_token=${MAPBOX_TOKEN}`;
+		searchStats.total++;
+		const res = await fetch(url);
+		if (!res.ok){
+			searchStats.failed++;
+			if (res.status === 429) searchStats.rateLimited++;
+			return [];
+		}
 	
 	const data = await res.json();
 	if (!data.features) return [];
@@ -156,6 +168,9 @@ function distanceToRouteMiles(place, routeCoords){
 
 // Finds scenic/romantic stops near the route, deduped by name+location
 export async function findRomanticStopsAlongRoute(routeGeometry){
+	searchStats.total = 0;
+	searchStats.failed = 0;
+	searchStats.rateLimited = 0;
 	const samplePoints = sampleRouteCoordinates(routeGeometry, 10);
 
 	// search each sample point seperately so results stay grouped by locationm along the route
