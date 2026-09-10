@@ -7,7 +7,7 @@ import {
 	} from './Map.js';
 
 import {
-	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces
+	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces, searchStats
 	} from './Routing-Location.js';
 	
 	const originInput = document.getElementById('originInput');
@@ -193,6 +193,18 @@ try {
 			const romanticStops = await findRomanticStopsAlongRoute(route.geometry);
 			
 			renderRomanticStops(romanticStops);
+
+			if (searchStats.rateLimited > 0){
+				addSummaryCard(
+					'Heads up',
+					`${searchStats.rateLimited} of ${searchStats.total} scenic searches were rate-limited by Mapbox and came back empty \u2014 some stretches of the route may be missing because of this, not because nothing is there.`
+				);
+			} else if (searchStats.failed > 0){
+				addSummaryCard(
+					'Heads up',
+					`${searchStats.failed} of ${searchStats.total} scenic searches failed to load \u2014 some stretches of the route may be missing stops because of this.`
+				);
+			}
 			
 			if (romanticStops.length > 0){
 				addSummaryCard(
