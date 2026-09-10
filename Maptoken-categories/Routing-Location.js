@@ -159,13 +159,12 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 	const samplePoints = sampleRouteCoordinates(routeGeometry, 6);
 
 	// search each sample point seperately so results stay grouped by locationm along the route
-	const perPointResults = await Promise.all(
-		samplePoints.map(async ([lng, lat]) => {
+	const perPointResults = [];
+		for (const [lng, lat] of samplePoints){
 			const searches = ROMANTIC_POI_CATEGORIES.map(category => searchCategoryNear(category, lng, lat));
 			const results = await Promise.all(searches);
-			return results.flat();
-		})
-	);
+			perPointResults.push(results.flat());
+		}
 	// Dedupe globally, but keep results grouped by sample point
 	const seen = new Set();
 	const dedupedPerPoint = perPointResults.map((pointResults, i) => {
