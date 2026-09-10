@@ -70,6 +70,9 @@ export async function getDirections(coordsArray){
 
 /* ================= ROMANTIC STOP SEARCH =================== */
 // Picks evenly-spaced points along the route line to search near
+function delay(ms){
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
 function haversineMiles(a, b){
 	const R = 3958.8;
 	const [lng1, lat1] = a;
@@ -179,6 +182,7 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 			const searches = ROMANTIC_POI_CATEGORIES.map(category => searchCategoryNear(category, lng, lat));
 			const results = await Promise.all(searches);
 			perPointResults.push(results.flat());
+			await delay(200);
 		}
 	// Dedupe globally, but keep results grouped by sample point
 	const seen = new Set();
