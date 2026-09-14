@@ -551,7 +551,7 @@ body{
 	border-color: var(--rose);
 	color: var(--surface);
 }
-.category-chip-actions{
+.category-chips-actions{
 	display: flex;
 	gap: 14px;
 	margin-top: 10px;
