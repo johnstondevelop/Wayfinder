@@ -491,3 +491,83 @@ body{
 	color: var(--plum);
 	text-decoration: underline;
 }
+
+/* =================== CATEGORY FILTERING ================== */
+.category-toggle-btn{
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	border: 1.5px solid var(--line);
+	background: var(--ivory);
+	color: var(--plum);
+	font-family: var(--sans);
+	font-size: .8rem;
+	font-weight: 600;
+	padding: 6px 12px;
+	border-radius: 999px;
+	cursor: pointer;
+	transition: border-color .25s var(--ease);
+}
+.category-toggle-btn:hover{
+	border-color: var(--gold-soft);
+}
+.category-toggle-arrow{
+	font-size: .65rem;
+	transition: transform .25s var(--ease);
+}
+.category-toggle-btn[aria-expanded="true"] .category-toggle-arrow{
+	transform: rotate(180deg);
+}
+.category-dropdown{
+	margin-top: 10px;
+	padding: 12px;
+	background: var(--surface);
+	border: 1.5px solid var(--line);
+	border-radius: 12px;
+	box-shadow: 0 10px 24px rgba(42, 22, 32, 0.1);
+}
+.category-chips{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+.category-chip{
+	border: 1.5px solid var(--line);
+	background: var(--ivory);
+	color: var(--ink-soft);
+	font-family: var(--sans);
+	font-size: .8rem;
+	font-weight: 500;
+	padding: 7px 12px;
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
+}
+.category-chip:hover{
+	border-color: var(--gold-soft);
+}
+.category-chip.active{
+	background: var(--rose);
+	border-color: var(--rose);
+	color: var(--surface);
+}
+.category-ship-actions{
+	display: flex;
+	gap: 14px;
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px solid var(--line);
+}
+.category-chip-action-btn{
+	border: none;
+	background: none;
+	color: var(--gold);
+	font-family: var(--sans);
+	font-size: .78rem;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 2px 4px;
+}
+.category-chip-action-btn:hover{
+	text-decoration: underLine;
+}

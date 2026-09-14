@@ -9,6 +9,9 @@ import {
 import {
 	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces, searchStats
 	} from './Routing-Location.js';
+import {
+	initCategoryFilter
+} from './CategoryFilter.js'
 	
 	const originInput = document.getElementById('originInput');
 	const stopsList = document.getElementById('stopsList');
@@ -190,7 +193,7 @@ try {
 		
 		if (tripState.findRomanticStops){
 			showStatus('Looking for scenic stops along the way...');
-			const romanticStops = await findRomanticStopsAlongRoute(route.geometry);
+			const romanticStops = await findRomanticStopsAlongRoute(route.geometry, tripState.slectedCategories);
 			
 			renderRomanticStops(romanticStops);
 
@@ -237,3 +240,4 @@ function addSummaryCard(title, text){
 /* ============== INITIAL STATE ================ */
 addStop();
 renderStops();
+initCategoryFilter();

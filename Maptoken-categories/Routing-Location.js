@@ -170,7 +170,7 @@ function distanceToRouteMiles(place, routeCoords){
 }
 
 // Finds scenic/romantic stops near the route, deduped by name+location
-export async function findRomanticStopsAlongRoute(routeGeometry){
+export async function findRomanticStopsAlongRoute(routeGeometry, categories = ROMANTIC_POI_CATEGORIES){
 	searchStats.total = 0;
 	searchStats.failed = 0;
 	searchStats.rateLimited = 0;
@@ -179,7 +179,7 @@ export async function findRomanticStopsAlongRoute(routeGeometry){
 	// search each sample point seperately so results stay grouped by locationm along the route
 	const perPointResults = [];
 		for (const [lng, lat] of samplePoints){
-			const searches = ROMANTIC_POI_CATEGORIES.map(category => searchCategoryNear(category, lng, lat));
+			const searches = categories.map(category => searchCategoryNear(category, lng, lat));
 			const results = await Promise.all(searches);
 			perPointResults.push(results.flat());
 			await delay(200);

@@ -24,3 +24,26 @@ export const ROMANTIC_POI_CATEGORIES = ['viewpoint',
                      'pier',
                       'cafe',
                        'wine_bar'];
+
+export const ROMANTIC_POI_CATEGORY_LABELS = {
+     viewpoint: 'Viewpoint',
+     waterfall: 'Waterfall',
+     lighthouse: 'Lighthouse',
+     winery: 'Windery',
+     beach: 'Beach',
+     garden: 'Garden',
+     trailhead: 'Trailhead',
+     park: 'Park',
+     historic_site: 'Historic Site',
+     castle: 'Castle',
+     monument: 'Monument',
+     cinema: 'Cinema',
+     theatre: 'Theatre',
+     art_gallery: 'Art Gallery'.,
+     museum: 'Museum',
+     diner_restaurant: 'Diner',
+     dessert_shop: 'Dessert Shop',
+     pier: "Pier",
+     cafe: 'Cafe',
+     wine_bar: 'Wine Bar'
+};
