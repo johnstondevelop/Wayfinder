@@ -193,7 +193,7 @@ try {
 		
 		if (tripState.findRomanticStops){
 			showStatus('Looking for scenic stops along the way...');
-			const romanticStops = await findRomanticStopsAlongRoute(route.geometry, tripState.slectedCategories);
+			const romanticStops = await findRomanticStopsAlongRoute(route.geometry, tripState.selectedCategories);
 			
 			renderRomanticStops(romanticStops);
 

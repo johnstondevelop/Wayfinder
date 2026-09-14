@@ -1,11 +1,11 @@
-import { ROMANTIC_POI_CATEGORIES } from '.maptoken-config.js';
+import { ROMANTIC_POI_CATEGORIES } from './maptoken-config.js';
 
 export const tripState = {
 	origin: null,     // { name: string, lng: number, lat: number }
 	stops: [],        // array of { id: string, name: string, lng: number, lat: number }
 	days: 1,
 	findRomanticStops: true,
-	selectedCategories: [...ROMANTIC_POI_CATEGORIES]
+	selectedCategories: [...ROMANTIC_POI_CATEGORIES],
 	route: null,      // filled in once routing.js gets a result
 	};
 	
@@ -55,7 +55,7 @@ export function selectAllRomanticCategories(){
 }
 
 export function clearAllRomanticCategories(){
-	tripstate.selectedCategories = [];
+	tripState.selectedCategories = [];
 }
 
 export function setRoute(route){

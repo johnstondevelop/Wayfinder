@@ -1,6 +1,6 @@
 import { ROMANTIC_POI_CATEGORIES, ROMANTIC_POI_CATEGORY_LABELS } from './maptoken-config.js';
 import {
-    tripstate, toggleRomanticCategory, selectAllRomanticCategories, clearAllRomanticCategories
+    tripState, toggleRomanticCategory, selectAllRomanticCategories, clearAllRomanticCategories
     } from './state-and-data.js'
 
 export function initCategoryFilter(){
@@ -9,7 +9,7 @@ export function initCategoryFilter(){
     const categoryDropdown = document.getElementById('categoryDropdown');
     const categoryChips = document.getElementById('categoryChips');
     const categorySelectAllBtn = document.getElementById('categorySelectAllBtn');
-    const categoryClareAllBtn = document.getElementById('categoryClearAllBtn');
+    const categoryClearAllBtn = document.getElementById('categoryClearAllBtn');
 
     function updateCategoryDropdownLabel(){
         const total = ROMANTIC_POI_CATEGORIES.length;
@@ -31,7 +31,7 @@ export function initCategoryFilter(){
             chip.className = 'category-chip';
             if (tripState.selectedCategories.includes(category)) chip.classList.add('active');
             chip.textContent = ROMANTIC_POI_CATEGORY_LABELS[category] || category;
-            chip.adEventListener('click', () => {
+            chip.addEventListener('click', () => {
                 toggleRomanticCategory(category);
                 renderCategoryChips();
                 updateCategoryDropdownLabel();
@@ -42,7 +42,7 @@ export function initCategoryFilter(){
 
     categoryDropdownBtn.addEventListener('click', () => {
         const isOpen = categoryDropdownBtn.getAttribute('aria-expanded') === 'true';
-        categoryDropdownBtn.setAttribute('aria-extended', String(!isOpen));
+        categoryDropdownBtn.setAttribute('aria-expanded', String(!isOpen));
         categoryDropdown.hidden = isOpen;
     });
 
