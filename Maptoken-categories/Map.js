@@ -1,4 +1,5 @@
 import { MAPBOX_TOKEN, DEFAULT_CENTER, DEFAULT_ZOOM } from './maptoken-config.js';
+import { ROMANTIC_POI_CATEGORY_ICONS } from './CategoryIcons.js';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -117,14 +118,29 @@ function googleMapsUrl(name, address, lng, lat){
 	const query = address ? `${name}, ${address}` : `${name} @${lat},${lng}`;
 	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
-function buildPopupHTML({name, address, website, lng, lat }){
-	const linkUrl = website || googleMapsUrl(name, address, lng, lat);
-	const linkLabel = website ? 'Visit Website ↗' : 'View on Google Maps ↗';
+function appleMapsUrl(name, address, lng, lat){
+	// Apple Maps web links: pin the coordinates and label them with the place name/address as the search query
+	const query = address ? `${name}, ${address}` : name;
+	return `https://maps.apple.com/?ll=${lat},${lng}&q=${encodeURIComponent(query)}`;
+}
+function buildPopupHTML({name, address, website, lng, lat, category }){
+	const links = [];
+	if (website){
+		links.push(`<a href="${website}" target="_blank" rel="noopener noreferrer" class="popup-link">Website ↗</a>`);
+	}
+	links.push(`<a href="${googleMapsUrl(name, address, lng, lat)}" target="_blank" rel="noopener noreferrer" class="popup-link">Google Maps ↗</a>`);
+	links.push(`<a href="${appleMapsUrl(name, address, lng, lat)}" target="_blank" rel="noopener noreferrer" class="popup-link">Apple Maps ↗</a>`);
+
+	const icon = category ? ROMANTIC_POI_CATEGORY_ICONS[category] : null;
+
 	return `
 		<div class="popup-place">
-			<h4>${escapeHtml(name)}</h4>
+			<div class="popup-header">
+				${icon ? `<span class="popup-icon">${icon}</span>` : ''}
+				<h4>${escapeHtml(name)}</h4>
+			</div>
 			${address ? `<p class="popup-address">${escapeHtml(address)}</p>` : ''}
-			<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="popup-link">${linkLabel}</a>
+			<div class="popup-links">${links.join('')}</div>
 		</div>
 	`;
 }
@@ -164,7 +180,8 @@ export function renderRomanticStops(places){
 			properties: {
 				name: place.name,
 				address: place.address || '',
-				website: place.website || null
+				website: place.website || null,
+				category: place.category || null
 			}
 		}))
 	});

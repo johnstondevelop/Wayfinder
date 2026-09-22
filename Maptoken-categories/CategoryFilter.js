@@ -1,4 +1,5 @@
 import { ROMANTIC_POI_CATEGORIES, ROMANTIC_POI_CATEGORY_LABELS } from './maptoken-config.js';
+import { ROMANTIC_POI_CATEGORY_ICONS } from './CategoryIcons.js';
 import {
     tripState, toggleRomanticCategory, selectAllRomanticCategories, clearAllRomanticCategories
     } from './state-and-data.js'
@@ -30,7 +31,8 @@ export function initCategoryFilter(){
             chip.type = 'button';
             chip.className = 'category-chip';
             if (tripState.selectedCategories.includes(category)) chip.classList.add('active');
-            chip.textContent = ROMANTIC_POI_CATEGORY_LABELS[category] || category;
+            const icon = ROMANTIC_POI_CATEGORY_ICONS[category] || '';
+            chip.innerHTML = `${icon ? `<span class="chip-icon">${icon}</span>` : ''}<span>${ROMANTIC_POI_CATEGORY_LABELS[category] || category}</span>`;
             chip.addEventListener('click', () => {
                 toggleRomanticCategory(category);
                 renderCategoryChips();

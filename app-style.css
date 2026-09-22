@@ -45,13 +45,46 @@ body{
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
+	box-sizing: border-box;
+	border: 6px solid var(--ivory);
+	outline: 1px solid var(--gold-soft);
+	outline-offset: -7px;
 }
 
 .topbar{
+	position: relative;
 	padding: 18px 28px;
 	background: var(--plum);
 	display: flex;
 	align-items: center;
+	gap: 10px;
+}
+
+/* a soft scalloped seam along the bottom edge of the header */
+.topbar::after{
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -9px;
+	height: 9px;
+	background-image: radial-gradient(circle at 9px 0, transparent 9px, var(--plum) 9.5px);
+	background-size: 18px 9px;
+	background-repeat: repeat-x;
+	pointer-events: none;
+}
+
+.brand-mark{
+	display: flex;
+	flex: 0 0 auto;
+	width: 26px;
+	height: 26px;
+	color: var(--gold-soft);
+}
+.brand-mark svg{
+	width: 100%;
+	height: 100%;
+	display: block;
 }
 
 .brand{
@@ -65,6 +98,25 @@ body{
 	font-style: italic;
 	font-weight: 500;
 	color: var(--gold-soft);
+}
+
+/* a little dashed "route" with a heart at the end, between the tagline and the form */
+.route-divider{
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 22px;
+	color: var(--rose);
+}
+.route-divider::before{
+	content: '';
+	flex: 1;
+	border-top: 2px dashed var(--line);
+}
+.route-divider::after{
+	content: '♥';
+	font-size: .8rem;
+	line-height: 1;
 }
 
 .layout{
@@ -475,10 +527,41 @@ body{
 	font-size: 1rem;
 	color: var(--plum);
 }
+.popup-header{
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.popup-header h4{
+	margin: 0;
+}
+.popup-icon{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 16px;
+	height: 16px;
+	padding: 5px;
+	border-radius: 50%;
+	background: var(--rose-soft);
+	color: var(--plum);
+}
+.popup-icon svg{
+	width: 100%;
+	height: 100%;
+	display: block;
+}
 .popup-address{
 	margin: 0 0 8px;
 	font-size: .8rem;
 	color: var(--ink-soft);
+}
+.popup-links{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 14px;
+	margin-top: 2px;
 }
 .popup-link{
 	display: inline-block;
@@ -486,6 +569,7 @@ body{
 	font-weight: 600;
 	color: var(--gold);
 	text-decoration: none;
+	white-space: nowrap;
 }
 .popup-link:hover{
 	color: var(--plum);
@@ -532,6 +616,9 @@ body{
 	gap: 8px;
 }
 .category-chip{
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 	border: 1.5px solid var(--line);
 	background: var(--ivory);
 	color: var(--ink-soft);
@@ -550,6 +637,17 @@ body{
 	background: var(--rose);
 	border-color: var(--rose);
 	color: var(--surface);
+}
+.chip-icon{
+	display: flex;
+	flex: 0 0 auto;
+	width: 15px;
+	height: 15px;
+}
+.chip-icon svg{
+	width: 100%;
+	height: 100%;
+	display: block;
 }
 .category-chips-actions{
 	display: flex;
