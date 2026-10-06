@@ -50,7 +50,7 @@ export function setDays(days){
 	tripState.days = Math.max(1, Math.min(30, Number(days) || 1));
 }
 
-export function multiDay(value){
+export function setMultiDay(value){
 	tripState.multiDay = value;
 }
 

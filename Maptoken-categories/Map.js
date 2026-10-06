@@ -36,7 +36,7 @@ export function initMap(){
 	map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
 	map.on('movestart', (e) => {
-		if (e.originalEvent & onUserPanHandler) onUserPanHandler();
+		if (e.originalEvent && onUserPanHandler) onUserPanHandler();
 	});
 	
 	// subtle warm tint over the base map so it matches the dusk pallette
