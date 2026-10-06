@@ -51,7 +51,7 @@ export async function getDirections(coordsArray){
 	}
 	
 	const coordString = coordsArray.map(c => c.join(',')).join(';');
-	const url = `${DIRECTIONS_URL}/${coordString}?geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`;
+	const url = `${DIRECTIONS_URL}/${coordString}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`;
 	
 	const res = await fetch(url);
 	if (!res.ok) throw new Error('Directions request failed');
@@ -91,7 +91,7 @@ export function flattenRouteSteps(route){
 	(route.legs || []).forEach(leg => {
 		(leg.steps || []).forEach(step => {
 		steps.push({ ...step, cumulativeDistanceMeters: cumulative});
-		cumulative += steps.distanceMeters;
+		cumulative += step.distanceMeters;
 		});	
 	});
 return steps;

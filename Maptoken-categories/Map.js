@@ -145,7 +145,7 @@ function appleMapsUrl(name, address, lng, lat){
 	const query = address ? `${name}, ${address}` : name;
 	return `https://maps.apple.com/?ll=${lat},${lng}&q=${encodeURIComponent(query)}`;
 }
-function buildPopupHTML({name, address, website, lng, lat, category }){
+function buildPopupHTML({name, address, website, lng, lat, category, addToTripKey }){
 	const links = [];
 	if (website){
 		links.push(`<a href="${website}" target="_blank" rel="noopener noreferrer" class="popup-link">Website ↗</a>`);
