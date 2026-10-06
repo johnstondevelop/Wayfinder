@@ -84,6 +84,7 @@
 			</div>
 			
 			<button class="plan-btn" id="planBtn">Find our route</button>
+			<button class="drive-btn" id="startDriveBtn" disabled>Start Drive</button>
 			
 			<div id="summaryPanel" class="summary-panel"></div>
 			
@@ -93,6 +94,13 @@
 			<div class="map-frame">
 				<div id="map"></div>
 				<div id="mapStatus" class="map-status"></div>
+				<div id="navBanner" class="nav-banner" hidden>
+					<div class="nav-banner-text">
+						<p id="navInstruction" class="nav-instruction">Drive Safely! &mdash; directions will appear here</p>
+						<p id="navDistance" class="nav-distance"></p>
+					</div>
+					<button type="button" id="stopDriveBtn" class="nav-stop-btn">End Drive</button>
+				</div>
 			</div>
 		</main>
 		

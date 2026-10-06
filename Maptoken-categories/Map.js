@@ -7,8 +7,18 @@ let map = null;
 let originMarker = null;
 let stopMarkers = [];
 let romanticPopup = null;
+let liveMarker = null;
+let addToTripHandler = null;
+const scenicPlacesByKey = new Map();
 
 const ROMANTIC_SOURCE_ID = 'romantic-points';
+
+function placeKey(place){
+	return `${place.name}|${place.lng.toFixed(5)}|${place.lat.toFixed(5)}`;
+}
+export function setAddToTripHandler(fn){
+	addToTripHandler = fn;
+}
 
 export function initMap(){
 	map = new mapboxgl.Map({
@@ -84,10 +94,11 @@ export function initMap(){
 		map.on('click', 'romantic-unclustered', (e) => {
 			const feature = e.features[0];
 			const coords = feature.geometry.coordinates.slice();
+			const key = placeKey({ name: feature.properties.name, lng: coords[0], lat: coords[1] });
 			if (romanticPopup) romanticPopup.remove();
 			romanticPopup = new mapboxgl.Popup({offset: 12, maxWidth: '260px' })
 			.setLngLat(coords)
-			.setHTML(buildPopupHTML({ ...feature.properties, lng: coords[0], lat: coords[1] }))
+			.setHTML(buildPopupHTML({ ...feature.properties, lng: coords[0], lat: coords[1], addToTripKey: addToTripHandler ? key : null }))
 			.addTo(map);
 		});
 
@@ -100,6 +111,17 @@ export function initMap(){
 	requestAnimationFrame(() => map.resize());
 	window.addEventListener('resize', () => map.resize());
 	window.addEventListener('orientationchange', () => setTimeout(() => map.resize(), 250));
+	
+	map.getContainer().addEventListener('click', (e) => {
+		const btn = e.target.closest('.popup-add-trip-btn');
+		if (!btn) return;
+		const place = scenicPlacesByKey.get(btn.dataset.addTripKey);
+		if (place && addToTripHandler){
+			addToTripHandler(place);
+			btn.textContent = 'Added!';
+			btn.disabled = true;
+		}
+	});
 
 	return map;
 }
@@ -130,6 +152,9 @@ function buildPopupHTML({name, address, website, lng, lat, category }){
 	}
 	links.push(`<a href="${googleMapsUrl(name, address, lng, lat)}" target="_blank" rel="noopener noreferrer" class="popup-link">Google Maps ↗</a>`);
 	links.push(`<a href="${appleMapsUrl(name, address, lng, lat)}" target="_blank" rel="noopener noreferrer" class="popup-link">Apple Maps ↗</a>`);
+	if (addToTripKey){
+		links.push(`<button type="button" class="popup-add-trip-btn" data-add-trip-key="${escapeHtml(addToTripKey)}">+ Add to trip </button`);
+	}
 
 	const icon = category ? ROMANTIC_POI_CATEGORY_ICONS[category] : null;
 
@@ -172,6 +197,8 @@ export function addStopMarker(lng, lat, label, name){
 export function renderRomanticStops(places){
 	const source = map.getSource(ROMANTIC_SOURCE_ID);
 	if (!source) return;
+	scenicPlacesByKey.clear();
+	places.forEach(place => scenicPlacesByKey.set(placeKey(place), place));
 	source.setData({
 		type: 'FeatureCollection',
 		features: places.map(place => ({
@@ -214,6 +241,39 @@ export function fitToCoordinates(coords){
 		new mapboxgl.LngLatBounds(coords[0], coords[0])
 	);
 	map.fitBounds(bounds, {padding: 60, duration: 900});
+}
+export function setLiveMarker(lng, lat, heading){
+	if (!liveMarker){
+		const el = createMarkerEl('live');
+		el.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2 L19 21 L12 17 L5 21 Z"/></svg>`;
+		liveMarker = new mapboxgl.Marker({element: el, anchor: 'center', rotationAlignment: 'map' })
+			.setLngLat([lng, lat])
+			.addTo(map);
+	} else {
+		liveMarker.setLngLat([lng, lat])
+	}
+	if (typeof heading === 'number' && !Number.isNaN(heading)){
+		liveMarker.setRotation(heading);
+	}
+}
+export function clearLiveMarker(){
+	if (liveMarker){
+		liveMarker.remove();
+		liveMarker = null;
+	}
+}
+export function followCamera(lng, lat, bearing){
+	map.easeTo({
+		center: [lng, lat],
+		zoom: 17,
+		bearing: typeof bearing === 'number' && !Number.isNaN(bearing) ? bearing : map.getBearing(),
+		pitch: 60,
+		duration: 800
+	});
+}
+
+export function exitFollowCamera(){
+	map.easeTo({ pitch: 0, bearing: 0, duration: 600 });
 }
 
 export function showStatus(message){

@@ -20,6 +20,17 @@ export function addStop(){
 export function removeStop(id){
 	tripState.stops = tripState.stops.filter(s => s.id !== id);
 }
+// Splices an already-geocoded place (a scenic stope where the driver the driver
+// is adding to the trip) into the stops list at 'index', rather than appending at at the
+// end the way addStop() does - this is what turns it into a real waypoint
+// that stis in the correct driving order.
+export function insertStops(index, place){
+	const id = 'stop-' + nextStopId++;
+	const stop = {id, name: palce.name, lng: place.lng, lat: place.lat};
+	const safeIndex = Math.max(0, Math.min(index, tripState.stops.length));
+	tripstate.stops.splice(safeIndex, 0, stop);
+	return id;
+}
 
 export function setOrigin(place){
 	tripState.origin = place;

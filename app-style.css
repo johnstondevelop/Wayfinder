@@ -326,6 +326,84 @@ body{
 	transform: scale(.98);
 }
 
+/* ============ START/END DRIVE ===================== */
+.drive-btn{
+	width: 100%;
+	padding: 12px;
+	border: 1.5px solid var(--plum);
+	border-radius: 10px;
+	background: transparent;
+	color: var(--plum);
+	font-family: var(--serif);
+	font-size: .95rem;
+	font-weight: 600;
+	cursor: pointer;
+	margin-top: 10px;
+	transition: background .25s var(--ease), color .25s var(--ease), opacity .25s var(--ease);
+}
+.drive-btn:hover:not(:disabled){
+	background: var(--plum);
+	color: var(--ivory);
+}
+.drive-btn:disabled{
+	opacity: .45;
+	cursor: not-allowed;
+}
+
+/* ============ TURN BY TURN BANNER ================= */
+.nav-banner{
+	position: absolute;
+	top: 18px;
+	left: 18px;
+	right: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	background: var(--plum);
+	color: var(--ivory);
+	border-radius: 14px;
+	padding: 14px 18px;
+	box-shadow: 0 10px 28px rgba(42, 22, 32, 0.35);
+}
+.nav-banner[hidden]{
+	display: none;
+}
+.nav-banner-text{
+	min-width: 0;
+}
+.nav-instruction{
+	margin: 0;
+	font-family: var(--serif);
+	font-size: 1.05rem;
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.nav-distance{
+	margin: 2px 0 0;
+	font-size: .85rem;
+	color: var(--gold-soft);
+	font-weight: 600;
+}
+.nav-stop-btn{
+	flex-shrink: 0;
+	border: 1.5px solid var(--gold-soft);
+	background: transparent;
+	color: var(--ivory);
+	font-family: var(--sans);
+	font-size: .8rem;
+	font-weight: 600;
+	padding: 8px 14px;
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background .25s var(--ease);
+}
+.nav-stop-btn:hover{
+	background: rgba(255,255,255,.12);
+}
+
 /* ============ AUTOCOMPLETE SUGGESTIONS ============ */
 .autocomplete-wrap{
 	position: relative;
@@ -506,6 +584,18 @@ body{
 	border: 2.5px solid var(--surface);
 	box-shadow: 0 2px 6px rgba(217, 142, 150, 0.5);
 }
+.map-marker-live{
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: var(--plum);
+	color: var(--ivory);
+	border: 3px solid var(--surface);
+	box-shadow: 0 2px 10px rgba(92, 33, 53, 0.5), 0 0 0 6px rgba(92, 33, 53, 0.15);
+}
+.map-marker-live:hover{
+	transform: none;
+}
 
 /* Popup styling to match the palette (Mapbox default popups are plain white/black) */
 .mapboxgl-popup-content{
@@ -574,6 +664,26 @@ body{
 .popup-link:hover{
 	color: var(--plum);
 	text-decoration: underline;
+}
+.popup-add-trip-btn{
+	display: inline-block;
+	font-size: .82rem;
+	font-weight: 600;
+	color: var(--surface);
+	background: var(--plum);
+	border: none;
+	padding: 4px 10px;
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background .25s var(--ease);
+}
+.popup-add-trip-btn:hover{
+	background: var(--plum-deep);
+}
+.popup-add-trip-btn:disabled{
+	background: var(--gold-soft);
+	color: var(--plum);
+	cursor: defualt;
 }
 
 /* =================== CATEGORY FILTERING ================== */

@@ -21,9 +21,17 @@ import {
 	const planBtn = document.getElementById('planBtn');
 	const summaryPanel = document.getElementById('summaryPanel');
 	const originSuggestions = document.getElementById('originSuggestions');
-	
+	const startDriveBtn = document.getElementById('startDriveBtn');
+	const stopDriveBtn = document.getElementById('stopDriveBtn');
+	const navBanner = document.getElementById('navBanner');
+	const navInstruction = document.getElementById('navInstruction');
+	const navDistance = document.getElement('navDistance');
+
+	const METERS_PER_MILE = 1609.34;
+
 	initMap();
-	
+	setAddToTripHandler(addScenicStopToTrip);
+
 	function debounce(fn, delay){
 		let timer = null;
 		return (...args) => {
@@ -160,6 +168,25 @@ scenicToggle.addEventListener('change', () => setRomanticStops(scenicToggle.chec
 /* ================ PLAN ROUTE ============== */
 planBtn.addEventListener('click', planRoute);
 
+
+async function fetchAndDrawRoute({ fitCamera = true} = {}){
+	const coords = [
+		[tripState.origin.lng, tripState.orgin.lat], ...tripState.stops.map(s => [s.lng, s.lat])
+	];
+	
+	const route = await getDirections(coords);
+	setRoute(route);
+
+	drawRoute({ type: 'Feature', geometry: route.geometry, properties: {} });
+	if (fitCamera) fitToCoordinates(coords);
+
+	clearStopMarkers();
+	tripState.stops.forEach((s, i) => addStopMarker(s.lng, s.lat, String(i + 1), s.name));
+
+	updateStartDriveAvailability();
+	return route;
+}
+
 async function planRoute(){
 	if (!isReadyToPlan()){
 		showStatus('Add a starting point and atleast one stop first');
@@ -172,18 +199,8 @@ planBtn.textContent = 'Finding your route...';
 summaryPanel.innerHTML = '';
 
 try {
-	const coords = [
-		[tripState.origin.lng, tripState.origin.lat],...tripState.stops.map(s => [s.lng, s.lat])
-		];
-		
-		const route = await getDirections(coords);
-		setRoute(route);
-		
-		drawRoute({ type: 'Feature', geometry: route.geometry, properties: {} });
-		fitToCoordinates(coords);
-		
-		clearStopMarkers();
-		tripState.stops.forEach((s, i) => addStopMarker(s.lng, s.lat, String(i + 1), s.name));
+	
+		const route = await fetchAndDrawRoute();
 		
 		const { totalHours, perDayHours } = balanceDays(route.durationSeconds, tripState.days);
 		addSummaryCard(
@@ -230,12 +247,159 @@ try {
 	}
 }
 
+async function addScenicStopToTrip(place){
+	if (!tripState.route) return;
+
+	const routeCoords = tripState.route.geometry.coordinates;
+	const { distanceAlongRoute } = locateAlongRoute([place.lng, place.lat], routeCoords);
+	const legMiles = tripState.route.legs.map(leg => leg.distanceMeters / METERS_PER_MILE);
+	const insertIndex = findStopInsertionIndex(distanceAlongRoute, legMiles);
+
+	insertStops(insertIndex, place);
+	renderStops();
+
+	showStatus('Adding this stop to your route...');
+	try {
+		await fetchAndDrawRoute({ fitCamera: true});
+		hideStatus();
+	} catch(err){
+		console.error(err);
+		showStatus('Could not add that stop to the route');
+		setTimeout(hideStatus, 2500);
+	}
+}
+
 function addSummaryCard(title, text){
 	const card = document.createElement('div');
 	card.className = 'summary-card';
 	card.innerHTML = `<h4>${title}</h4><p>${text}</p>`;
 	summaryPanel.appendChild(card);
 }
+
+let watchId = null;
+letnavSteps = [];
+letcurrentStepIndex = 0;
+let lastFixPoint = null;
+
+function updateStartDriveAvailability(){
+	startDriveBtn.disabled = !tripState.route;
+}
+
+function formatDistanceImperial(miles){
+	const safeMiles = Math.max(0, miles);
+	if (safeMiles < 0.1){
+		const feet = Math.max(50m Math.round(safeMiles * 5280 / 50) * 50);
+		return `${feet} ft`;
+	}
+	return `${safeMiles.toFixed(safeMiles < 1 ? 1 : 0)} mi`;
+}
+
+function bearingBetween(a, b){
+	const [lng1, lat1] = [a[0] * Math.PI / 180, a[1] * Math.PI / 180];
+	const [lng2, lat2] = [b[0] * Math.PI / 180, b[1] * Math.PI / 180];
+	const dLng = lng2 - lng1;
+	const y = Math.sin(dLng) * Math.cos(lat2);
+	const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) Math.cos(dLng);
+	return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+
+function updateNavBanner(distanceAlongMeters){
+	if (!navSteps.length){
+		navInstruction.textContent = 'Drive safely - directions will appear here';
+		navDistance.textContent = '';
+		return;
+	}
+	const nextStep = navSteps[currentStepIndex + 1];
+	if (nextStep){
+		navInstruction.textContent = nextStep.instruction || 'Continue on route';
+		if (typeof distanceAlongMeters === 'number'){
+			const remainingMeters = Math.max(0, nextStep.cumulativeDistanceMeters - distanceAlongMeters);
+			navDistance.textContent = `in ${formatDistanceImperial(remainingMeters / METERS_PER_MILE)}`; 
+		} else {
+			navDistance.textContent = '';
+		}
+	} else {
+		navInstruction.textContent = navSteps[currentStepIndex].instruction || 'You have arrived';
+		navDistance.textContent = '';
+	}
+}
+
+function handlePositionUpdate(position){
+	const { longitude, latitude, heading } = position.coords;
+	const point = [longitude, latitude];
+
+	let bearing = (typeof heading === 'number' && !Number.isNaN(heading)) ? heading : null;
+	if (bearing === null && lastFixPoint){
+		bearing = bearingBetween(lastFixedPoint, point);
+	}
+	lastFixedPoint = point;
+
+	setLiveMarker(longitude, latitude, bearing === null ? undefined : bearing);
+	followCamera(longitude, latitude, bearing === null ? undefined : bearing);
+
+	if (!tripState.route) return;
+	const {distanceAlongRoute } = locateAlongRoute(point, tripstate.route.geometry.coordinates);
+	const distanceAlongMeters = distanceAlongRoute * METERS_PER_MILE;
+
+	while (
+		currentStepIndex < navSteps.length - 1 &&
+		distanceAlongMeters >= navSteps[currentStepIndex + 1].cumulativeDistanceMeters
+	){
+		currentStepIndex++;
+	}
+	updateNavBanner(distanceAlongMeters);
+}
+
+function startNavigation(){
+	if (!tripState.route){
+		showStatus('Plan a route before starting the drive!');
+		setTimeout(hideStatus, 2500);
+		return;
+	}
+	if (!('geolocation' in navigator)){
+		showStatus('This browser does not support GPS location');
+		setTimeout(hideStatus, 3000);
+		return;
+	}
+
+	navSteps = flattenRouteSteps(tripState.route);
+	currentStepIndex = 0;
+	lastFixPoint = null;
+
+	navInstruction.textContent = 'Getting your location...';
+	navDistance.textContent = '';
+	navBanner.hidden = false;
+	startDriveBtn.hidden = true;
+
+	watchId = navigator.geolocation.watchPosition(
+		handlePositionUpdate,
+		(err) => {
+			console.error(err);
+			showStatus('Could not get your location - check location permissions');
+			setTimeout(hideStatus, 3000);
+		},
+		{ enableHighAccuracy: true, maximumAge: 1000, timeout: 10000 }
+	);
+}
+
+function stopNavigation(){
+	if (!watchId != null){
+		navigator.geolocation.clearWatch(watchId);
+		watchId = null;
+	}
+	navBanner.hidden = true;
+	startDriveBtn.hidden = false;
+	clearLiveMarker();
+	exitFollowCamera();
+
+	const coords = [
+		[tripState.origin.lng, tripstate.origin.lat], ...tripState.stops.map(s => [s.lng, s.lat])
+	];
+	fitToCoordinates(coords);
+}
+
+startDriveBtn.addEventListener('click', startNavigation);
+stopDriveBtn.addEventListener('click', stopNavigation);
 
 /* ============== INITIAL STATE ================ */
 addStop();
