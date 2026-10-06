@@ -4,6 +4,7 @@ export const tripState = {
 	origin: null,     // { name: string, lng: number, lat: number }
 	stops: [],        // array of { id: string, name: string, lng: number, lat: number }
 	days: 1,
+	multiDay: false,
 	findRomanticStops: true,
 	selectedCategories: [...ROMANTIC_POI_CATEGORIES],
 	route: null,      // filled in once routing.js gets a result
@@ -47,6 +48,10 @@ export function setStopPlace(id, place){
 
 export function setDays(days){
 	tripState.days = Math.max(1, Math.min(30, Number(days) || 1));
+}
+
+export function multiDay(value){
+	tripState.multiDay = value;
 }
 
 export function setRomanticStops(value){

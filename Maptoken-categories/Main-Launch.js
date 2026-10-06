@@ -4,7 +4,7 @@ import {
 	} from './state-and-data.js';
 import {
 	initMap, setOriginMarker, clearStopMarkers, addStopMarker, renderRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus,
-	setAddToTripHandler, setLiveMarker, clearLiveMarker, followCamera, exitFollowCamera
+	setAddToTripHandler, setLiveMarker, clearLiveMarker, followCamera, exitFollowCamera, setOnUserPanHandler
 	} from './Map.js';
 
 import {
@@ -20,6 +20,8 @@ import {
 	const addStopBtn = document.getElementById('addStopBtn');
 	const daysInput = document.getElementById('daysInput');
 	const scenicToggle = document.getElementById('scenicToggle');
+	const multiDayToggle = document.getElementById('multiDayToggle');
+	const daysFieldWrap = document.getElementById('daysFieldWrap');
 	const planBtn = document.getElementById('planBtn');
 	const summaryPanel = document.getElementById('summaryPanel');
 	const originSuggestions = document.getElementById('originSuggestions');
@@ -33,6 +35,7 @@ import {
 
 	initMap();
 	setAddToTripHandler(addScenicStopToTrip);
+	setOnUserPanHandler(handleUserPan);
 
 	function debounce(fn, delay){
 		let timer = null;
@@ -166,6 +169,10 @@ stopsList.addEventListener('blur', onStopInputBlur);
 
 daysInput.addEventListener('input', () => setDays(daysInput.value));
 scenicToggle.addEventListener('change', () => setRomanticStops(scenicToggle.checked));
+multiDayToggle.addEventListener('change', () => {
+	setMultiDay(multiDayToggle.checked);
+	daysFieldWrap.hidden = !multiDayToggle.checked;
+});
 
 /* ================ PLAN ROUTE ============== */
 planBtn.addEventListener('click', planRoute);
@@ -204,11 +211,7 @@ try {
 	
 		const route = await fetchAndDrawRoute();
 		
-		const { totalHours, perDayHours } = balanceDays(route.durationSeconds, tripState.days);
-		addSummaryCard(
-			'Your Route',
-			`${totalHours} hours of driving total \u2014 about ${perDayHours} hours per day over ${tripState.days} day${tripState.days > 1 ? 's' : ''}.`
-		);
+		renderRouteSummaryCards(route);
 		
 		if (tripState.findRomanticStops){
 			showStatus('Looking for scenic stops along the way...');
@@ -271,6 +274,25 @@ async function addScenicStopToTrip(place){
 	}
 }
 
+function renderRouteSummaryCards(route){
+	const { totalHours, perDayHours } = balanceDays(route.durationSeconds, tripState.days);
+
+	let routeText = `${totalHours} hours of driving total.`;
+	if (tripState.multiDay){
+		routeText = `${totalHours} hours of driving total - about ${perDayHours} hours per day over ${tripState.days} day${tripState.days > 1 ? 's' : ''}.`;
+	}
+	addSummaryCard('Your Route', routeText);
+
+	if (route.legs.length > 1){
+		const waypointNames = [tripState.origin.name, ...tripState.stops.map(s => s.name)];
+		const legLines = route.legs.map((leg, i) => {
+			const legHours = Math.round((leg.durationSeconds / 3600) * 10) / 10;
+			return `${waypointNames[i]} to ${waypointNames[i + 1]}: ${legHours} hours`;
+		}).join('<br>');
+		addSummaryCard('Drive time for each leg', legLines);
+	}
+}
+
 function addSummaryCard(title, text){
 	const card = document.createElement('div');
 	card.className = 'summary-card';
@@ -282,6 +304,8 @@ let watchId = null;
 let navSteps = [];
 let currentStepIndex = 0;
 let lastFixPoint = null;
+let lastBearing;
+let isFollowing = true;
 
 function updateStartDriveAvailability(){
 	startDriveBtn.disabled = !tripState.route;
@@ -326,6 +350,22 @@ function updateNavBanner(distanceAlongMeters){
 	}
 }
 
+function handleUserPan(){
+	if (watchId === null) return;
+	if (isFollowing){
+		isFollowing = false;
+		recenterBtn.hidden = false;
+	}
+}
+
+function recenterOnLiveMarker(){
+	isFollowing = true;
+	recenterBtn.hidden = true;
+	if (lastFixPoint){
+		followCamera(lastFixPoint[0], lastFixPoint[1], lastBearing);
+	}
+}
+
 function handlePositionUpdate(position){
 	const { longitude, latitude, heading } = position.coords;
 	const point = [longitude, latitude];
@@ -335,10 +375,12 @@ function handlePositionUpdate(position){
 		bearing = bearingBetween(lastFixPoint, point);
 	}
 	lastFixPoint = point;
+	if (bearing !== null) lastBearing = bearing;
 
 	setLiveMarker(longitude, latitude, bearing === null ? undefined : bearing);
+	if (isFollowing){
 	followCamera(longitude, latitude, bearing === null ? undefined : bearing);
-
+	}
 	if (!tripState.route) return;
 	const {distanceAlongRoute } = locateAlongRoute(point, tripState.route.geometry.coordinates);
 	const distanceAlongMeters = distanceAlongRoute * METERS_PER_MILE;
@@ -367,11 +409,15 @@ function startNavigation(){
 	navSteps = flattenRouteSteps(tripState.route);
 	currentStepIndex = 0;
 	lastFixPoint = null;
+	isFollowing = true;
+	recenterBtn.hidden = true;
 
 	navInstruction.textContent = 'Getting your location...';
 	navDistance.textContent = '';
 	navBanner.hidden = false;
 	startDriveBtn.hidden = true;
+
+	followCamera(tripState.origin.lng, tripState.origin.lat);
 
 	watchId = navigator.geolocation.watchPosition(
 		handlePositionUpdate,
@@ -391,6 +437,8 @@ function stopNavigation(){
 	}
 	navBanner.hidden = true;
 	startDriveBtn.hidden = false;
+	isFollowing = true;
+	recenterBtn.hidden = true;
 	clearLiveMarker();
 	exitFollowCamera();
 
@@ -402,6 +450,7 @@ function stopNavigation(){
 
 startDriveBtn.addEventListener('click', startNavigation);
 stopDriveBtn.addEventListener('click', stopNavigation);
+recenterBtn.addEventListener('click', recenterOnLiveMarker);
 
 /* ============== INITIAL STATE ================ */
 addStop();

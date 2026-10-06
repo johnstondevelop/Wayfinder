@@ -9,6 +9,7 @@ let stopMarkers = [];
 let romanticPopup = null;
 let liveMarker = null;
 let addToTripHandler = null;
+let onUserPanHandler = null;
 const scenicPlacesByKey = new Map();
 
 const ROMANTIC_SOURCE_ID = 'romantic-points';
@@ -20,6 +21,10 @@ export function setAddToTripHandler(fn){
 	addToTripHandler = fn;
 }
 
+export function setOnUserPanHandler(fn){
+	onUserPanHandler = fn;
+}
+
 export function initMap(){
 	map = new mapboxgl.Map({
 		container: 'map',
@@ -29,6 +34,10 @@ export function initMap(){
 		});
 		
 	map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+	map.on('movestart', (e) => {
+		if (e.originalEvent & onUserPanHandler) onUserPanHandler();
+	});
 	
 	// subtle warm tint over the base map so it matches the dusk pallette
 	map.on('load', ()=> {
@@ -242,10 +251,13 @@ export function fitToCoordinates(coords){
 	);
 	map.fitBounds(bounds, {padding: 60, duration: 900});
 }
+
+const LIVE_MARKER_ICON = '<svg viewBox="0 0 24 24" width="22" height="22"><path transform="rotate(180 12 12)" d ="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.43 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" stroke="white" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+
 export function setLiveMarker(lng, lat, heading){
 	if (!liveMarker){
 		const el = createMarkerEl('live');
-		el.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2 L19 21 L12 17 L5 21 Z"/></svg>`;
+		el.innerHTML = LIVE_MARKER_ICON;
 		liveMarker = new mapboxgl.Marker({element: el, anchor: 'center', rotationAlignment: 'map' })
 			.setLngLat([lng, lat])
 			.addTo(map);

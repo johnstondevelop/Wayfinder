@@ -67,9 +67,19 @@
 				<div id="stopsList" class="stops-list"></div>
 			</div>
 			
-			<div class="panel">
-				<label class="field-label" for="daysInput">Trip Length(days)</label>
-				<input type="number" id="daysInput" class="field-input" value="1" min="1" max="30">
+			<div class="panel toggle-panel">
+				<label class="toggle-row" for="multiDayToggle">
+					<span>
+						<span class="field-label">Multiple Days</span>
+						<span class="toggle-sub">Turn this on to split a longer road trip's drive time across more than one day</span>
+					</span>
+					<input type="checkbox" id="multiDayToggle" class="toggle-input">
+					<span class="toggle-switch"></span>
+				</label>
+				<div id="daysFieldWrap" class="days-field-wrap" hidden>
+					<label class="field-label" for="daysInput">Trip Length(days)</label>
+					<input type="number" id="daysInput" class="field-input" value="1" min="1" max="30">
+				</div>
 			</div>
 			
 			<div class="panel toggle-panel">
@@ -101,6 +111,10 @@
 					</div>
 					<button type="button" id="stopDriveBtn" class="nav-stop-btn">End Drive</button>
 				</div>
+				<button type="button" id="recenterBtn" class="recenter-btn" hidden>
+					<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M19 12h3"/></svg>
+					<span>Recenter</span>
+				</button>
 			</div>
 		</main>
 		

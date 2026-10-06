@@ -404,6 +404,41 @@ body{
 	background: rgba(255,255,255,.12);
 }
 
+/* ============ RECENTER ============================*/
+.recenter-btn{
+	position: absolute;
+	bottom: 20px;
+	right: 18px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	border: none;
+	background: var(--plum);
+	color: var(--ivory);
+	font-family: var(--sans);
+	font-size: .82rem;
+	font-weight: 600;
+	padding: 10px 16px;
+	border-radius: 999px;
+	cursor: pointer;
+	box-shadow: 0 6px 18px rgba(92, 33, 53, 0.35);
+	transition: background .25s var(--ease), transform .15s var(--ease);
+}
+.recenter-btn:hover{
+	background: var(--plum-deep);
+}
+.recenter-btn:active{
+	transform: scale(.97);
+}
+.recenter-btn[hidden]{
+	display: none;
+}
+
+/* ============ MULTI DAY TOGGLE ==================== */
+.days-field-wrap{
+	margin-top: 12px;
+}
+
 /* ============ AUTOCOMPLETE SUGGESTIONS ============ */
 .autocomplete-wrap{
 	position: relative;
@@ -587,11 +622,14 @@ body{
 .map-marker-live{
 	width: 26px;
 	height: 26px;
-	border-radius: 50%;
-	background: var(--plum);
-	color: var(--ivory);
-	border: 3px solid var(--surface);
-	box-shadow: 0 2px 10px rgba(92, 33, 53, 0.5), 0 0 0 6px rgba(92, 33, 53, 0.15);
+	color: var(--plum);
+	filter: drop-shadow(0 2px 5px rgba(92, 33, 53, 0.55));
+	transition: transform 0.8s linear;
+}
+.map-marker-live svg{
+	width: 100%;
+	height: 100%;
+	display: block;
 }
 .map-marker-live:hover{
 	transform: none;
