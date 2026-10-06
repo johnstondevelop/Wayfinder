@@ -64,7 +64,7 @@ export async function getDirections(coordsArray){
 	return {
 		geometry: route.geometry,
 		distanceMeters: route.distance,
-		durationSeconds: route.duration
+		durationSeconds: route.duration,
 		legs: (route.legs || []).map(leg => ({
 			distanceMeters: leg.distance,
 			durationSeconds: leg.duration,

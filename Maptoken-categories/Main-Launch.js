@@ -1,13 +1,15 @@
 import { MAPBOX_TOKEN } from './maptoken-config.js';
 import {
-	tripState, addStop, removeStop, setOrigin, setStopPlace, setDays, setRomanticStops, setRoute, isReadyToPlan
+	tripState, addStop, removeStop, setOrigin, setStopPlace, setDays, setRomanticStops, setRoute, isReadyToPlan, insertStops
 	} from './state-and-data.js';
 import {
-	initMap, setOriginMarker, clearStopMarkers, addStopMarker, renderRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus
+	initMap, setOriginMarker, clearStopMarkers, addStopMarker, renderRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus,
+	setAddToTripHandler, setLiveMarker, clearLiveMarker, followCamera, exitFollowCamera
 	} from './Map.js';
 
 import {
-	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces, searchStats
+	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces, searchStats,
+	locateAlongRoute, findStopInsertionIndex, flattenRouteSteps
 	} from './Routing-Location.js';
 import {
 	initCategoryFilter
@@ -25,7 +27,7 @@ import {
 	const stopDriveBtn = document.getElementById('stopDriveBtn');
 	const navBanner = document.getElementById('navBanner');
 	const navInstruction = document.getElementById('navInstruction');
-	const navDistance = document.getElement('navDistance');
+	const navDistance = document.getElementById('navDistance');
 
 	const METERS_PER_MILE = 1609.34;
 
@@ -171,7 +173,7 @@ planBtn.addEventListener('click', planRoute);
 
 async function fetchAndDrawRoute({ fitCamera = true} = {}){
 	const coords = [
-		[tripState.origin.lng, tripState.orgin.lat], ...tripState.stops.map(s => [s.lng, s.lat])
+		[tripState.origin.lng, tripState.origin.lat], ...tripState.stops.map(s => [s.lng, s.lat])
 	];
 	
 	const route = await getDirections(coords);
@@ -277,8 +279,8 @@ function addSummaryCard(title, text){
 }
 
 let watchId = null;
-letnavSteps = [];
-letcurrentStepIndex = 0;
+let navSteps = [];
+let currentStepIndex = 0;
 let lastFixPoint = null;
 
 function updateStartDriveAvailability(){
@@ -288,7 +290,7 @@ function updateStartDriveAvailability(){
 function formatDistanceImperial(miles){
 	const safeMiles = Math.max(0, miles);
 	if (safeMiles < 0.1){
-		const feet = Math.max(50m Math.round(safeMiles * 5280 / 50) * 50);
+		const feet = Math.max(50, Math.round(safeMiles * 5280 / 50) * 50);
 		return `${feet} ft`;
 	}
 	return `${safeMiles.toFixed(safeMiles < 1 ? 1 : 0)} mi`;
@@ -299,7 +301,7 @@ function bearingBetween(a, b){
 	const [lng2, lat2] = [b[0] * Math.PI / 180, b[1] * Math.PI / 180];
 	const dLng = lng2 - lng1;
 	const y = Math.sin(dLng) * Math.cos(lat2);
-	const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) Math.cos(dLng);
+	const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
 	return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
 
@@ -330,15 +332,15 @@ function handlePositionUpdate(position){
 
 	let bearing = (typeof heading === 'number' && !Number.isNaN(heading)) ? heading : null;
 	if (bearing === null && lastFixPoint){
-		bearing = bearingBetween(lastFixedPoint, point);
+		bearing = bearingBetween(lastFixPoint, point);
 	}
-	lastFixedPoint = point;
+	lastFixPoint = point;
 
 	setLiveMarker(longitude, latitude, bearing === null ? undefined : bearing);
 	followCamera(longitude, latitude, bearing === null ? undefined : bearing);
 
 	if (!tripState.route) return;
-	const {distanceAlongRoute } = locateAlongRoute(point, tripstate.route.geometry.coordinates);
+	const {distanceAlongRoute } = locateAlongRoute(point, tripState.route.geometry.coordinates);
 	const distanceAlongMeters = distanceAlongRoute * METERS_PER_MILE;
 
 	while (
@@ -383,7 +385,7 @@ function startNavigation(){
 }
 
 function stopNavigation(){
-	if (!watchId != null){
+	if (watchId != null){
 		navigator.geolocation.clearWatch(watchId);
 		watchId = null;
 	}
@@ -393,7 +395,7 @@ function stopNavigation(){
 	exitFollowCamera();
 
 	const coords = [
-		[tripState.origin.lng, tripstate.origin.lat], ...tripState.stops.map(s => [s.lng, s.lat])
+		[tripState.origin.lng, tripState.origin.lat], ...tripState.stops.map(s => [s.lng, s.lat])
 	];
 	fitToCoordinates(coords);
 }
