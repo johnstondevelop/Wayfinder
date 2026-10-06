@@ -7,14 +7,14 @@ const APP_SHELL = [
     './manifest.webmanifest',
     './icons/icon-192.png',
     './icons/icon-512.png',
-    './apple-touch-icon.png',
+    './icons/apple-touch-icon.png',
     './Maptoken-categories/Main-Launch.js',
     './Maptoken-categories/Map.js',
-    './Maptoken-categories/state-and-data,js',
+    './Maptoken-categories/state-and-data.js',
     './Maptoken-categories/Routing-Location.js',
     './Maptoken-categories/CategoryIcons.js',
     './Maptoken-categories/CategoryFilter.js',
-    './Maptoken-categoreis/maptoken-config.js'
+    './Maptoken-categories/maptoken-config.js'
 ];
 
 self.addEventListener('install', (event) => {

@@ -38,7 +38,7 @@ export function initMap(){
 
 	map.on('movestart', (e) => {
 		if (e.originalEvent){
-			if (liveMarkerEl) liveMarkerEl.style.transition = 'none;
+			if (liveMarkerEl) liveMarkerEl.style.transition = 'none';
 			if (onUserPanHandler) onUserPanHandler();
 		}
 	});
@@ -266,7 +266,7 @@ export function setLiveMarker(lng, lat, heading){
 	if (!liveMarker){
 		const el = createMarkerEl('live');
 		el.innerHTML = LIVE_MARKER_ICON;
-		liveMarkerel = el;
+		liveMarkerEl = el;
 		liveMarker = new mapboxgl.Marker({element: el, anchor: 'center', rotationAlignment: 'map' })
 			.setLngLat([lng, lat])
 			.addTo(map);
