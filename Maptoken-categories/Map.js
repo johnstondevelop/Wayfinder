@@ -8,6 +8,7 @@ let originMarker = null;
 let stopMarkers = [];
 let romanticPopup = null;
 let liveMarker = null;
+let liveMarkerEl = null;
 let addToTripHandler = null;
 let onUserPanHandler = null;
 const scenicPlacesByKey = new Map();
@@ -36,8 +37,15 @@ export function initMap(){
 	map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
 	map.on('movestart', (e) => {
-		if (e.originalEvent && onUserPanHandler) onUserPanHandler();
+		if (e.originalEvent){
+			if (liveMarkerEl) liveMarkerEl.style.transition = 'none;
+			if (onUserPanHandler) onUserPanHandler();
+		}
 	});
+
+	map.on('moveend', () => {
+		if (liveMarkerEl) liveMarkerEl.style.transition = '';
+	})
 	
 	// subtle warm tint over the base map so it matches the dusk pallette
 	map.on('load', ()=> {
@@ -258,6 +266,7 @@ export function setLiveMarker(lng, lat, heading){
 	if (!liveMarker){
 		const el = createMarkerEl('live');
 		el.innerHTML = LIVE_MARKER_ICON;
+		liveMarkerel = el;
 		liveMarker = new mapboxgl.Marker({element: el, anchor: 'center', rotationAlignment: 'map' })
 			.setLngLat([lng, lat])
 			.addTo(map);
@@ -272,6 +281,7 @@ export function clearLiveMarker(){
 	if (liveMarker){
 		liveMarker.remove();
 		liveMarker = null;
+		liveMarkerEl = null;
 	}
 }
 export function followCamera(lng, lat, bearing){

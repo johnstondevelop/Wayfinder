@@ -1,6 +1,6 @@
 import { MAPBOX_TOKEN } from './maptoken-config.js';
 import {
-	tripState, addStop, removeStop, setOrigin, setStopPlace, setDays, setRomanticStops, setRoute, isReadyToPlan, insertStops
+	tripState, addStop, removeStop, setOrigin, setStopPlace, setDays, setMultiDays, setRomanticStops, setRoute, isReadyToPlan, insertStops
 	} from './state-and-data.js';
 import {
 	initMap, setOriginMarker, clearStopMarkers, addStopMarker, renderRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus,
