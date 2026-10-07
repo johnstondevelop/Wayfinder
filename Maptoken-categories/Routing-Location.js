@@ -202,13 +202,13 @@ export async function findRomanticStopsAlongRoute(routeGeometry, categories = RO
 
 const spread = [];
 let tookOne = true;
-while (tookOne && spread.length < 120){
+while (tookOne && spread.length < 200){
 	tookOne = false;
 	for (const pointResults of dedupedPerPoint){
 		if (pointResults.length){
 			spread.push(pointResults.shift());
 			tookOne = true;
-			if (spread.length >= 120) break;
+			if (spread.length >= 200) break;
 		}
 	}
 }
