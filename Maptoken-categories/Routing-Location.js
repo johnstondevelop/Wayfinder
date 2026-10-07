@@ -51,7 +51,7 @@ export async function getDirections(coordsArray){
 	}
 	
 	const coordString = coordsArray.map(c => c.join(',')).join(';');
-	const url = `${DIRECTIONS_URL}/${coordString}?geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`;
+	const url = `${DIRECTIONS_URL}/${coordString}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`;
 	
 	const res = await fetch(url);
 	if (!res.ok) throw new Error('Directions request failed');
@@ -64,8 +64,37 @@ export async function getDirections(coordsArray){
 	return {
 		geometry: route.geometry,
 		distanceMeters: route.distance,
-		durationSeconds: route.duration
+		durationSeconds: route.duration,
+		legs: (route.legs || []).map(leg => ({
+			distanceMeters: leg.distance,
+			durationSeconds: leg.duration,
+			steps: (leg.steps || []).map(step=> ({
+				instruction: step.maneuver.instruction,
+				type: step.maneuver.type,
+				modifier: step.maneuver.modifier || null,
+				location: step.maneuver.location,
+				distanceMeters: step.distance,
+				durationSeconds: step.duration
+			}))
+		}))
 	};
+}
+
+/* ================= Turn-BY-TURN STEP FLATTENING ============*/
+// Lays every legs steps end-to-end into one list, each tagged with how far
+// (in meters) it sits from the very start of the route - this is what lets
+// the live GPS position be compared against a single running distance instead
+// of juggling leg/step indices seperately
+export function flattenRouteSteps(route){
+	const steps = [];
+	let cumulative = 0;
+	(route.legs || []).forEach(leg => {
+		(leg.steps || []).forEach(step => {
+		steps.push({ ...step, cumulativeDistanceMeters: cumulative});
+		cumulative += step.distanceMeters;
+		});	
+	});
+return steps;
 }
 
 /* ================= ROMANTIC STOP SEARCH =================== */
@@ -142,14 +171,14 @@ function toLocalXY(lng, lat, refLatRad){
 	const y = (lat * Math.PI / 180) * EARTH_RADIUS_MILES;
 	return [x, y];
 }
-function pointToSegmentMiles(point, a, b){
+function projectPointOntoSegment(point, a, b){
 	const refLatRad = point[1] * Math.PI / 180;
 	const [px, py] = toLocalXY(point[0], point[1], refLatRad);
 	const [ax, ay] = toLocalXY(a[0], a[1], refLatRad);
 	const [bx, by] = toLocalXY(b[0], b[1], refLatRad);
 
 	const dx = bx - ax;
-	const dy = by-ay;
+	const dy = by - ay;
 	const lengthSq = dx * dx + dy * dy;
 
 	let t = lengthSq === 0 ? 0 : ((px - ax) * dx + (py - ay) * dy) / lengthSq;
@@ -157,7 +186,10 @@ function pointToSegmentMiles(point, a, b){
 
 	const closestX = ax + t * dx;
 	const closestY = ay + t * dy;
-	return Math.hypot(px - closestX, py - closestY);
+	return { t, distanceMiles: Math.hypot(px - closestX, py - closestY) };
+}
+function pointToSegmentMiles(point, a, b){
+	return projectPointOntoSegment(point, a, b).distanceMiles;
 }
 
 function distanceToRouteMiles(place, routeCoords){
@@ -167,6 +199,34 @@ function distanceToRouteMiles(place, routeCoords){
 		if (d < min) min = d;
 	}
 	return min;
+}
+
+/* ============================= POSITION ALONG ROUTE ==================== */
+export function locateAlongRoute(point, routeCoords){
+	let best = { distanceAlongRoute: 0, distanceFromRoute: Infinity };
+	let cumulative = 0;
+	for (let i = 0; i < routeCoords.length - 1; i++){
+		const a = routeCoords[i];
+		const b = routeCoords[i + 1];
+		const segmentMiles = haversineMiles(a, b);
+		const { t, distanceMiles } = projectPointOntoSegment(point, a, b);
+		if (distanceMiles < best.distanceFromRoute){
+			best = {
+				distanceAlongRoute: cumulative + segmentMiles * t,
+				distanceFromRoute: distanceMiles
+			};
+		}
+		cumulative += segmentMiles;
+	}
+	return best;
+}
+export function findStopInsertionIndex(distanceAlongRouteMiles, legDistanceMiles){
+	let cumulative = 0;
+	for (let i = 0; i < legDistanceMiles.length; i++){
+		cumulative += legDistanceMiles[i];
+		if (distanceAlongRouteMiles < cumulative) return i;
+	}
+	return legDistanceMiles.length;
 }
 
 // Finds scenic/romantic stops near the route, deduped by name+location

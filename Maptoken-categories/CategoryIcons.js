@@ -47,3 +47,4 @@ export const ROMANTIC_POI_CATEGORY_ICONS = {
 
 	wine_bar: `<svg ${ICON_DEFAULTS}><path d="M7.8 3h8.4l-.9 5.4a3.3 3.3 0 01-6.6 0z"/><path d="M12 12.2V18"/><path d="M8.6 21h6.8"/></svg>`,
 };
+

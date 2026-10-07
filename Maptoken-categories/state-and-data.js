@@ -4,6 +4,7 @@ export const tripState = {
 	origin: null,     // { name: string, lng: number, lat: number }
 	stops: [],        // array of { id: string, name: string, lng: number, lat: number }
 	days: 1,
+	multiDay: false,
 	findRomanticStops: true,
 	selectedCategories: [...ROMANTIC_POI_CATEGORIES],
 	route: null,      // filled in once routing.js gets a result
@@ -19,6 +20,17 @@ export function addStop(){
 
 export function removeStop(id){
 	tripState.stops = tripState.stops.filter(s => s.id !== id);
+}
+// Splices an already-geocoded place (a scenic stope where the driver the driver
+// is adding to the trip) into the stops list at 'index', rather than appending at at the
+// end the way addStop() does - this is what turns it into a real waypoint
+// that stis in the correct driving order.
+export function insertStops(index, place){
+	const id = 'stop-' + nextStopId++;
+	const stop = {id, name: place.name, lng: place.lng, lat: place.lat};
+	const safeIndex = Math.max(0, Math.min(index, tripState.stops.length));
+	tripState.stops.splice(safeIndex, 0, stop);
+	return id;
 }
 
 export function setOrigin(place){
@@ -36,6 +48,10 @@ export function setStopPlace(id, place){
 
 export function setDays(days){
 	tripState.days = Math.max(1, Math.min(30, Number(days) || 1));
+}
+
+export function setMultiDay(value){
+	tripState.multiDay = value;
 }
 
 export function setRomanticStops(value){

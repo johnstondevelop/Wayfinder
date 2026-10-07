@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LovinglyLost</title>
 
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#5C2135">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LovinglyLost">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
@@ -67,9 +76,19 @@
 				<div id="stopsList" class="stops-list"></div>
 			</div>
 			
-			<div class="panel">
-				<label class="field-label" for="daysInput">Trip Length(days)</label>
-				<input type="number" id="daysInput" class="field-input" value="1" min="1" max="30">
+			<div class="panel toggle-panel">
+				<label class="toggle-row" for="multiDayToggle">
+					<span>
+						<span class="field-label">Multiple Days</span>
+						<span class="toggle-sub">Turn this on to split a longer road trip's drive time across more than one day</span>
+					</span>
+					<input type="checkbox" id="multiDayToggle" class="toggle-input">
+					<span class="toggle-switch"></span>
+				</label>
+				<div id="daysFieldWrap" class="days-field-wrap" hidden>
+					<label class="field-label" for="daysInput"> Trip Length (days)</label>
+					<input type="number" id="daysInput" class="field-input" value="1" min="1" max="30">
+				</div>
 			</div>
 			
 			<div class="panel toggle-panel">
@@ -84,6 +103,7 @@
 			</div>
 			
 			<button class="plan-btn" id="planBtn">Find our route</button>
+			<button class="drive-btn" id="startDriveBtn" disabled>Start Drive</button>
 			
 			<div id="summaryPanel" class="summary-panel"></div>
 			
@@ -93,6 +113,17 @@
 			<div class="map-frame">
 				<div id="map"></div>
 				<div id="mapStatus" class="map-status"></div>
+				<div id="navBanner" class="nav-banner" hidden>
+					<div class="nav-banner-text">
+						<p id="navInstruction" class="nav-instruction">Drive Safely! &mdash; directions will appear here</p>
+						<p id="navDistance" class="nav-distance"></p>
+					</div>
+					<button type="button" id="stopDriveBtn" class="nav-stop-btn">End Drive</button>
+				</div>
+				<button type="button" id="recenterBtn" class="recenter-btn" hidden>
+					<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M19 12h3M19 12h3"/></svg>
+					<span>Recenter</span>
+				</button>
 			</div>
 		</main>
 		
@@ -101,5 +132,6 @@
 </div>
 
 <script type="module" src="Maptoken-categories/Main-Launch.js"></script>
+<script src="ProgressiveWebApp-Register.js"></script>
 </body>
 </html>
