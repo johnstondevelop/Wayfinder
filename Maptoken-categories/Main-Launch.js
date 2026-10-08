@@ -62,10 +62,10 @@ function renderStops(){
 		input.autocomplete = 'off';
 		input.value = stop.name || '';
 		
-		const sugestionsList = document.createElement('ul');
-		sugestionsList.className = 'suggestions-list';
+		const suggestionsList = document.createElement('ul');
+		suggestionsList.className = 'suggestions-list';
 
-		attachPlaceAutocomplete(input, suggestionList, (place) => setStopPlace(stop.id, place));
+		attachPlaceAutocomplete(input, suggestionsList, (place) => setStopPlace(stop.id, place));
 
 		wrap.appendChild(input);
 		wrap.appendChild(suggestionsList);
@@ -133,7 +133,7 @@ async function planRoute(){
 	planBtn.disabled = false;
 
 	if (!isReadyToPlan()){
-		showStatus('Add a starting point and at least on stop. If you typed one in, try picking it from the suggestions');
+		showStatus('Add a starting point and at least one stop. If you typed one in, try picking it from the suggestions');
 		setTimeout(hideStatus, 4000);
 		return;
 	}

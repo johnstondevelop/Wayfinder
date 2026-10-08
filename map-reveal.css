@@ -22,7 +22,7 @@ still see them before the map has appeared */
     text-align: center;
     transition: opacity .3s var(--ease), transform .3s var(--ease);
 }
-.map-status-visible{
+.map-status.visible{
     transform: translate(-50%, 0);
 }
 /* ---- Before the first search (computer) ---- */
@@ -39,7 +39,7 @@ still see them before the map has appeared */
     overflow: hidden;
 }
 .map-placeholder-card{
-    max-width: 0 0 8px;
+    max-width: 360px;
     padding: 28px 28px 24px;
     background: rgba(255, 255, 255, .9);
     border: 1px solid var(--line);
@@ -91,7 +91,7 @@ still see them before the map has appeared */
 body:not(.route-ready) .map-frame{
     display: none;
 }
-body.route-ready .map-placehodler{
+body.route-ready .map-placeholder{
     display: none;
 }
 
@@ -159,7 +159,7 @@ body.route-ready .map-placehodler{
         transition: transform .35s var(--ease);
         z-index: 5;
     }
-    .trip-sheet-is-expanded{
+    .trip-sheet.is-expanded{
         transform: translateY(0);
     }
 

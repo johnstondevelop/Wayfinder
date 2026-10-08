@@ -2,7 +2,7 @@
 .topbar{
     z-index: 20;
 }
-.brand-links{
+.brand-link{
     display: flex;
     align-items: center;
     gap: 10px;
@@ -46,7 +46,7 @@
     border-radius: 999px;
     cursor: pointer;
 }
-.site-menut-btn svg{
+.site-menu-btn svg{
     display: block;
 }
 @media (max-width: 860px) {

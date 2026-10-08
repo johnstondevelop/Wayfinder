@@ -11,7 +11,7 @@ export function initMapReveal(){
     sheet = document.getElementById('tripSheet');
     sheetHandle = document.getElementById('tripSheetHandle');
     sheetActions = document.getElementById('tripSheetActions');
-    sheetBody = document.getElementsById('tripSheetBody');
+    sheetBody = document.getElementById('tripSheetBody');
     editTripBtn = document.getElementById('editTripBtn');
     backToMapBtn = document.getElementById('backToMapBtn');
     startDriveBtn = document.getElementById('startDriveBtn');
@@ -95,24 +95,24 @@ function initSheetDrag(){
         return Math.min(collapsedOffset, Math.max(0, startOffset + (clientY - startY)));
     }
 
-    sheetHandle.addEventListener('pointerDown', (e) => {
+    sheetHandle.addEventListener('pointerdown', (e) => {
         dragging = true;
         moved = false;
         startY = e.clientY;
-        collapsedOffset = sheet.offSetHeight - getSheetPeek();
+        collapsedOffset = sheet.offsetHeight - getSheetPeek();
         startOffset = sheet.classList.contains('is-expanded') ? 0 : collapsedOffset;
         sheet.style.transition = 'none';
         sheetHandle.setPointerCapture(e.pointerId);
     });
 
-    sheetHandle.addEventListener('pointer-move', (e) => {
+    sheetHandle.addEventListener('pointermove', (e) => {
         if (!dragging) return;
         if (Math.abs(e.clientY - startY) > 4) moved = true;
         if (!moved) return;
-        sheet.style.transform = `translateY${offSetFor(e.clientY)}px`;
+        sheet.style.transform = `translateY(${offSetFor(e.clientY)}px)`;
     });
 
-    sheetHandle.addEventListener('pointer-up', (e) => {
+    sheetHandle.addEventListener('pointerup', (e) => {
         if (!dragging) return;
         dragging = false;
         sheet.style.transition = '';
@@ -124,7 +124,7 @@ function initSheetDrag(){
         setSheetExpanded(offSetFor(e.clientY) < collapsedOffset / 2);
     });
 
-    sheetHandle.addEventListener('pointer-cancel', (e) => {
+    sheetHandle.addEventListener('pointercancel', (e) => {
         dragging = false;
         sheet.style.transition = '';
         sheet.style.transform = '';

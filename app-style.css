@@ -495,7 +495,7 @@ body{
 
 /* Bigger suggestions are easier to hit with a thumb */
 		.suggestion-item{
-		font-size: 12px;
+		padding: 12px;
 		font-size: .95rem;
 	}
 }
