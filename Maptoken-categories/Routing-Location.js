@@ -9,7 +9,7 @@ const SEARCH_CATEGORY_URL = 'https://api.mapbox.com/search/searchbox/v1/category
 export async function geocodePlace(query){
 	if (!query || query.trim().length < 2) return null;
 	
-	const url = `${GEOCODE_URL}/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1`;
+	const url = `${GEOCODE_URL}/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=1&proximity=ip`;
 	const res = await fetch(url);
 	if (!res.ok) throw new Error('Geocoding request failed');
 	
@@ -29,7 +29,7 @@ export async function geocodePlace(query){
 export async function suggestPlaces(query){
 	if (!query || query.trim().length < 2) return [];
 
-	const url = `${GEOCODE_URL}/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=5&autocomplete=true`;
+	const url = `${GEOCODE_URL}/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&limit=5&autocomplete=true&proximity=ip`;
 	const res = await fetch(url);
 	if (!res.ok) return [];
 
@@ -44,6 +44,29 @@ export async function suggestPlaces(query){
 }
 
 /* ================ DIRECTIONS ================ */
+// Turns Mapbox's reason for refusing a route into something readable, so
+// "it didn't work" comes with a hint about why.
+function directionsErrorMessage(status, data){
+	const code = data && data.code;
+	const detail = data && data.message;
+	if (status === 401 || status === 403 || code === 'NotAuthorized' || code === 'Forbidden'){
+		return `Mapbox turned this request down (${status}). The access token or its URL restrictions may need a look.`;
+	}
+	if (status === 429 || code === 'TooManyRequests'){
+		return 'Too many route requests in a short time. Wait a minute and try again.';
+	}
+	if (code === 'NoSegment'){
+		return "One of your places is too far from a road to drive to. Try a nearby town or address instead.";
+	}
+	if (code === 'NoRoute' || status === 200){
+		return "Couldn't find a drivable route between those places. Check that each place is the one you meant.";
+	}
+	if (detail){
+		return `Mapbox couldn't plan this route: ${detail}`;
+	}
+	return `Directions request failed (error ${status}).`;
+}
+
 // coordsArray: [[lng, lat], [lng, lat], ...] in visit order (origin first)
 export async function getDirections(coordsArray){
 	if (coordsArray.length < 2){
@@ -54,12 +77,16 @@ export async function getDirections(coordsArray){
 	const url = `${DIRECTIONS_URL}/${coordString}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`;
 	
 	const res = await fetch(url);
-	if (!res.ok) throw new Error('Directions request failed');
-	const data = await res.json();
-	if (!data.routes || data.routes.length === 0){
-		throw new Error('No route found between those points');
+	let data = null;
+	try{
+		data = await res.json();
+	} catch (err){
+		// no readable body; handled below
 	}
-	
+	if (!res.ok || !data || !data.routes || data.routes.length === 0){
+		console.error('Directions request failed', res.status, data);
+		throw new Error(directionsErrorMessage(res.status, data));
+	}
 	const route = data.routes[0];
 	return {
 		geometry: route.geometry,

@@ -17,6 +17,9 @@ import {
 import {
 	initMapReveal, showMapView
 } from './MapReveal.js';
+import {
+	attachPlaceAutocomplete, waitForPendingLookups
+} from './PlaceAutocomplete.js';
 	
 	const originInput = document.getElementById('originInput');
 	const stopsList = document.getElementById('stopsList');
@@ -41,29 +44,6 @@ import {
 	setOnUserPanHandler(handleUserPan);
 	initMapReveal();
 
-	function debounce(fn, delay){
-		let timer = null;
-		return (...args) => {
-			clearTimeout(timer);
-			timer = setTimeout(() => fn(...args), delay);
-		};
-}
-
-	function renderSuggestionsList(listEl, places, onSelect){
-		listEl.innerHTML = '';
-		places.forEach(place => {
-			const item = document.createElement('li');
-			item.className = 'suggestion-item';
-			item.textContent = place.name;
-			// mousedown (not click) so this fires before the input's blur event clears the list
-			item.addEventListener('mousedown', (e) => {
-				e.preventDefault();
-				onSelect(place);
-				listEl.innerHTML = '';
-			});
-			listEl.appendChild(item);
-		});
-	};
 	
 /* ================== STOP LIST RENDERING ================ */
 function renderStops(){
@@ -81,28 +61,11 @@ function renderStops(){
 		input.placeholder = 'City, address, or landmark';
 		input.autocomplete = 'off';
 		input.value = stop.name || '';
-		input.dataset.stopId = stop.id;
-		input.addEventListener('blur', onStopInputBlur);
+		
+		const sugestionsList = document.createElement('ul');
+		sugestionsList.className = 'suggestions-list';
 
-		const suggestionsList = document.createElement('ul');
-		suggestionsList.className = 'suggestions-list';
-
-		input.addEventListener('input', debounce(async () => {
-			const query = input.value.trim();
-			if (query.length < 2){
-				suggestionsList.innerHTML = '';
-				return;
-			}
-			const places = await suggestPlaces(query);
-			renderSuggestionsList(suggestionsList, places, (place) => {
-				setStopPlace(stop.id, place);
-				input.value = place.name;
-			});
-		}, 300));
-
-		input.addEventListener('blur', () => {
-			setTimeout(() => { suggestionsList.innerHTML = ''; }, 150);
-		});
+		attachPlaceAutocomplete(input, suggestionList, (place) => setStopPlace(stop.id, place));
 
 		wrap.appendChild(input);
 		wrap.appendChild(suggestionsList);
@@ -126,50 +89,11 @@ addStopBtn.addEventListener('click', () => {
 	renderStops();
 });
 
-/* ==================== GEOCODING ON BLUR ==================== */
-async function onOriginalBlur(){
-	const query = originInput.value.trim();
-	if (!query) return;
-	const place = await geocodePlace(query);
-	if (place){
-		setOrigin(place);
-		originInput.value = place.name;
-		setOriginMarker(place.lng, place.lat, place.name);
-	}
-}
-async function onStopInputBlur(e){
-	const input = e.target;
-	const stopId = input.dataset.stopId;
-	const query = input.value.trim();
-	if (!query) return;
-	const place = await geocodePlace(query);
-	if (place){
-		setStopPlace(stopId, place);
-		input.value = place.name;
-	}
-}
-
-
-originInput.addEventListener('input', debounce(async () => {
-	const query = originInput.value.trim();
-	if (query.length < 2){
-		originSuggestions.innerHTML = '';
-		return;
-	}
-	const places = await suggestPlaces(query);
-	renderSuggestionsList(originSuggestions, places, (place) => {
-		setOrigin(place);
-		originInput.value = place.name;
-		setOriginMarker(place.lng, place.lat, place.name);
-	});
-}, 300));
-
-originInput.addEventListener('blur', () => {
-	setTimeout(() => { originSuggestions.innerHTML = ''; }, 150);
+/* ==================== STARTING POINT ==================== */
+attachPlaceAutocomplete(originInput, originSuggestions, (place) => {
+	setOrigin(place);
+	setOriginMarker(place.lng, place.lat, place.name);
 });
-
-originInput.addEventListener('blur', onOriginalBlur);
-stopsList.addEventListener('blur', onStopInputBlur);
 
 daysInput.addEventListener('input', () => setDays(daysInput.value));
 scenicToggle.addEventListener('change', () => setRomanticStops(scenicToggle.checked));
@@ -201,9 +125,16 @@ async function fetchAndDrawRoute({ fitCamera = true} = {}){
 }
 
 async function planRoute(){
+	// On a phone, tapping this button right after typing a place can beat
+	// the lookup of what you typed, so let any of those finish first
+	if (document.activeElement instanceof HTMLInputElement) document.activeElement.blur();
+	planBtn.disabled = true;
+	await waitForPendingLookups();
+	planBtn.disabled = false;
+
 	if (!isReadyToPlan()){
-		showStatus('Add a starting point and atleast one stop first');
-		setTimeout(hideStatus, 2500);
+		showStatus('Add a starting point and at least on stop. If you typed one in, try picking it from the suggestions');
+		setTimeout(hideStatus, 4000);
 		return;
 	}
 
@@ -250,7 +181,7 @@ try {
 	} catch (err){
 		console.error(err);
 		showStatus(err.message || 'Something went wrong planning this route');
-		setTimeout(hideStatus, 3000);
+		setTimeout(hideStatus, 7000);
 	} finally {
 		planBtn.disabled = false;
 		planBtn.textContent = 'Find our route';

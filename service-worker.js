@@ -24,6 +24,7 @@ const APP_SHELL = [
     './Maptoken-categories/CategoryIcons.js',
     './Maptoken-categories/CategoryFilter.js',
     './Maptoken-categories/MapReveal.js',
+    './Maptoken-categories/PlaceAutocomplete.js',
     './Maptoken-categories/maptoken-config.js'
 ];
 

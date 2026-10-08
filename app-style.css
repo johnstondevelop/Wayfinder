@@ -221,6 +221,11 @@ body{
 @keyframes stopIn{
 	to{ opacity: 1; transform: translateY(0); }
 }
+.stop-row:focus-within,
+.stop-row:has(.suggestions-list:not(:empty)){
+	position: relative;
+	z-index: 5;
+}
 
 .stop-row .field-input{ flex: 1; }
 
@@ -479,7 +484,21 @@ body{
 	background: var(--rose-soft);
 	color: var(--plum);
 }
+.autocomplete-wrap{
+	scroll-margin-top: 14px;
+}
+@media (max-width: 860px){
+	/* Iphones zoom the whole page in when you tap a text box whose text is
+	 smaller than 16px, which throws the layout off. 16px stops that */
+	 .field-input{
+		 font-size: 16px; }
 
+/* Bigger suggestions are easier to hit with a thumb */
+		.suggestion-item{
+		font-size: 12px;
+		font-size: .95rem;
+	}
+}
 /* ============ SUMMARY PANEL ============ */
 .summary-panel{
 	margin-top: 24px;
