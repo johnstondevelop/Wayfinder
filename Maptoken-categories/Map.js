@@ -11,6 +11,7 @@ let liveMarker = null;
 let liveMarkerEl = null;
 let addToTripHandler = null;
 let onUserPanHandler = null;
+let fitPaddingProvider = null;
 const scenicPlacesByKey = new Map();
 
 const ROMANTIC_SOURCE_ID = 'romantic-points';
@@ -24,6 +25,10 @@ export function setAddToTripHandler(fn){
 
 export function setOnUserPanHandler(fn){
 	onUserPanHandler = fn;
+}
+
+export function setFitPaddingProvider(fn){
+	fitPaddingProvider = fn;
 }
 
 export function initMap(){
@@ -257,7 +262,8 @@ export function fitToCoordinates(coords){
 		(b, c) => b.extend(c),
 		new mapboxgl.LngLatBounds(coords[0], coords[0])
 	);
-	map.fitBounds(bounds, {padding: 60, duration: 900});
+	const padding = fitPaddingProvider ? fitPaddingProvider() : 60;
+	map.fitBounds(bounds, {padding, duration: 900});
 }
 
 const LIVE_MARKER_ICON = '<svg viewBox="0 0 24 24" width="22" height="22"><path transform="rotate(180 12 12)" d ="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.43 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" stroke="white" stroke-width="1.4" stroke-linejoin="round"/></svg>';

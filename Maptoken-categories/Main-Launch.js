@@ -14,6 +14,9 @@ import {
 import {
 	initCategoryFilter
 } from './CategoryFilter.js'
+import {
+	initMapReveal, showMapView
+} from './MapReveal.js';
 	
 	const originInput = document.getElementById('originInput');
 	const stopsList = document.getElementById('stopsList');
@@ -36,6 +39,7 @@ import {
 	initMap();
 	setAddToTripHandler(addScenicStopToTrip);
 	setOnUserPanHandler(handleUserPan);
+	initMapReveal();
 
 	function debounce(fn, delay){
 		let timer = null;
@@ -203,6 +207,7 @@ async function planRoute(){
 		return;
 	}
 
+showMapView();
 planBtn.disabled = true;
 planBtn.textContent = 'Finding your route...';
 summaryPanel.innerHTML = '';
