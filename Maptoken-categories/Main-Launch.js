@@ -160,7 +160,7 @@ try {
 			renderRomanticStops(stops);
 			});
 
-			renderRomanticStops(romanticStop);
+			renderRomanticStops(romanticStops);
 			if (searchStats.rateLimited > 0){
 				addSummaryCard(
 					'Heads up',
