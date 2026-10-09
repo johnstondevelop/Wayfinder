@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lovinglylost-shell-v4';
+const CACHE_NAME = 'lovinglylost-shell-v5';
 
 const APP_SHELL = [
     './',
@@ -31,7 +31,9 @@ const APP_SHELL = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => cache.addAll(APP_SHELL))
+                        // cache: 'reload' skips the browser's own short-term copies, so a
+            // fresh version saves the files you just pushed, not ones from minutes ago.
+            .then((cache) => cache.addAll(APP_SHELL.map((url) => new Request(url, { cache: 'reload' }))))
             .then(() => self.skipWaiting())
     );
 });
