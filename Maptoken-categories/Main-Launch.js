@@ -155,10 +155,12 @@ try {
 			// The search runs at a steady pace so Mapbox doesnt turn request
 			// away, which takes which takes a few seconds; show the stops as they came in
 
-			const romanticStops = await findRomanticStopsAlongRoute(route.geometry, tripState.selectedCategories), ({fraction, stops}) =>{
+			const romanticStops = await findRomanticStopsAlongRoute(route.geometry, tripState.selectedCategories, ({fraction, stops}) =>{
 				showStatus(`Looking for scenic stops along the way...${Math.round(fraction * 100)}%`);
 			renderRomanticStops(stops);
+			});
 
+			renderRomanticStops(romanticStop);
 			if (searchStats.rateLimited > 0){
 				addSummaryCard(
 					'Heads up',

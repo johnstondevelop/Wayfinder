@@ -165,15 +165,34 @@ function sampleRouteCoordinates(geometry, sampleCount = 6){
 	const res = await fetch(url);
 	if (!res.ok) return []; */
 
-	export const searchStats = { total: 0, failed: 0, rateLimited: 0 };
+		export const searchStats = { total: 0, failed: 0, rateLimited: 0 };
+
+	// Mapbox turns away scenic searches that arrive in a big burst (about ten
+	// at the same instant), but happily answers a steady stream of them. So
+	// rather than firing a whole batch at once, the searches are started one
+	// at a time, SEARCH_GAP_MS apart, and any that still get turned away
+	// (status 429) wait a moment and try again.
+	const SEARCH_GAP_MS = 50;      // about 20 searches a second
+	const SEARCH_RETRIES = 3;
 
 	async function searchCategoryNear(category, lng, lat){
 		const url = `${SEARCH_CATEGORY_URL}/${encodeURIComponent(category)}?proximity=${lng},${lat}&limit=3&access_token=${MAPBOX_TOKEN}`;
 		searchStats.total++;
-		const res = await fetch(url);
-		if (!res.ok){
+
+		let res = null;
+		for (let attempt = 0; attempt <= SEARCH_RETRIES; attempt++){
+			try {
+				res = await fetch(url);
+			} catch (err){
+				res = null; // no connection; counted as failed below
+				break;
+			}
+			if (res.status !== 429 || attempt === SEARCH_RETRIES) break;
+			await delay(500 * (attempt + 1));
+		}
+		if (!res || !res.ok){
 			searchStats.failed++;
-			if (res.status === 429) searchStats.rateLimited++;
+			if (res && res.status === 429) searchStats.rateLimited++;
 			return [];
 		}
 	
@@ -257,20 +276,44 @@ export function findStopInsertionIndex(distanceAlongRouteMiles, legDistanceMiles
 }
 
 // Finds scenic/romantic stops near the route, deduped by name+location
-export async function findRomanticStopsAlongRoute(routeGeometry, categories = ROMANTIC_POI_CATEGORIES){
+// Finds scenic/romantic stops near the route, deduped by name+location.
+// onProgress (optional) is called as results come in with
+// { fraction, stops }: how far along the search is (0 to 1), and the
+// stops found so far, so the map can fill in while the search runs.
+export async function findRomanticStopsAlongRoute(routeGeometry, categories = ROMANTIC_POI_CATEGORIES, onProgress = null){
 	searchStats.total = 0;
 	searchStats.failed = 0;
 	searchStats.rateLimited = 0;
 	const samplePoints = sampleRouteCoordinates(routeGeometry, 10);
 
-	// search each sample point seperately so results stay grouped by locationm along the route
-	const perPointResults = [];
-		for (const [lng, lat] of samplePoints){
-			const searches = categories.map(category => searchCategoryNear(category, lng, lat));
-			const results = await Promise.all(searches);
-			perPointResults.push(results.flat());
-			await delay(200);
-		}
+	// search each sample point seperately so results stay grouped by location along the route
+	const perPointResults = samplePoints.map(() => []);
+	const jobs = [];
+	samplePoints.forEach(([lng, lat], pointIndex) => {
+		categories.forEach(category => jobs.push({ category, lng, lat, pointIndex }));
+	});
+
+	let done = 0;
+	const running = [];
+	for (const job of jobs){
+		running.push((async () => {
+			const places = await searchCategoryNear(job.category, job.lng, job.lat);
+			perPointResults[job.pointIndex].push(...places);
+			done++;
+			if (onProgress && (done % 10 === 0 || done === jobs.length)){
+				onProgress({ fraction: done / jobs.length, stops: spreadAlongRoute(perPointResults, samplePoints) });
+			}
+		})());
+		await delay(SEARCH_GAP_MS);
+	}
+	await Promise.all(running);
+
+	return spreadAlongRoute(perPointResults, samplePoints);
+}
+
+// Dedupes the results and interleaves them point by point, so the stops
+// shown are spread along the whole route instead of bunched at the start.
+function spreadAlongRoute(perPointResults, samplePoints){
 	// Dedupe globally, but keep results grouped by sample point
 	const seen = new Set();
 	const dedupedPerPoint = perPointResults.map((pointResults, i) => {
