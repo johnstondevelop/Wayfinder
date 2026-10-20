@@ -4,7 +4,7 @@ import {
 	} from './state-and-data.js';
 import {
 	initMap, setOriginMarker, clearStopMarkers, addStopMarker, renderRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus,
-	setAddToTripHandler, setLiveMarker, clearLiveMarker, followCamera, exitFollowCamera, setOnUserPanHandler
+	setAddToTripHandler, setLiveMarker, clearLiveMarker, followCamera, exitFollowCamera, setOnUserPanHandler, setRemoveFromTripHandler
 	} from './Map.js';
 
 import {
@@ -41,6 +41,7 @@ import {
 
 	initMap();
 	setAddToTripHandler(addScenicStopToTrip);
+	setRemoveFromTripHandler(removeStopFromTrip, findStopIdForPlace);
 	setOnUserPanHandler(handleUserPan);
 	initMapReveal();
 
@@ -73,10 +74,8 @@ function renderStops(){
 		const removeBtn = document.createElement('button');
 		removeBtn.className = 'remove-stop-btn'
 		removeBtn.textContent = 'x';
-		removeBtn.addEventListener('click', () => {
-			removeStop(stop.id);
-			renderStops();
-		});
+		removeBtn.addEventListener('click', () => 
+		removeStopFromTrip(stop.id));
 
 		row.appendChild(wrap);
 		row.appendChild(removeBtn);
@@ -106,23 +105,43 @@ multiDayToggle.addEventListener('change', () => {
 planBtn.addEventListener('click', planRoute);
 
 
+let routeRequestId = 0;
+
 async function fetchAndDrawRoute({ fitCamera = true} = {}){
 	const coords = [
 		[tripState.origin.lng, tripState.origin.lat], ...tripState.stops.map(s => [s.lng, s.lat])
 	];
-	
+
+	// If the trip changes again while this request is out (a stop added and
+	// then removed right away, say), only the newest answer gets drawn.
+	const myRequestId = ++routeRequestId;
 	const route = await getDirections(coords);
+	if (myRequestId !== routeRequestId) return null;
 	setRoute(route);
 
 	drawRoute({ type: 'Feature', geometry: route.geometry, properties: {} });
 	if (fitCamera) fitToCoordinates(coords);
 
-	clearStopMarkers();
-	tripState.stops.forEach((s, i) => addStopMarker(s.lng, s.lat, String(i + 1), s.name));
+	redrawStopMarkers();
+
+	// Mid-drive, swap in the new route's turn-by-turn steps so the
+	// directions banner follows the trip as it is now.
+	if (watchId !== null){
+		navSteps = flattenRouteSteps(route);
+		currentStepIndex = 0;
+	}
 
 	updateStartDriveAvailability();
 	return route;
 }
+
+function redrawStopMarkers(){
+	clearStopMarkers();
+	tripState.stops.forEach((s, i) => {
+		if (s.lng !== null) addStopMarker(s.lng, s.lat, String(i + 1), s.name, s.id);
+	});
+}
+
 
 async function planRoute(){
 	// On a phone, tapping this button right after typing a place can beat
@@ -146,6 +165,7 @@ summaryPanel.innerHTML = '';
 try {
 	
 		const route = await fetchAndDrawRoute();
+		if (!route) return;
 		
 		renderRouteSummaryCards(route);
 		
@@ -202,28 +222,76 @@ async function addScenicStopToTrip(place){
 	const legMiles = tripState.route.legs.map(leg => leg.distanceMeters / METERS_PER_MILE);
 	const insertIndex = findStopInsertionIndex(distanceAlongRoute, legMiles);
 
-	insertStops(insertIndex, place);
+		const stopId = insertStops(insertIndex, place);
 	renderStops();
+	await refreshRouteAfterEdit('Adding this stop to your route...', { fitCamera: true });
+	return stopId;
+}
 
-	showStatus('Adding this stop to your route...');
+// Takes a stop back out of the trip (from the x in the planner, or the
+// "Remove from trip" button on the map) and redraws the route without it.
+async function removeStopFromTrip(stopId){
+	removeStop(stopId);
+	renderStops();
+	redrawStopMarkers();
+	await refreshRouteAfterEdit('Updating your route...', { fitCamera: false });
+}
+
+// The id of the trip stop sitting at this place, or null if it isn't in the trip.
+function findStopIdForPlace(place){
+	const match = tripState.stops.find(s =>
+		s.lng !== null && Math.abs(s.lng - place.lng) < 1e-6 && Math.abs(s.lat - place.lat) < 1e-6
+	);
+	return match ? match.id : null;
+}
+
+// Once a route is on the map, adding or removing a stop redraws it right
+// away, so the map, the summary and the turn-by-turn all match the trip.
+async function refreshRouteAfterEdit(message, { fitCamera }){
+	if (!tripState.route) return;
+	if (!tripState.stops.some(s => s.lng !== null)){
+		clearPlannedRoute();
+		return;
+	}
+	// A blank stop box is still waiting to be filled in; "Find our route" will pick it up.
+	if (!isReadyToPlan()) return;
+
+	showStatus(message);
 	try {
-		await fetchAndDrawRoute({ fitCamera: true});
+		const route = await fetchAndDrawRoute({ fitCamera });
+		if (route) renderRouteSummaryCards(route);
 		hideStatus();
-	} catch(err){
+	} catch (err){
 		console.error(err);
-		showStatus('Could not add that stop to the route');
-		setTimeout(hideStatus, 2500);
+		showStatus(err.message || 'Could not update the route');
+		setTimeout(hideStatus, 4000);
 	}
 }
 
+// No stops left to drive to: take the route off the map and its summary off the panel.
+function clearPlannedRoute(){
+	routeRequestId++;
+	setRoute(null);
+	drawRoute({ type: 'FeatureCollection', features: [] });
+	clearStopMarkers();
+	summaryPanel.querySelectorAll('[data-route-card]').forEach(card => card.remove());
+	updateStartDriveAvailability();
+}
+
+
+
 function renderRouteSummaryCards(route){
+
+	summaryPanel.querySelectorAll('[data-route-card').forEach(card => card.remove());
+	const cards = [];
+
 	const { totalHours, perDayHours } = balanceDays(route.durationSeconds, tripState.days);
 
 	let routeText = `${totalHours} hours of driving total.`;
 	if (tripState.multiDay){
 		routeText = `${totalHours} hours of driving total - about ${perDayHours} hours per day over ${tripState.days} day${tripState.days > 1 ? 's' : ''}.`;
 	}
-	addSummaryCard('Your Route', routeText);
+	cards.push(addSummaryCard('Your Route', routeText));
 
 	if (route.legs.length > 1){
 		const waypointNames = [tripState.origin.name, ...tripState.stops.map(s => s.name)];
@@ -231,8 +299,10 @@ function renderRouteSummaryCards(route){
 			const legHours = Math.round((leg.durationSeconds / 3600) * 10) / 10;
 			return `${waypointNames[i]} to ${waypointNames[i + 1]}: ${legHours} hours`;
 		}).join('<br>');
-		addSummaryCard('Drive time for each leg', legLines);
+		cards.push(addSummaryCard('Drive time for each leg', legLines));
 	}
+	cards.forEach(card => {card.dataset.routeCard = 'true'; });
+	summaryPanel.prepend(...cards);
 }
 
 function addSummaryCard(title, text){
@@ -240,6 +310,7 @@ function addSummaryCard(title, text){
 	card.className = 'summary-card';
 	card.innerHTML = `<h4>${title}</h4><p>${text}</p>`;
 	summaryPanel.appendChild(card);
+	return card;
 }
 
 let watchId = null;

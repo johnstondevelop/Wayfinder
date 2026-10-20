@@ -10,6 +10,8 @@ let romanticPopup = null;
 let liveMarker = null;
 let liveMarkerEl = null;
 let addToTripHandler = null;
+let removeFromTripHandler = null;
+let findStopId = null;
 let onUserPanHandler = null;
 let fitPaddingProvider = null;
 const scenicPlacesByKey = new Map();
@@ -21,6 +23,10 @@ function placeKey(place){
 }
 export function setAddToTripHandler(fn){
 	addToTripHandler = fn;
+}
+export function setRemoveFromTripHandler(removeFn, findStopIdFn){
+	removeFromTripHandler = removeFn;
+	findTripStopId = findStopIdFn;
 }
 
 export function setOnUserPanHandler(fn){
@@ -116,11 +122,15 @@ export function initMap(){
 		map.on('click', 'romantic-unclustered', (e) => {
 			const feature = e.features[0];
 			const coords = feature.geometry.coordinates.slice();
-			const key = placeKey({ name: feature.properties.name, lng: coords[0], lat: coords[1] });
+			const key = feature.properties.key;
 			if (romanticPopup) romanticPopup.remove();
 			romanticPopup = new mapboxgl.Popup({offset: 12, maxWidth: '260px' })
 			.setLngLat(coords)
-			.setHTML(buildPopupHTML({ ...feature.properties, lng: coords[0], lat: coords[1], addToTripKey: addToTripHandler ? key : null }))
+			.setHTML(buildPopupHTML({ 
+				...feature.properties, lng: coords[0], lat: coords[1],
+			addToTripKey: addToTripHandler ? key : null,
+			removeStopId: stopIdForScenicSpot(key)
+		}))
 			.addTo(map);
 		});
 
@@ -136,15 +146,29 @@ export function initMap(){
 	
 	map.getContainer().addEventListener('click', (e) => {
 		const btn = e.target.closest('.popup-add-trip-btn');
-		if (!btn) return;
-		const place = scenicPlacesByKey.get(btn.dataset.addTripKey);
-		if (place && addToTripHandler){
-			addToTripHandler(place);
-			btn.textContent = 'Added!';
-			btn.disabled = true;
+		const removeBtn = e.target.closest('.popup-remove-trip-btn');
+		
+		if(addBtn && addToTripHandler){
+			const key = addBtn.dataset.addTripKey;
+			const place = scenicPlacesByKey.get(key);
+			if (!place) return;
+			addBtn.textContent = 'Adding...';
+			addBtn.disabled = true;
+			await addToTripHandler(place);
+
+			const stopId = stopIdForScenicSpot(key);
+			if (addBtn.isConnected) addBtn.outerHTML = stopId ? removeTripButtonHTML(stopId, key) : addTripButtonHTML(key);
+		}
+
+		if (removeBtn && removeFromTripHandler){
+			const key = removeBtn.dataset.addTripKey;
+			removeBtn.textContent = 'Removing...';
+			removeBtn.disabled = true;
+			await removeFromTripHandler(removeBtn.dataset.stopId);
+
+			if (key && removeBtn.isConnected) removeBtn.outerHTMl = addTripButtonHTML(key);
 		}
 	});
-
 	return map;
 }
 
@@ -167,19 +191,31 @@ function appleMapsUrl(name, address, lng, lat){
 	const query = address ? `${name}, ${address}` : name;
 	return `https://maps.apple.com/?ll=${lat},${lng}&q=${encodeURIComponent(query)}`;
 }
-function buildPopupHTML({name, address, website, lng, lat, category, addToTripKey }){
+function stopIdForScenicSpot(key){
+	const place = scenicPlacesByKey.get(key);
+	return place&& findTripStopId ? findTripStopId(place) : null;
+}
+function addTripButtonHTML(addToTripKey){
+	return `<button type="button" class="popup-add-trip-btn" data-add-trip-key="${escapeHtml(addToTripKey)}">+ Add to Trip</button>`;
+}
+function removeTripButtonHTML(addToTripKey){
+	const ketAttr = addToTripKey ? ` data-add-trip-key="${escapeHtml(addToTripKey)}"` : '';
+	return `<button type="button" class="popup-add-trip-btn" data-add-trip-key="${escapeHtml(stopId)}"${keyAttr}>Remove from Trip</button>`;
+}
+function buildPopupHTML({name, address, website, lng, lat, category, addToTripKey, removeStopId }){
 	const links = [];
 	if (website){
 		links.push(`<a href="${website}" target="_blank" rel="noopener noreferrer" class="popup-link">Website ↗</a>`);
 	}
 	links.push(`<a href="${googleMapsUrl(name, address, lng, lat)}" target="_blank" rel="noopener noreferrer" class="popup-link">Google Maps ↗</a>`);
 	links.push(`<a href="${appleMapsUrl(name, address, lng, lat)}" target="_blank" rel="noopener noreferrer" class="popup-link">Apple Maps ↗</a>`);
-	if (addToTripKey){
-		links.push(`<button type="button" class="popup-add-trip-btn" data-add-trip-key="${escapeHtml(addToTripKey)}">+ Add to trip </button`);
+	if (removeStopId && removeFromTripHandler){
+		links.push(removeTripButtonHTML(removeStopId, addToTripKey));
+	} else if (addToTripKey){
+		links.push(addTripButtonHTML(addToTripKey));
 	}
 
 	const icon = category ? ROMANTIC_POI_CATEGORY_ICONS[category] : null;
-
 	return `
 		<div class="popup-place">
 			<div class="popup-header">
@@ -205,12 +241,12 @@ export function clearStopMarkers(){
 	stopMarkers = [];
 }
 
-export function addStopMarker(lng, lat, label, name){
+export function addStopMarker(lng, lat, label, name, stopId){
 	const el = createMarkerEl('stop');
 	el.textContent = label;
 	const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
 		.setLngLat([lng, lat])
-		.setPopup(new mapboxgl.Popup({offset: 18 }).setHTML(buildPopupHTML({name: name || `Stop ${label}`, address: '', website: null, lng, lat})))
+		.setPopup(new mapboxgl.Popup({offset: 18 }).setHTML(buildPopupHTML({name: name || `Stop ${label}`, address: '', website: null, lng, lat, removeStopId: stopId})))
 		.addTo(map);
 	stopMarkers.push(marker);
 	return marker;
@@ -227,6 +263,7 @@ export function renderRomanticStops(places){
 			type: 'Feature',
 			geometry: {type: 'Point', coordinates: [place.lng, place.lat] },
 			properties: {
+				key: placeKey(place),
 				name: place.name,
 				address: place.address || '',
 				website: place.website || null,

@@ -740,7 +740,27 @@ body{
 .popup-add-trip-btn:disabled{
 	background: var(--gold-soft);
 	color: var(--plum);
-	cursor: defualt;
+	cursor: default;
+}
+.popup-remove-trip-btn{
+	display: inline-block;
+	font-size: .82rem;
+	font-weight: 600;
+	color: var(--plum);
+	background: transparent;
+	border: 1.5px solid var(--plum);
+	padding: 3px 10px;
+	border-radius: 999px;
+	cursor: pointer;
+	transition: background .25s var(--ease), color .25s var(--ease);
+}
+.popup-remove-trip-btn:hover{
+	background: var(--plum);
+	color: var(--surface);
+}
+.popup-remove-trip-btn:disabled{
+	opacity: .6;
+	cursor: default;
 }
 
 /* =================== CATEGORY FILTERING ================== */
