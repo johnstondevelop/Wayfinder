@@ -11,7 +11,7 @@ let liveMarker = null;
 let liveMarkerEl = null;
 let addToTripHandler = null;
 let removeFromTripHandler = null;
-let findStopId = null;
+let findTripStopId = null;
 let onUserPanHandler = null;
 let fitPaddingProvider = null;
 const scenicPlacesByKey = new Map();
@@ -144,8 +144,8 @@ export function initMap(){
 	window.addEventListener('resize', () => map.resize());
 	window.addEventListener('orientationchange', () => setTimeout(() => map.resize(), 250));
 	
-	map.getContainer().addEventListener('click', (e) => {
-		const btn = e.target.closest('.popup-add-trip-btn');
+	map.getContainer().addEventListener('click', async (e) => {
+		const addBtn = e.target.closest('.popup-add-trip-btn');
 		const removeBtn = e.target.closest('.popup-remove-trip-btn');
 		
 		if(addBtn && addToTripHandler){
@@ -166,7 +166,7 @@ export function initMap(){
 			removeBtn.disabled = true;
 			await removeFromTripHandler(removeBtn.dataset.stopId);
 
-			if (key && removeBtn.isConnected) removeBtn.outerHTMl = addTripButtonHTML(key);
+			if (key && removeBtn.isConnected) removeBtn.outerHTML = addTripButtonHTML(key);
 		}
 	});
 	return map;

@@ -282,7 +282,7 @@ function clearPlannedRoute(){
 
 function renderRouteSummaryCards(route){
 
-	summaryPanel.querySelectorAll('[data-route-card').forEach(card => card.remove());
+	summaryPanel.querySelectorAll('[data-route-card]').forEach(card => card.remove());
 	const cards = [];
 
 	const { totalHours, perDayHours } = balanceDays(route.durationSeconds, tripState.days);
