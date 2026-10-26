@@ -56,7 +56,7 @@ async function loadAccount(){
 	aboutInput.value = (profile && profile.about) || '';
 	updateGreeting(nameInput.value);
 
-	const theme = document.getElementById.dataset.theme;
+	const theme = document.documentElement.dataset.theme;
 	if (profile && profile.theme && profile.theme !== theme && window.LovinglyTheme){
 		window.LovinglyTheme.setTheme(profile.theme, { saveToAccount: false });
 	}
