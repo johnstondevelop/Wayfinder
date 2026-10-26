@@ -199,7 +199,7 @@ function addTripButtonHTML(addToTripKey){
 	return `<button type="button" class="popup-add-trip-btn" data-add-trip-key="${escapeHtml(addToTripKey)}">+ Add to Trip</button>`;
 }
 function removeTripButtonHTML(addToTripKey){
-	const ketAttr = addToTripKey ? ` data-add-trip-key="${escapeHtml(addToTripKey)}"` : '';
+	const keyAttr = addToTripKey ? ` data-add-trip-key="${escapeHtml(addToTripKey)}"` : '';
 	return `<button type="button" class="popup-add-trip-btn" data-add-trip-key="${escapeHtml(stopId)}"${keyAttr}>Remove from Trip</button>`;
 }
 function buildPopupHTML({name, address, website, lng, lat, category, addToTripKey, removeStopId }){
