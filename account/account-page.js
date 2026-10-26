@@ -1,7 +1,7 @@
 // The "My account" page: loads the signed-in person's details, saves
 // changes, and signs them out. Anyone not signed in is sent to login.html.
 import { supabase, getSignedInUser, emailLinkType } from './supabase-client.js';
-import { attachHometownSuggestions } from './homerown-suggest.js';
+import { attachHometownSuggestions } from './hometown-suggest.js';
 
 const loading = document.getElementById('accountLoading');
 const sections = document.querySelectorAll('.account-section');
