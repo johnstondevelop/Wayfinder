@@ -1,0 +1,147 @@
+/* ================ ACCOUNT PAGES ================
+   Styles for login.html and account.html. They're built from the same
+   cards and buttons as the About page (site-pages.css); this file adds
+   the form boxes, the Sign in / Create account switch, and messages. */
+
+/* Anything hidden by the page's script stays hidden, even items that
+   would otherwise be shown as flex boxes. */
+.account-card [hidden],
+.account-section[hidden],
+.account-message:empty{
+	display: none !important;
+}
+
+.account-card{
+	max-width: 460px;
+	margin: 0 auto 22px;
+}
+
+/* ---- Sign in / Create account switch ---- */
+.account-tabs{
+	display: flex;
+	gap: 4px;
+	margin-bottom: 22px;
+	padding: 4px;
+	background: var(--ivory);
+	border: 1px solid var(--line);
+	border-radius: 12px;
+}
+.account-tab{
+	flex: 1;
+	padding: 10px 12px;
+	border: none;
+	border-radius: 9px;
+	background: transparent;
+	color: var(--ink-soft);
+	font-family: var(--sans);
+	font-size: .9rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .25s var(--ease), color .25s var(--ease);
+}
+.account-tab.is-active{
+	background: var(--plum);
+	color: var(--ivory);
+}
+
+/* ---- Form boxes ---- */
+.account-form{
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+.account-field{
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-size: .88rem;
+	font-weight: 600;
+	color: var(--plum);
+}
+.account-field small{
+	font-weight: 400;
+	color: var(--ink-soft);
+}
+.account-field input,
+.account-field textarea{
+	width: 100%;
+	padding: 12px 14px;
+	border: 1.5px solid var(--line);
+	border-radius: 10px;
+	background: var(--ivory);
+	color: var(--ink);
+	font-family: var(--sans);
+	font-size: 16px; /* 16px or more stops iPhones zooming in on the box */
+	font-weight: 400;
+	transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.account-field textarea{
+	resize: vertical;
+	line-height: 1.5;
+}
+.account-field input:focus,
+.account-field textarea:focus{
+	outline: none;
+	border-color: var(--gold);
+	box-shadow: 0 0 0 3px rgba(227, 185, 128, .35);
+}
+
+.account-form .page-btn:disabled{
+	opacity: .6;
+	cursor: wait;
+}
+
+/* Plain text-style buttons, like "Forgot your password?" */
+.account-link{
+	align-self: center;
+	padding: 4px;
+	border: none;
+	background: none;
+	color: var(--plum);
+	font-family: var(--sans);
+	font-size: .88rem;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.account-actions{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+/* ---- Messages ---- */
+.account-message{
+	margin: 0;
+	padding: 12px 14px;
+	border-radius: 10px;
+	background: var(--ivory);
+	font-size: .9rem;
+	color: var(--ink-soft);
+}
+.account-message.is-error{
+	background: var(--rose-soft);
+	color: #8A2638;
+}
+.account-message.is-success{
+	background: #E5F0E1;
+	color: #2F5A2B;
+}
+.account-actions .account-message{
+	padding: 8px 12px;
+}
+#accountWelcome{
+	margin-bottom: 22px;
+	text-align: center;
+}
+
+.account-loading,
+.account-note{
+	text-align: center;
+	color: var(--ink-soft);
+}
+.account-note a{
+	color: var(--plum);
+	font-weight: 600;
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My account · LovinglyLost</title>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#5C2135">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LovinglyLost">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="app-style.css">
+<link rel="stylesheet" href="site-nav.css">
+<link rel="stylesheet" href="site-pages.css">
+</head>
+<body class="site-page">
+
+<div class="page">
+
+	<header class="topbar">
+		<a class="brand-link" href="index.html">
+			<span class="brand-mark" aria-hidden="true">
+				<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M3 24c4-3.4 4-7.6 0-11s-4-7.6 0-11" stroke-dasharray="2.4 3.4"/>
+					<path d="M17.5 13.5c0 0-4.7-3.2-4.7-6.9 0-2 1.6-3.2 3.2-3.2.7 0 1.3.3 1.5.9.2-.6.8-.9 1.5-.9 1.6 0 3.2 1.2 3.2 3.2 0 3.7-4.7 6.9-4.7 6.9z" fill="currentColor" stroke="none"/>
+				</svg>
+			</span>
+			<span class="brand">Lovingly<em>Lost</em></span>
+		</a>
+		<button type="button" class="site-menu-btn" id="siteMenuBtn" aria-expanded="false" aria-controls="siteNav">
+			<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+			<span>Menu</span>
+		</button>
+					<nav class="site-nav" id="siteNav" aria-label="Main">
+			<a class="site-nav-link" href="index.html">Plan a trip</a>
+			<a class="site-nav-link" href="about.html">About</a>
+			<a class="site-nav-link" href="contact.html">Contact</a>
+			<a class="site-nav-link" href="account.html" id="accountNavLink" aria-current="page">My account</a>
+		</nav>
+	</header>
+
+	<main class="page-main">
+
+		<section class="page-hero">
+			<p class="page-eyebrow">Your account</p>
+			<h1 class="page-title">Hello, <em id="accountGreeting">traveler.</em></h1>
+			<p class="page-lede">Everything here is saved to your account, so it's waiting for you on any phone or computer you sign in on.</p>
+		</section>
+
+		<p class="account-loading" id="accountLoading">Loading your account...</p>
+
+		<p class="account-message" id="accountWelcome" role="status"></p>
+
+		<section class="page-card account-section" hidden>
+			<h2>About you</h2>
+			<form class="account-form" id="profileForm">
+				<label class="account-field">
+					<span>Your name</span>
+					<input type="text" id="profileName" autocomplete="name" maxlength="60">
+				</label>
+				<label class="account-field">
+					<span>Home town</span>
+					<input type="text" id="profileHomeTown" autocomplete="address-level2" maxlength="80">
+				</label>
+				<label class="account-field">
+					<span>A little about you <small>(optional)</small></span>
+					<textarea id="profileAbout" rows="4" maxlength="500" placeholder="Your favorite kind of drive, a dream road trip, who you like to travel with..."></textarea>
+				</label>
+				<div class="account-actions">
+					<button type="submit" class="page-btn" id="profileSaveBtn">Save</button>
+					<p class="account-message" id="profileMessage" role="status"></p>
+				</div>
+			</form>
+		</section>
+
+		<section class="page-card account-section" hidden>
+			<h2>Sign-in details</h2>
+			<p>You're signed in as <strong id="accountEmail"></strong>.</p>
+			<div class="account-actions">
+				<button type="button" class="page-btn page-btn-secondary" id="signOutBtn">Sign out</button>
+			</div>
+		</section>
+
+	</main>
+
+	<footer class="site-footer">
+		Made with &hearts; for long drives &middot; <a href="contact.html">Found a problem? Let us know</a>
+	</footer>
+
+</div>
+
+<script src="site-nav.js"></script>
+<script type="module" src="account/account-page.js"></script>
+<script src="ProgressiveWebApp-Register.js"></script>
+</body>
+</html>

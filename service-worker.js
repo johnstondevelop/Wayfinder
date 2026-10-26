@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lovinglylost-shell-v9';
+const CACHE_NAME = 'lovinglylost-shell-v10';
 
 const APP_SHELL = [
     './',
