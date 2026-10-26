@@ -1,0 +1,202 @@
+/* ================ COLOR THEMES ================
+   Each theme swaps the color tokens from the top of app-style.css. The
+   names stay the same (--plum is "the main color", --gold "the accent")
+   so nothing else has to change. Plum & Gold is the default, so it needs
+   no block of its own. theme.js sets data-theme on <html>. */
+
+html[data-theme="sage"]{
+	--ivory: #F5F2E9;
+	--plum: #3B5747;
+	--plum-deep: #263A2F;
+	--ink: #1E2922;
+	--ink-soft: #58665D;
+	--gold: #A9783F;
+	--gold-soft: #E2C48F;
+	--rose: #8DB39A;
+	--rose-soft: #DCE9DF;
+	--line: #DAD6C6;
+}
+
+html[data-theme="ocean"]{
+	--ivory: #F2F6F7;
+	--plum: #1D4A66;
+	--plum-deep: #123247;
+	--ink: #14222B;
+	--ink-soft: #4F6573;
+	--gold: #C4573F;
+	--gold-soft: #F4B7A0;
+	--rose: #E58F79;
+	--rose-soft: #FBE1D8;
+	--line: #D2DFE4;
+}
+
+html[data-theme="sunset"]{
+	--ivory: #FBF3EA;
+	--plum: #8C3A25;
+	--plum-deep: #5F2416;
+	--ink: #2B1A14;
+	--ink-soft: #6C544A;
+	--gold: #B9762A;
+	--gold-soft: #F2CF8C;
+	--rose: #E59A7F;
+	--rose-soft: #F8DFD4;
+	--line: #EBD7C6;
+}
+
+html[data-theme="lavender"]{
+	--ivory: #F7F4FB;
+	--plum: #4A3A73;
+	--plum-deep: #2E2350;
+	--ink: #221B33;
+	--ink-soft: #5F5676;
+	--gold: #9C6FB8;
+	--gold-soft: #E8CBA0;
+	--rose: #B4A5DD;
+	--rose-soft: #E8E3F6;
+	--line: #E0DAEC;
+}
+
+/* ---- Colors other files wrote as fixed numbers, redone here so they
+   follow the theme. (With Plum & Gold they look exactly the same.) ---- */
+.field-input:focus{ box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 18%, transparent); }
+.plan-btn:hover{ box-shadow: 0 6px 18px color-mix(in srgb, var(--plum) 25%, transparent); }
+.recenter-btn{ box-shadow: 0 6px 18px color-mix(in srgb, var(--plum) 35%, transparent); }
+.map-marker-origin{ box-shadow: 0 2px 8px color-mix(in srgb, var(--plum) 40%, transparent); }
+.map-marker-stop{ box-shadow: 0 2px 8px color-mix(in srgb, var(--gold) 40%, transparent); }
+.map-marker-romantic{ box-shadow: 0 2px 6px color-mix(in srgb, var(--rose) 50%, transparent); }
+.map-marker-live{ filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--plum) 55%, transparent)); }
+.page-btn:hover{ box-shadow: 0 6px 18px color-mix(in srgb, var(--plum) 25%, transparent); }
+.site-nav-link[aria-current="page"]{ background: color-mix(in srgb, var(--gold-soft) 14%, transparent); }
+.site-menu-btn{ border-color: color-mix(in srgb, var(--gold-soft) 50%, transparent); }
+.account-field input:focus,
+.account-field textarea:focus{ box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold-soft) 35%, transparent); }
+
+/* The intro's glow and logo */
+html.show-intro .intro{
+	background: radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--plum) 80%, var(--rose)) 0%, var(--plum) 48%, var(--plum-deep) 100%);
+}
+.intro-mark > path{ stroke: var(--gold-soft); }
+.intro-mark > .intro-heart{ fill: var(--gold-soft); stroke: none; }
+
+/* ================ THE "COLORS" PICKER ================ */
+.theme-picker{
+	position: relative;
+}
+.theme-picker-btn{
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+}
+.theme-dot{
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: conic-gradient(var(--gold-soft) 0 50%, var(--rose) 0);
+	box-shadow: 0 0 0 1.5px var(--ivory);
+}
+
+.theme-options{
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	z-index: 40;
+	min-width: 210px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 8px;
+	background: var(--surface);
+	border-radius: 14px;
+	box-shadow: 0 14px 30px rgba(0, 0, 0, .2);
+}
+.theme-options[hidden]{
+	display: none;
+}
+
+.theme-option{
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 9px 10px;
+	border: none;
+	border-radius: 10px;
+	background: transparent;
+	color: var(--ink);
+	font-family: var(--sans);
+	font-size: .9rem;
+	font-weight: 500;
+	text-align: left;
+	cursor: pointer;
+}
+.theme-option:hover{
+	background: var(--ivory);
+}
+.theme-option[aria-pressed="true"]{
+	background: var(--rose-soft);
+	color: var(--plum);
+	font-weight: 600;
+}
+.theme-option[aria-pressed="true"]::after{
+	content: '✓';
+	margin-left: auto;
+}
+.theme-swatch{
+	flex: 0 0 26px;
+	height: 26px;
+	border-radius: 50%;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12);
+}
+
+/* On phones the menu is already a drop-down, so the choices sit inside it. */
+@media (max-width: 860px){
+	.theme-picker-btn{
+		width: 100%;
+	}
+	.theme-options{
+		position: static;
+		min-width: 0;
+		margin-top: 2px;
+		background: rgba(255, 255, 255, .08);
+		box-shadow: none;
+	}
+	.theme-option{
+		color: var(--ivory);
+	}
+	.theme-option:hover{
+		background: rgba(255, 255, 255, .1);
+	}
+	.theme-option[aria-pressed="true"]{
+		background: rgba(255, 255, 255, .16);
+		color: var(--gold-soft);
+	}
+}
+
+/* On the account page the choices are laid out as cards. */
+.theme-options.theme-options-inline{
+	position: static;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+	gap: 10px;
+	min-width: 0;
+	padding: 0;
+	background: none;
+	box-shadow: none;
+}
+.theme-options-inline .theme-option{
+	padding: 12px;
+	border: 1.5px solid var(--line);
+	color: var(--ink);
+	background: var(--surface);
+}
+.theme-options-inline .theme-option:hover{
+	border-color: var(--gold-soft);
+}
+.theme-options-inline .theme-option[aria-pressed="true"]{
+	border-color: var(--plum);
+	background: var(--rose-soft);
+	color: var(--plum);
+}

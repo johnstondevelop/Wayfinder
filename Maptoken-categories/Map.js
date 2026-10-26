@@ -18,6 +18,27 @@ const scenicPlacesByKey = new Map();
 
 const ROMANTIC_SOURCE_ID = 'romantic-points';
 
+// Reads one of the current theme's colors (see themes.css), so the map's
+// own dots and route line match the colors people picked.
+function themeColor(name){
+	return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+// When someone picks new colors, repaint the map to match.
+window.addEventListener('themechange', () => {
+	if (!map) return;
+	const layers = [
+		['romantic-clusters', 'circle-color', '--rose'],
+		['romantic-cluster-count', 'text-color', '--plum'],
+		['romantic-unclustered', 'circle-color', '--rose'],
+		['route-line', 'line-color', '--gold']
+	];
+	layers.forEach(([layerId, property, color]) => {
+		if (map.getLayer(layerId)) map.setPaintProperty(layerId, property, themeColor(color));
+	});
+});
+
+
 function placeKey(place){
 	return `${place.name}|${place.lng.toFixed(5)}|${place.lat.toFixed(5)}`;
 }
@@ -77,7 +98,7 @@ export function initMap(){
 				source: ROMANTIC_SOURCE_ID,
 				filter: ['has', 'point_count'],
 				paint: {
-					'circle-color': '#D98E96',
+					'circle-color': themeColor('--rose'),
 					'circle-radius': ['step', ['get', 'point_count'], 16, 5, 20, 15, 26],
 					'circle-stroke-width': 3,
 					'circle-stroke-color': '#FFFFFF'
@@ -94,7 +115,7 @@ export function initMap(){
 					'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
 					'text-size': 13
 				},
-				paint: { 'text-color': '#5C2135'}
+				paint: { 'text-color': themeColor('--plum')}
 			});
 	
 		map.addLayer({
@@ -103,7 +124,7 @@ export function initMap(){
 			source: ROMANTIC_SOURCE_ID,
 			filter: ['!', ['has', 'point_count']],
 			paint: {
-				'circle-color': '#D98E96',
+				'circle-color': themeColor('--rose'),
 				'circle-radius': 8,
 				'circle-stroke-width': 2.5,
 				'circle-stroke-color': '#FFFFFF'
@@ -286,7 +307,7 @@ export function drawRoute(geojson){
 		source: 'route',
 		layout: { 'line-join': 'round', 'line-cap': 'round' },
 		paint: {
-			'line-color': '#C98A4B',
+			'line-color': themeColor('--gold'),
 			'line-width': 4,
 			'line-opacity': 0.9
 		}

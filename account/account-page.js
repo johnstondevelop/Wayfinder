@@ -1,6 +1,7 @@
 // The "My account" page: loads the signed-in person's details, saves
 // changes, and signs them out. Anyone not signed in is sent to login.html.
 import { supabase, getSignedInUser, emailLinkType } from './supabase-client.js';
+import { attachHometownSuggestions } from './homerown-suggest.js';
 
 const loading = document.getElementById('accountLoading');
 const sections = document.querySelectorAll('.account-section');
@@ -15,6 +16,10 @@ const saveBtn = document.getElementById('profileSaveBtn');
 const profileMessage = document.getElementById('profileMessage');
 const welcomeMessage = document.getElementById('accountWelcome');
 const signOutBtn = document.getElementById('signOutBtn');
+const themeOptions = document.getElementById('accountThemeOptions');
+
+attachHometownSuggestions(homeTownInput, document.getElementById('homeTownSuggestions'));
+if (window.LovinglyTheme) window.LovinglyTheme.fillThemeOptions(themeOptions);
 
 let user = null;
 
@@ -34,7 +39,7 @@ async function loadAccount(){
 
 	const { data: profile, error } = await supabase
 		.from('profiles')
-		.select('display_name, home_town, about')
+		.select('display_name, home_town, about, theme')
 		.eq('id', user.id)
 		.maybeSingle();
 
@@ -50,6 +55,11 @@ async function loadAccount(){
 	homeTownInput.value = (profile && profile.home_town) || '';
 	aboutInput.value = (profile && profile.about) || '';
 	updateGreeting(nameInput.value);
+
+	const theme = document.getElementById.dataset.theme;
+	if (profile && profile.theme && profile.theme !== theme && window.LovinglyTheme){
+		window.LovinglyTheme.setTheme(profile.theme, { saveToAccount: false });
+	}
 
 	if (emailLinkType === 'signup'){
 		showMessage(welcomeMessage, 'Your email is confirmed. Welcome to LovinglyLost!', 'success');

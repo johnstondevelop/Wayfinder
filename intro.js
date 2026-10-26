@@ -17,7 +17,8 @@
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const SHOW_FOR_MS = reduceMotion ? 1200 : 2400;
-    const FADE_MS = 500;
+    const EXIT_MS = reduceMotion ? 500 :
+    1200; // how long the leaving animation takes
 
     document.addEventListener('DOMContentLoaded', () => {
         const intro = document.getElementById('intro');
@@ -27,11 +28,18 @@
         function finish(){
             if (finished) return;
             finished = true;
+            // The window onto the map opens from the middle of the heart.
+            const heart = intro.querySelector('.intro-heart');
+            if (heart){
+                const box = heart.getBoundingClientRect();
+                intro.style.setProperty('--hole-x', (box.left + box.width / 2) + 'px');
+                intro.style.setProperty('--hole-y', (box.top + box.height / 2) + 'px');
+            }
             intro.classList.add('is-leaving');
             setTimeout(() => {
                 intro.remove();
                 document.documentElement.classList.remove('show-intro');
-            }, FADE_MS);
+            }, EXIT_MS);
         }
 
         setTimeout(finish, SHOW_FOR_MS);

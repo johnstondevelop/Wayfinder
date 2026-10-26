@@ -21,6 +21,8 @@
 <link rel="stylesheet" href="site-nav.css">
 <link rel="stylesheet" href="site-pages.css">
 <link rel="stylesheet" href="account.css">
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
 </head>
 <body class="site-page">
 
@@ -67,10 +69,14 @@
 					<span>Your name</span>
 					<input type="text" id="profileName" autocomplete="name" maxlength="60">
 				</label>
-				<label class="account-field">
-					<span>Home town</span>
-					<input type="text" id="profileHomeTown" autocomplete="address-level2" maxlength="80">
-				</label>
+				<div class="account-field">
+					<label for="profileHomeTown">Home town</label>
+					<div class="autocomplete-wrap">
+						<input type="text" id="profileHomeTown" maxlength="80" placeholder="Start typing your town...">
+						 <ul class="suggestions-list" id="homeTownSuggestions"></ul>
+					</div>
+				</div>
+
 				<label class="account-field">
 					<span>A little about you <small>(optional)</small></span>
 					<textarea id="profileAbout" rows="4" maxlength="500" placeholder="Your favorite kind of drive, a dream road trip, who you like to travel with..."></textarea>
@@ -82,8 +88,15 @@
 			</form>
 		</section>
 
+				<section class="page-card account-section" hidden>
+			<h2>Colors</h2>
+			<p>Pick the colors LovinglyLost uses. Your choice is saved to your account, so it follows you to any phone or computer.</p>
+			<div class="theme-options theme-options-inline" id="accountThemeOptions"></div>
+		</section>
+
 		<section class="page-card account-section" hidden>
 			<h2>Sign-in details</h2>
+
 			<p>You're signed in as <strong id="accountEmail"></strong>.</p>
 			<div class="account-actions">
 				<button type="button" class="page-btn page-btn-secondary" id="signOutBtn">Sign out</button>

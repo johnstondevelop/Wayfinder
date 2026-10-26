@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lovinglylost-shell-v11';
+const CACHE_NAME = 'lovinglylost-shell-v12';
 
 const APP_SHELL = [
     './',
@@ -12,6 +12,8 @@ const APP_SHELL = [
     './site-nav.js',
     './intro.css',
     './intro.js',
+    './theme.css',
+    './theme.js',
     './contact-page.js',
     './ProgressiveWebApp-Register.js',
     './images/decor-roads-hearts.svg',

@@ -24,11 +24,53 @@ html.show-intro .intro{
     cursor: pointer;
     transition: opacity .5s var(--ease), visibility .5s;
 }
-
-/* Fading away at the end (or when tapped). */
+/* ---- Leaving (at the end, or when tapped) ----
+   The heart swells, the words and road fade, then the screen opens out
+   from the heart like a window onto the map. intro.js puts the heart's
+   position in --hole-x / --hole-y; --intro-hole is how wide the
+   see-through circle has grown. */
+@property --intro-hole{
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
 html.show-intro .intro.is-leaving{
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(circle at var(--hole-x, 50%) var(--hole-y, 42%), transparent var(--intro-hole), #000 calc(var(--intro-hole) + 1px));
+    mask-image: radial-gradient(circle at var(--hole-x, 50%) var(--hole-y, 42%), transparent var(--intro-hole), #000 calc(var(--intro-hole) + 1px));
+    animation: introOpen .85s cubic-bezier(.65, 0, .25, 1) .3s forwards;
+}
+html.show-intro .is-leaving .intro-mark{
+    transform: scale(1.5);
+    transform-origin: 67% 32%; /* the middle of the heart */
+    transition: transform .45s cubic-bezier(.5, 0, .3, 1.4);
+}
+html.show-intro .is-leaving .intro-mark > path:not(.intro-heart){
     opacity: 0;
-    visibility: hidden;
+    transition: opacity .3s ease;
+}
+html.show-intro .is-leaving .intro-brand,
+html.show-intro .is-leaving .intro-tagline,
+html.show-intro .is-leaving .intro-skip{
+    translate: 0 8px;
+    filter: opacity(0);
+    transition: translate .35s ease, filter .3s ease;
+}
+@keyframes introOpen{
+    80%{ opacity: 1; }
+    to{ --intro-hole: 150vmax; opacity: 0; }
+}
+/* Less motion: skip the window and just fade. */
+@media (prefers-reduced-motion: reduce){
+    html.show-intro .intro.is-leaving{
+        -webkit-mask-image: none;
+        mask-image: none;
+        animation: none;
+        opacity: 0;
+    }
+    html.show-intro .is-leaving .intro-mark{
+        transform: none;
+    }
 }
 .intro-mark{
     width: 132px;
