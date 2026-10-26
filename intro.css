@@ -1,0 +1,125 @@
+/* ================ INTRO ANIMATION ==============
+A short welcome that plays over the planner the first time it opens in a
+visit: the dashed road from the logo draws itself, the heart pops in and
+beats, then the name fades up and the whole thing fades away.
+intro.js decides whether to show it by adding .show-intro to <html> */
+
+.intro{
+    display: none;
+}
+
+html.show-intro .intro{
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px;
+    background: radial-gradient(circle at 50% 42%, #74304a 0%, var(--plum) 48%, var(--plum-deep) 100%);
+    color:  var(--ivory);
+    text-align: center;
+    cursor: pointer;
+    transition: opacity .5s var(--ease), visibility .5s;
+}
+
+/* Fading away at the end (or when tapped). */
+html.show-intro .intro.is-leaving{
+    opacity: 0;
+    visibility: hidden;
+}
+.intro-mark{
+    width: 132px;
+    height: 132px;
+    overflow: visible;
+}
+
+/* The dashed road is revealed by a solid cop of itself (the mask) being
+"drawn" from one end to the other. pathLength="1" on the mask path makes
+the whole lne exactly 1 unit long, so 1 -> 0 drawsall of it. */
+.intro-road-reveal{
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: introDraw .9s var(--ease) .15s forwards;
+}
+.intro-heart{
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0);
+    animation: 
+        introPop .45s cubic-bezier(.3, 1.6, .5, 1) .85s forwards,
+        introBeat .9s ease-in-out 1.45s 1;
+}
+.intro-brand{
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: .01em;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: introRise .6s var(--ease) 1.05s forwards;
+}
+.intro-brand em{
+    font-style: italic;
+    font-weight: 500;
+    color: var(--gold-soft);
+}
+.intro-tagline{
+    margin: 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1rem;
+    color: rgba(250, 241, 232, .8);
+    opacity: 0;
+    transform: translateY(10px);
+    animation:  introRise .6s var(--ease) 1.3s forwards;
+}
+.intro-skip{
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    font-family: var(--sans);
+    font-size: .78rem;
+    letter-spacing: .06em;
+    color: rgba(250, 241, 232, .55);
+    opacity: 0;
+    animation: introFadeIn .6s ease .4s forwards;
+}
+@keyframes introDraw{
+    to{ stroke-dashoffset: 0;}
+}
+@keyframes introPop{
+    to{ transform: scale(1);}
+}
+@keyframes introBeat{
+    0%, 100%{ transform: scale(1);}
+    20%{ transform: scale(1.14); }
+    40%{ transform: scale(1);}
+    60%{ transform: scale(1.08);}
+}
+@keyframes introRise{
+    to{ opacity: 1; transform: translateY(0);}
+}
+@keyframes introFadeIn{
+    to{ opacity: 1;}
+}
+
+/* For people whose phone or computer asks for less motions: no drawing or
+popping, just the finished logo, which then fades away. */
+@media (prefers-reduced-motion: reduce){
+    .intro-road-reveal,
+    .intro-heart,
+    .intro-brand,
+    .intro-tagline,
+    .intro-skip{
+        animation: none;
+        stroke-dashoffset: 0;
+        transform: none;
+        opacity: 1;
+    }
+}

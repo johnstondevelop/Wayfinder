@@ -10,6 +10,8 @@ const APP_SHELL = [
     './map-reveal.css',
     './site-pages.css',
     './site-nav.js',
+    './intro.css',
+    './intro.js',
     './contact-page.js',
     './ProgressiveWebApp-Register.js',
     './images/decor-roads-hearts.svg',

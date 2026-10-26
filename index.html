@@ -23,9 +23,20 @@
 <link rel="stylesheet" href="app-style.css">
 <link rel="stylesheet" href="site-nav.css">
 <link rel="stylesheet" href="map-reveal.css">
+<link rel="stylesheet" href="intro.css">
+<script src="intro.js"></script>
 </head>
 <body>
 
+<div class="intro" id="intro" aria-hidden="true">
+	<svg class="intro-mark" viewBox="0 0 26 26" fill="none" stroke-linecap="round" stroke-linejoin="round">
+		<defs>
+			<mask id="introRoadMask" maskUnits="userSpaceOnUse" x="-2" y="-2" width="30" height="30">
+				<path class="intro-road-reveal" d="M3"
+			</mask>
+		</defs>
+	</svg>
+</div>
 <div class="app">
 
 	<header class="topbar">
