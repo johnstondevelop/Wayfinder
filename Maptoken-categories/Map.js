@@ -198,7 +198,7 @@ function stopIdForScenicSpot(key){
 function addTripButtonHTML(addToTripKey){
 	return `<button type="button" class="popup-add-trip-btn" data-add-trip-key="${escapeHtml(addToTripKey)}">+ Add to Trip</button>`;
 }
-function removeTripButtonHTML(addToTripKey){
+function removeTripButtonHTML(stopId, addToTripKey){
 	const keyAttr = addToTripKey ? ` data-add-trip-key="${escapeHtml(addToTripKey)}"` : '';
 	return `<button type="button" class="popup-remove-trip-btn" data-stop-id="${escapeHtml(stopId)}"${keyAttr}>Remove from Trip</button>`;
 }
