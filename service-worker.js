@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lovinglylost-shell-v13';
+const CACHE_NAME = 'lovinglylost-shell-v14';
 
 const NETWORK_TIMEOUT_MS = 4000;
 
@@ -17,7 +17,7 @@ const APP_SHELL = [
     './theme.css',
     './theme.js',
     './contact-page.js',
-    './update.js',
+    './updates.js',
     './whats-new.js',
     './whats-new.css',
     './updates.html',

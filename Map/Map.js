@@ -67,6 +67,13 @@ export function initMap(){
 		if (lastScenicPlaces.length) renderRomanticStops(lastScenicPlaces);
 	});
 
+	map = newmapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/light-v11',
+		center: DEFAULT_CENTER,
+		zoom: DEFUALT_ZOOM
+	});
+
 
 		
 	map.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -208,10 +215,17 @@ export function initMap(){
 			}
 		}
 
-		if (removeBtn && removeFromTripHandler){
+				if (removeBtn && removeFromTripHandler){
+			const key = removeBtn.dataset.addTripKey;
+			removeBtn.textContent = 'Removing...';
+			removeBtn.disabled = true;
+			await removeFromTripHandler(removeBtn.dataset.stopId);
 
+			if (key && removeBtn.isConnected) removeBtn.outerHTML = addTripButtonHTML(key);
+		}
 	});
 	return map;
+
 }
 
 function createMarkerEl(kind){
@@ -298,7 +312,7 @@ export function addStopMarker(lng, lat, label, name, stopId){
 	return marker;
 }
 
-export function renderRomanticStops(places){
+export function renderRomanticStops(allPlaces){
 	const source = map.getSource(ROMANTIC_SOURCE_ID);
 	if (!source) return;
 	lastScenicPlaces = allPlaces;
