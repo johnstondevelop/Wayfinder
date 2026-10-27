@@ -301,7 +301,7 @@ export async function findRomanticStopsAlongRoute(routeGeometry, categories = RO
 	const perPointResults = samplePoints.map(() => []);
 	const jobs = [];
 	samplePoints.forEach(([lng, lat], pointIndex) => {
-		categories.forEach(category => jobs.push({ category, searchId: mapboxIds[category], lng, lat, pointIndex }));
+		searchable.forEach(category => jobs.push({ category, searchId: mapboxIds[category], lng, lat, pointIndex }));
 	});
 
 	let done = 0;
