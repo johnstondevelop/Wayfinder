@@ -46,5 +46,16 @@ export const ROMANTIC_POI_CATEGORY_ICONS = {
 	cafe: `<svg ${ICON_DEFAULTS}><path d="M4.5 8h12.4v5.6a4.8 4.8 0 01-4.8 4.8H9.3a4.8 4.8 0 01-4.8-4.8z"/><path d="M16.9 9.2h1.8a2 2 0 010 4h-1.8"/><path d="M8.4 3c0 .9-.9.9-.9 1.9s.9 1 .9 1.9M12.6 3c0 .9-.9.9-.9 1.9s.9 1 .9 1.9"/></svg>`,
 
 	wine_bar: `<svg ${ICON_DEFAULTS}><path d="M7.8 3h8.4l-.9 5.4a3.3 3.3 0 01-6.6 0z"/><path d="M12 12.2V18"/><path d="M8.6 21h6.8"/></svg>`,
+
+	farmers_market: `<svg ${ICON_DEFAULTS}><path d="M3.5 10h17l-1.9 8.6a2 2 0 01-2 1.4H7.4a2 2 0 01-2-1.4z"/><path d="M8 10l3.2-6M16 10l-3.2-6"/><path d="M9 13.5v3M12 13.5v3M15 13.5v3"/></svg>`,
+
+	steakhouse: `<svg ${ICON_DEFAULTS}><path d="M4.5 10c0-3.6 3.8-6 8.1-6 4.8 0 7.9 2.8 7.9 6.5 0 4.9-4.7 10-10.2 10-3.9 0-5.8-2.9-5.8-6z"/><circle cx="14.6" cy="9.8" r="2.2"/><path d="M8 14.2c1.2.9 2.8 1.2 4.4.8"/></svg>`,
+
+	french_restaurant: `<svg ${ICON_DEFAULTS}><path d="M12 2v3"/><path d="M9.5 21L12 5l2.5 16"/><path d="M7.5 21h9"/><path d="M9 14.5h6"/><path d="M10.3 9.5h3.4"/></svg>`,
+
+	italian_restaurant: `<svg ${ICON_DEFAULTS}><path d="M12 3.5L4.2 19.2a17 17 0 0015.6 0z"/><path d="M5.7 16.2a14 14 0 0012.6 0"/><circle cx="11.8" cy="10.6" r="1" fill="currentColor" stroke="none"/><circle cx="9.9" cy="13.9" r="1" fill="currentColor" stroke="none"/><circle cx="14" cy="13.5" r="1" fill="currentColor" stroke="none"/></svg>`,
+
+	cocktail_bar: `<svg ${ICON_DEFAULTS}><path d="M4.5 4.5h15L12 12.5z"/><path d="M12 12.5V20"/><path d="M8.5 20h7"/><path d="M14.6 7.6l3.6-4.4"/><circle cx="18.8" cy="2.9" r="1"/></svg>`,
+
 };
 

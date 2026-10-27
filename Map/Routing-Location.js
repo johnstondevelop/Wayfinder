@@ -1,4 +1,7 @@
 import {MAPBOX_TOKEN, ROMANTIC_POI_CATEGORIES, ROMANTIC_STOP_MAX_DISTANCE_MILES } from './maptoken-config.js';
+import { excludeParam } from './road-preferences.js';
+import { mapboxIdsFor, categoryLabel } from './category-check.js';
+
 
 const GEOCODE_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 const DIRECTIONS_URL = 'https://api.mapbox.com/directions/v5/mapbox/driving';
@@ -74,7 +77,7 @@ export async function getDirections(coordsArray){
 	}
 	
 	const coordString = coordsArray.map(c => c.join(',')).join(';');
-	const url = `${DIRECTIONS_URL}/${coordString}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`;
+	const url = `${DIRECTIONS_URL}/${coordString}?geometries=geojson&overview=full&steps=true${excludeParam()}&access_token=${MAPBOX_TOKEN}`;
 	
 	const res = await fetch(url);
 	let data = null;
@@ -92,6 +95,9 @@ export async function getDirections(coordsArray){
 		geometry: route.geometry,
 		distanceMeters: route.distance,
 		durationSeconds: route.duration,
+		// Avoiding tolls, highways or ferries is best-effort: when theres
+		// no way around one, Mapbox uses it anyway and flags a "violation"
+		ignoredAvoid: (route.legs || []).some(leg => (leg.notifications || []).some(n => n.type === 'violation')),
 		legs: (route.legs || []).map(leg => ({
 			distanceMeters: leg.distance,
 			durationSeconds: leg.duration,
@@ -165,7 +171,7 @@ function sampleRouteCoordinates(geometry, sampleCount = 6){
 	const res = await fetch(url);
 	if (!res.ok) return []; */
 
-		export const searchStats = { total: 0, failed: 0, rateLimited: 0 };
+		export const searchStats = { total: 0, failed: 0, rateLimited: 0, skipped: [] };
 
 	// Mapbox turns away scenic searches that arrive in a big burst (about ten
 	// at the same instant), but happily answers a steady stream of them. So
@@ -286,11 +292,16 @@ export async function findRomanticStopsAlongRoute(routeGeometry, categories = RO
 	searchStats.rateLimited = 0;
 	const samplePoints = sampleRouteCoordinates(routeGeometry, 10);
 
+	// Search with Mapbox's exact ID for eah stop type, and skip any it doesn't have.
+	const mapboxIds = await mapboxIdsFor(categories);
+	searchStats.skipped = categories.filter(category => !mapboxIds[category]).map(categorylabel);
+	const searchable = categories.filter(category => mapboxIds[category]);
+
 	// search each sample point seperately so results stay grouped by location along the route
 	const perPointResults = samplePoints.map(() => []);
 	const jobs = [];
 	samplePoints.forEach(([lng, lat], pointIndex) => {
-		categories.forEach(category => jobs.push({ category, lng, lat, pointIndex }));
+		categories.forEach(category => jobs.push({ category, searchId: mapboxId[category], lng, lat, pointIndex }));
 	});
 
 	let done = 0;
@@ -298,6 +309,7 @@ export async function findRomanticStopsAlongRoute(routeGeometry, categories = RO
 	for (const job of jobs){
 		running.push((async () => {
 			const places = await searchCategoryNear(job.category, job.lng, job.lat);
+			places.forEach(place => { place.category = job.category; });
 			perPointResults[job.pointIndex].push(...places);
 			done++;
 			if (onProgress && (done % 10 === 0 || done === jobs.length)){

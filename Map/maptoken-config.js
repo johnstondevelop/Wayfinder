@@ -23,7 +23,13 @@ export const ROMANTIC_POI_CATEGORIES = ['viewpoint',
                     'dessert_shop',
                      'pier',
                       'cafe',
-                       'wine_bar'];
+                       'wine_bar',
+                        'farmers_market',
+                         'steakhouse',
+                          'french_restaurant',
+                           'italian_restaurant',
+                            'cocktail_bar'];
+
 
 export const ROMANTIC_POI_CATEGORY_LABELS = {
      viewpoint: 'Viewpoint',
@@ -45,5 +51,12 @@ export const ROMANTIC_POI_CATEGORY_LABELS = {
      dessert_shop: 'Dessert Shop',
      pier: "Pier",
      cafe: 'Cafe',
-     wine_bar: 'Wine Bar'
+     wine_bar: 'Wine Bar',
+     farmers_market: 'Farmers Market',
+     steakhouse: 'Steakhouse',
+     french_restaurant: 'French Restaurant',
+     italian_restaurant: 'Italian Restaurant',
+     cocktail_bar: 'Cocktail Bar'
+};
+
 };

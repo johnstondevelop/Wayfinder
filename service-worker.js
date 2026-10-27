@@ -43,6 +43,8 @@ const APP_SHELL = [
     './Map/MapReveal.js',
     './Map/PlaceAutocomplete.js',
     './Map/maptoken-config.js',
+    './Map/road-preferences.js',
+    './Map/category-check.js',
 
     './account/account-nav.js',
     './account/place-lists.js',

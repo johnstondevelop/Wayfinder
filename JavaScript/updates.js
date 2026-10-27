@@ -11,6 +11,17 @@
 //   title:   one short line
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
+		{
+		id: '2026-10-27-2',
+		date: 'October 27, 2026',
+		size: 'big',
+		title: 'Skip the tolls, find the hidden beauty',
+		changes: [
+			'Avoid tolls, highways or ferries right in the planner, or on your account page.',
+			'New stop types: farmers markets, steakhouses, French and Italian restaurants, and cocktail bars.'
+		]
+	},
+
     	{
 		id: '2026-10-27',
 		date: 'October 27, 2026',
