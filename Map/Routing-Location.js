@@ -294,21 +294,21 @@ export async function findRomanticStopsAlongRoute(routeGeometry, categories = RO
 
 	// Search with Mapbox's exact ID for eah stop type, and skip any it doesn't have.
 	const mapboxIds = await mapboxIdsFor(categories);
-	searchStats.skipped = categories.filter(category => !mapboxIds[category]).map(categorylabel);
+	searchStats.skipped = categories.filter(category => !mapboxIds[category]).map(categoryLabel);
 	const searchable = categories.filter(category => mapboxIds[category]);
 
 	// search each sample point seperately so results stay grouped by location along the route
 	const perPointResults = samplePoints.map(() => []);
 	const jobs = [];
 	samplePoints.forEach(([lng, lat], pointIndex) => {
-		categories.forEach(category => jobs.push({ category, searchId: mapboxId[category], lng, lat, pointIndex }));
+		categories.forEach(category => jobs.push({ category, searchId: mapboxIds[category], lng, lat, pointIndex }));
 	});
 
 	let done = 0;
 	const running = [];
 	for (const job of jobs){
 		running.push((async () => {
-			const places = await searchCategoryNear(job.category, job.lng, job.lat);
+			const places = await searchCategoryNear(job.searchId, job.lng, job.lat);
 			places.forEach(place => { place.category = job.category; });
 			perPointResults[job.pointIndex].push(...places);
 			done++;

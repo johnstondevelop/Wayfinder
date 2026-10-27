@@ -169,7 +169,7 @@ try {
 		
 		renderRouteSummaryCards(route);
 		if (route.ignoredAvoid){
-			addSummaryCard('Heads up', "Part of this route usesa road type you asked to avoid, because there wasn't a possible way around it.")
+			addSummaryCard('Heads up', "Part of this route uses a road type you asked to avoid, because there wasn't a possible way around it.")
 		}
 		
 		if (tripState.findRomanticStops){
@@ -196,9 +196,9 @@ try {
 				);
 			}
 			if (searchStats.skipped.length > 0){
-				addSummaryCard('Heads up', `Our System doesn't have these stop types, so they were skipped: ${searchStats.skipped.join(',')}.`);
+				addSummaryCard('Heads up', `Our System doesn't have these stop types, so they were skipped: ${searchStats.skipped.join(', ')}.`);
 			}
-			
+
 			if (romanticStops.length > 0){
 				addSummaryCard(
 					'Scenic stops nearby',

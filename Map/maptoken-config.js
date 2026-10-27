@@ -58,5 +58,3 @@ export const ROMANTIC_POI_CATEGORY_LABELS = {
      italian_restaurant: 'Italian Restaurant',
      cocktail_bar: 'Cocktail Bar'
 };
-
-};
