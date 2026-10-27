@@ -1,0 +1,227 @@
+/* ================ WHAT'S NEW ================
+   The update notices from whats-new.js: a card for big updates, a short
+   note at the top for small ones, the Big/Small badges, the dot on the
+   menu link, and the list on updates.html. Colors follow the theme. */
+
+/* ---- Badges ---- */
+.update-badge{
+	display: inline-block;
+	margin-right: 8px;
+	padding: 2px 9px;
+	border-radius: 999px;
+	background: var(--rose-soft);
+	color: var(--plum);
+	font-family: var(--sans);
+	font-size: .7rem;
+	font-weight: 700;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	vertical-align: middle;
+}
+.update-badge.is-big{
+	background: var(--gold-soft);
+	color: var(--plum-deep);
+}
+
+/* ---- One update (used in the card and on updates.html) ---- */
+.update-entry + .update-entry{
+	margin-top: 18px;
+	padding-top: 18px;
+	border-top: 1.5px dashed var(--line);
+}
+.update-meta{
+	margin: 0 0 8px;
+	font-size: .82rem;
+	color: var(--ink-soft);
+}
+.update-title{
+	margin: 0 0 10px;
+	font-family: var(--serif);
+	font-size: 1.3rem;
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--plum);
+}
+.update-changes{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	color: var(--ink);
+	font-size: .95rem;
+}
+.update-changes li{
+	display: flex;
+	gap: 10px;
+}
+.update-changes li::before{
+	content: '♥';
+	color: var(--rose);
+	font-size: .8rem;
+	line-height: 1.8;
+}
+
+/* ---- The card for big updates ---- */
+.update-backdrop{
+	position: fixed;
+	inset: 0;
+	z-index: 900;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	background: rgba(20, 12, 16, .45);
+	opacity: 0;
+	transition: opacity .3s var(--ease);
+}
+.update-backdrop.is-open{
+	opacity: 1;
+}
+.update-card{
+	width: 100%;
+	max-width: 460px;
+	max-height: calc(100dvh - 40px);
+	overflow-y: auto;
+	padding: 28px;
+	background: var(--surface);
+	border-radius: 20px;
+	border-top: 6px solid var(--gold-soft);
+	box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+	font-family: var(--sans);
+	transform: translateY(16px) scale(.97);
+	transition: transform .35s cubic-bezier(.3, 1.4, .5, 1);
+}
+.update-backdrop.is-open .update-card{
+	transform: none;
+}
+.update-eyebrow{
+	margin: 0 0 14px;
+	font-size: .75rem;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: var(--gold);
+}
+.update-actions{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 16px;
+	margin-top: 24px;
+}
+.update-done{
+	padding: 12px 26px;
+	border: none;
+	border-radius: 10px;
+	background: var(--plum);
+	color: var(--ivory);
+	font-family: var(--serif);
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.update-done:hover{
+	background: var(--plum-deep);
+}
+.update-all-link{
+	color: var(--plum);
+	font-size: .9rem;
+	font-weight: 600;
+}
+
+/* ---- The short note for small updates ---- */
+.update-toast{
+	position: fixed;
+	top: 84px;
+	left: 50%;
+	z-index: 900;
+	width: max-content;
+	max-width: calc(100% - 32px);
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 10px 10px 16px;
+	background: var(--surface);
+	border: 1.5px solid var(--gold-soft);
+	border-radius: 14px;
+	box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+	font-family: var(--sans);
+	opacity: 0;
+	transform: translate(-50%, -12px);
+	transition: opacity .3s var(--ease), transform .3s var(--ease);
+}
+.update-toast.is-open{
+	opacity: 1;
+	transform: translate(-50%, 0);
+}
+.update-toast-text{
+	margin: 0;
+	font-size: .9rem;
+	color: var(--ink);
+}
+.update-toast-more{
+	flex: none;
+	padding: 6px 10px;
+	border: none;
+	border-radius: 8px;
+	background: var(--rose-soft);
+	color: var(--plum);
+	font-family: var(--sans);
+	font-size: .82rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.update-toast-close{
+	flex: none;
+	width: 30px;
+	height: 30px;
+	border: none;
+	border-radius: 50%;
+	background: transparent;
+	color: var(--ink-soft);
+	font-size: 1.2rem;
+	line-height: 1;
+	cursor: pointer;
+}
+.update-toast-close:hover{
+	background: var(--ivory);
+}
+
+/* ---- The dot on "What's new" in the menu ---- */
+.update-dot{
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	margin-left: 6px;
+	border-radius: 50%;
+	background: var(--gold-soft);
+	vertical-align: middle;
+	box-shadow: 0 0 0 0 var(--gold-soft);
+	animation: updateDotPulse 2s ease-out infinite;
+}
+@keyframes updateDotPulse{
+	70%{ box-shadow: 0 0 0 7px transparent; }
+	100%{ box-shadow: 0 0 0 0 transparent; }
+}
+
+@media (max-width: 860px){
+	.update-toast{
+		top: 72px;
+		flex-wrap: wrap;
+	}
+	.update-card{
+		padding: 22px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce){
+	.update-card,
+	.update-toast{
+		transition: opacity .2s;
+	}
+	.update-dot{
+		animation: none;
+	}
+}

@@ -1,5 +1,7 @@
 const CACHE_NAME = 'lovinglylost-shell-v13';
 
+const NETWORK_TIMEOUT_MS = 4000;
+
 const APP_SHELL = [
     './',
     './index.html',
@@ -15,6 +17,10 @@ const APP_SHELL = [
     './theme.css',
     './theme.js',
     './contact-page.js',
+    './update.js',
+    './whats-new.js',
+    './whats-new.css',
+    './updates.html',
     './ProgressiveWebApp-Register.js',
     './images/decor-roads-hearts.svg',
     './manifest.webmanifest',
@@ -50,22 +56,42 @@ self.addEventListener('activate', (event) => {
     );
 });
 
+// Every file from this site: try the internet first so a new push shows up
+// on the next refresh, keep a copy of whatever arrives for offline use, and
+// fall back to that copy when there's no connection (or it's very slow).
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     if (url.origin !== self.location.origin) return;
     if (event.request.method !== 'GET') return;
-
-    if (event.request.mode === 'navigate'){
-
-        event.respondWith(
-                fetch(event.request).catch(() =>
-                    caches.match(event.request).then((cached) => cached || caches.match('./index.html'))
-            )
-        );
-        return;
-    }
-
-    event.respondWith(
-        caches.match(event.request).then((cached) => cached || fetch(event.request))
-    );
+    event.respondWith(networkFirst(event.request));
 });
+
+async function networkFirst(request){
+    const cache = await caches.open(CACHE_NAME);
+    try {
+        // cache: 'no-cache' makes the browser check with GitHub for a newer
+        // copy instead of reusing one it saved minutes ago.
+        const response = await withTimeout(fetch(request.url, { cache: 'no-cache' }), NETWORK_TIMEOUT_MS);
+        if (response.ok) cache.put(request, response.clone());
+        return response;
+    } catch (err){
+        const saved = await cache.match(request, { ignoreSearch: true });
+        if (saved) return saved;
+        if (request.mode === 'navigate'){
+            const home = await cache.match('./index.html');
+            if (home) return home;
+        }
+        return Response.error();
+    }
+}
+
+// Gives up on a request that takes longer than ms milliseconds.
+function withTimeout(promise, ms){
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('timed out')), ms);
+        promise.then(
+            (value) => { clearTimeout(timer); resolve(value); },
+            (err) => { clearTimeout(timer); reject(err); }
+        );
+    });
+}
