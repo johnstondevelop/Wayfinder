@@ -2,7 +2,7 @@
 // box, using the same Mapbox account as the planner. Picking one fills in
 // a tidy name like "Asheville, North Carolina". You can still type
 // anything you like without picking.
-import { MAPBOX_TOKEN } from '../Maptoken-categories/maptoken-config.js';
+import { MAPBOX_TOKEN } from '../Map/maptoken-config.js';
 
 const SUGGEST_DELAY_MS = 250;
 

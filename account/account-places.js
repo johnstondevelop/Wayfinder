@@ -1,7 +1,7 @@
 // The "Favorite stops" and "Places to avoid" cards on the account page.
 import { supabase } from './supabase-client.js';
-import { ROMANTIC_POI_CATEGORY_LABELS } from '../Maptoken-categories/maptoken-config.js';
-import { ROMANTIC_POI_CATEGORY_ICONS } from '../Maptoken-categories/CategoryIcons.js';
+import { ROMANTIC_POI_CATEGORY_LABELS } from '../Map/maptoken-config.js';
+import { ROMANTIC_POI_CATEGORY_ICONS } from '../Map/CategoryIcons.js';
 
 const EMPTY_NOTES = {
 	favorite: 'No favorites yet. Tap ♡ Save on any scenic stop on the map to keep it here.',

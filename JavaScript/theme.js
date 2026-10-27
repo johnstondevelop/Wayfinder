@@ -52,7 +52,7 @@
 		try { signedIn = Boolean(localStorage.getItem(SIGN_IN_KEY)); } catch (err){}
 		if (!signedIn) return;
 		try {
-			const { supabase, getSignedInUser } = await import('./account/supabase-client.js');
+			const { supabase, getSignedInUser } = await import('../account/supabase-client.js');
 			const user = await getSignedInUser();
 			if (user) await supabase.from('profiles').upsert({ id: user.id, theme: id });
 		} catch (err){

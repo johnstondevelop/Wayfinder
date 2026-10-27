@@ -35,7 +35,7 @@ still see them before the map has appeared */
     padding: 32px;
     border-radius: 18px;
     border: 1.5px dashed var(--gold-soft);
-    background: var(--ivory) url('images/decor-roads-hearts.svg') center / cover no-repeat;
+    background: var(--ivory) url('../images/decor-roads-hearts.svg') center / cover no-repeat;
     overflow: hidden;
 }
 .map-placeholder-card{

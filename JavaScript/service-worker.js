@@ -1,44 +1,58 @@
-const CACHE_NAME = 'lovinglylost-shell-v14';
+// You don't need to change this for normal updates: the app always asks
+// for the newest files first (see the fetch section at the bottom). Bump
+// it only when files move or get renamed, so phones drop their old copies.
+const CACHE_NAME = 'lovinglylost-shell-v15';
 
+// On a slow connection, wait this long for fresh files before using the
+// saved copies instead.
 const NETWORK_TIMEOUT_MS = 4000;
 
+// Saved on install so the app opens offline, even on a first visit.
+// Every file listed here must exist, or the update won't install.
 const APP_SHELL = [
     './',
     './index.html',
     './about.html',
     './contact.html',
-    './app-style.css',
-    './site-nav.css',
-    './map-reveal.css',
-    './site-pages.css',
-    './site-nav.js',
-    './intro.css',
-    './intro.js',
-    './theme.css',
-    './theme.js',
-    './contact-page.js',
-    './updates.js',
-    './whats-new.js',
-    './whats-new.css',
     './updates.html',
-    './saved-places.css',
-    './account/place-lists.js',
-    './ProgressiveWebApp-Register.js',
-    './images/decor-roads-hearts.svg',
     './manifest.webmanifest',
+
+    './css/app-style.css',
+    './css/site-nav.css',
+    './css/site-pages.css',
+    './css/map-reveal.css',
+    './css/intro.css',
+    './css/theme.css',
+    './css/whats-new.css',
+    './css/saved-places.css',
+
+    './JavaScript/site-nav.js',
+    './JavaScript/intro.js',
+    './JavaScript/theme.js',
+    './JavaScript/updates.js',
+    './JavaScript/whats-new.js',
+    './JavaScript/contact-page.js',
+    './JavaScript/ProgressiveWebApp-Register.js',
+
+    './Map/Main-Launch.js',
+    './Map/Map.js',
+    './Map/state-and-data.js',
+    './Map/Routing-Location.js',
+    './Map/CategoryIcons.js',
+    './Map/CategoryFilter.js',
+    './Map/MapReveal.js',
+    './Map/PlaceAutocomplete.js',
+    './Map/maptoken-config.js',
+
+    './account/account-nav.js',
+    './account/place-lists.js',
+
+    './images/decor-roads-hearts.svg',
     './icons/icon-192.png',
     './icons/icon-512.png',
-    './icons/apple-touch-icon.png',
-    './Maptoken-categories/Main-Launch.js',
-    './Maptoken-categories/Map.js',
-    './Maptoken-categories/state-and-data.js',
-    './Maptoken-categories/Routing-Location.js',
-    './Maptoken-categories/CategoryIcons.js',
-    './Maptoken-categories/CategoryFilter.js',
-    './Maptoken-categories/MapReveal.js',
-    './Maptoken-categories/PlaceAutocomplete.js',
-    './Maptoken-categories/maptoken-config.js'
+    './icons/apple-touch-icon.png'
 ];
+
 
 self.addEventListener('install', (event) => {
     event.waitUntil(

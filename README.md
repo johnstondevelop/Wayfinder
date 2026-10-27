@@ -1,5 +1,22 @@
 # LovinglyLost
 
+## How the files are organized
+
+The pages people visit sit at the top level, along with the two files browsers expect to find there. Everything else is grouped into folders:
+
+| Where | What's in it |
+|---|---|
+| `index.html`, `about.html`, `contact.html`, `login.html`, `account.html`, `updates.html` | The pages |
+| `manifest.webmanifest`, `service-worker.js` | What makes it installable and work offline. These have to stay at the top level. |
+| `css/` | Every stylesheet: the planner, the menu, the About-style pages, the intro, color themes, accounts, What's new, favorites |
+| `js/` | Scripts shared by every page: the menu, the intro, color themes, the What's new notices, and `updates.js`, the list of updates people see |
+| `map/` | The trip planner: the map, routes, scenic-stop search, place suggestions, and `maptoken-config.js` (the Mapbox token, starting map view, scenic categories, and how far a stop can be from the route) |
+| `account/` | Sign-in, the account page, saved places, and the connection to Supabase |
+| `icons/`, `images/` | App icons and artwork |
+
+To announce an update, add an entry at the top of `js/updates.js`. New files don't need to go in the service worker's list, but anything listed there must exist or the offline update won't install.
+
+
 LovinglyLost is a romantic road-trip planner. You give it a starting point, one or more stops along the way, and how many days you want the trip to take, and it plans a driving route between everything, splits the drive time evenly across your days, and if you'd like it goes looking for scenic and romantic spots near your route, like viewpoints, waterfalls, wineries, and little gardens, so you can build in some detours worth stopping for. Everything shows up on a map, and every stop you tap gives you links out to Google Maps and Apple Maps so you can get walking directions or save it for later.
 
 There's no backend and no build process behind any of this. It's a plain website a page of HTML, a stylesheet, and a handful of JavaScript files that runs entirely in your browser and talks directly to Mapbox's mapping and location services. That keeps things simple to run and easy to read through, at the cost of putting a bit more responsibility on the browser itself, which is worth keeping in mind as the app grows.
