@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="site-nav.css">
 <link rel="stylesheet" href="site-pages.css">
 <link rel="stylesheet" href="account.css">
+<link rel="stylesheet" href="saved-places.css"
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
 <link rel="stylesheet" href="whats-new.css">
@@ -87,6 +88,17 @@
 					<p class="account-message" id="profileMessage" role="status"></p>
 				</div>
 			</form>
+		<section class="page-card account-section" hidden>
+			<h2>Favorite stops</h2>
+			<p>Places youve saved with ♡ Save on the map</p>
+			<ul class="saved-places" id="favoritePlaces"></ul>
+		</section>
+		
+		<section class="page-card account-section" hidden>
+			<h2>Places to avoid</h2>
+			<p>These won't show up in your scenic stops</p>
+			<ul class="saved-places" id="avoidPlaces"></ul>
+		</section>
 		</section>
 
 				<section class="page-card account-section" hidden>

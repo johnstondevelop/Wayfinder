@@ -11,6 +11,18 @@
 //   title:   one short line
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
+    	{
+		id: '2026-10-27',
+		date: 'October 27, 2026',
+		size: 'big',
+		title: 'Favorite stops and places to avoid',
+		changes: [
+			'Tap ♡ Save on a scenic stop to keep it in your account.',
+			"Tap Avoid and that place won't show up on your routes again.",
+			'See and edit both lists on your account page.'
+		]
+	},
+
 	{
 		id: '2026-10-26',
 		date: 'October 26, 2026',

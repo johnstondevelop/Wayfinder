@@ -1,5 +1,6 @@
 import { MAPBOX_TOKEN, DEFAULT_CENTER, DEFAULT_ZOOM } from './maptoken-config.js';
 import { ROMANTIC_POI_CATEGORY_ICONS } from './CategoryIcons.js';
+import { loadPlaceLists, isAvoided, togglePlace, placeListButtonsHTML } from '../account/place-lists.js';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
@@ -15,6 +16,7 @@ let findTripStopId = null;
 let onUserPanHandler = null;
 let fitPaddingProvider = null;
 const scenicPlacesByKey = new Map();
+let lastScenicPlaces = []; // everything the last search found, before avoided places are hidden
 
 const ROMANTIC_SOURCE_ID = 'romantic-points';
 
@@ -59,12 +61,13 @@ export function setFitPaddingProvider(fn){
 }
 
 export function initMap(){
-	map = new mapboxgl.Map({
-		container: 'map',
-		style: 'mapbox://styles/mapbox/light-v11',
-		center: DEFAULT_CENTER,
-		zoom: DEFAULT_ZOOM
-		});
+	// Signed in? Fetch their favorites and avoided places, then redraw any
+	// scenic stops already on the map so avoided ones disappear.
+	loadPlaceLists().then(() => {
+		if (lastScenicPlaces.length) renderRomanticStops(lastScenicPlaces);
+	});
+
+
 		
 	map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
@@ -181,14 +184,32 @@ export function initMap(){
 			if (addBtn.isConnected) addBtn.outerHTML = stopId ? removeTripButtonHTML(stopId, key) : addTripButtonHTML(key);
 		}
 
-		if (removeBtn && removeFromTripHandler){
-			const key = removeBtn.dataset.addTripKey;
-			removeBtn.textContent = 'Removing...';
-			removeBtn.disabled = true;
-			await removeFromTripHandler(removeBtn.dataset.stopId);
-
-			if (key && removeBtn.isConnected) removeBtn.outerHTML = addTripButtonHTML(key);
+				// ♡ Save and Avoid in a scenic stop's popup
+		const listBtn = e.target.closest('.popup-list-btn');
+		if (listBtn){
+			const key = listBtn.dataset.placeKey;
+			const place = scenicPlacesByKey.get(key);
+			if (!place) return;
+			listBtn.disabled = true;
+			try {
+				const nowOnList = await togglePlace(listBtn.dataset.list, key, place);
+				if (listBtn.dataset.list === 'avoid' && nowOnList){
+					// Avoided: close the popup and take it off the map.
+					if (romanticPopup) romanticPopup.remove();
+					renderRomanticStops(lastScenicPlaces);
+					return;
+				}
+				const buttons = listBtn.closest('.popup-list-btns');
+				if (buttons) buttons.outerHTML = placeListButtonsHTML(key, place);
+			} catch (err){
+				console.error(err);
+				listBtn.disabled = false;
+				listBtn.textContent = "Couldn't save, try again";
+			}
 		}
+
+		if (removeBtn && removeFromTripHandler){
+
 	});
 	return map;
 }
@@ -237,6 +258,8 @@ function buildPopupHTML({name, address, website, lng, lat, category, addToTripKe
 	}
 
 	const icon = category ? ROMANTIC_POI_CATEGORY_ICONS[category] : null;
+	// Scenic stops also get <3 Save and Avoid
+	const scenicPlace = addToTripKey ? scenicPlacesByKey.get(addToTripKey) : null;
 	return `
 		<div class="popup-place">
 			<div class="popup-header">
@@ -244,7 +267,9 @@ function buildPopupHTML({name, address, website, lng, lat, category, addToTripKe
 				<h4>${escapeHtml(name)}</h4>
 			</div>
 			${address ? `<p class="popup-address">${escapeHtml(address)}</p>` : ''}
-			<div class="popup-links">${links.join('')}</div>
+						<div class="popup-links">${links.join('')}</div>
+			${scenicPlace ? placeListButtonsHTML(addToTripKey, scenicPlace) : ''}
+
 		</div>
 	`;
 }
@@ -276,6 +301,9 @@ export function addStopMarker(lng, lat, label, name, stopId){
 export function renderRomanticStops(places){
 	const source = map.getSource(ROMANTIC_SOURCE_ID);
 	if (!source) return;
+	lastScenicPlaces = allPlaces;
+	// Leave out anywhere the signed-in person chose to avoid.
+	const places = allPlaces.filter(place => !isAvoided(placeKey(place), place));
 	scenicPlacesByKey.clear();
 	places.forEach(place => scenicPlacesByKey.set(placeKey(place), place));
 	source.setData({

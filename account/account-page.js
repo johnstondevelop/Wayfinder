@@ -2,6 +2,7 @@
 // changes, and signs them out. Anyone not signed in is sent to login.html.
 import { supabase, getSignedInUser, emailLinkType } from './supabase-client.js';
 import { attachHometownSuggestions } from './hometown-suggest.js';
+import { showSavedPlaces } from './account-places.js';
 
 const loading = document.getElementById('accountLoading');
 const sections = document.querySelectorAll('.account-section');
@@ -67,6 +68,7 @@ async function loadAccount(){
 
 	loading.hidden = true;
 	sections.forEach(section => { section.hidden = false; });
+	showSavedPlaces();
 }
 
 profileForm.addEventListener('submit', async (e) => {

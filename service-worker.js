@@ -21,6 +21,8 @@ const APP_SHELL = [
     './whats-new.js',
     './whats-new.css',
     './updates.html',
+    './saved-places.css',
+    './account/place-lists.js',
     './ProgressiveWebApp-Register.js',
     './images/decor-roads-hearts.svg',
     './manifest.webmanifest',

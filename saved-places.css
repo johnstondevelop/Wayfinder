@@ -1,0 +1,148 @@
+/* ================ FAVORITES & PLACES TO AVOID ================
+   The ♡ Save / Avoid buttons in scenic-stop popups (planner), and the
+   two lists on the account page. Colors follow the theme. */
+
+/* ---- In the popups ---- */
+.popup-list-btns{
+	display: flex;
+	gap: 8px;
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px dashed var(--line);
+}
+.popup-list-btn{
+	padding: 4px 11px;
+	border: 1.5px solid var(--rose);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--plum);
+	font-family: var(--sans);
+	font-size: .8rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .2s var(--ease), color .2s var(--ease);
+}
+.popup-list-btn:hover,
+.popup-list-btn.is-on{
+	background: var(--rose-soft);
+}
+.popup-list-btn.is-on{
+	border-color: var(--plum);
+}
+.popup-avoid-btn{
+	border-color: var(--line);
+	color: var(--ink-soft);
+}
+.popup-avoid-btn:hover{
+	background: var(--ivory);
+	color: var(--ink);
+}
+.popup-list-btn:disabled{
+	opacity: .6;
+	cursor: wait;
+}
+.popup-list-signin{
+	display: block;
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px dashed var(--line);
+	font-size: .8rem;
+	font-weight: 600;
+	color: var(--plum);
+}
+
+/* ---- On the account page ---- */
+.saved-places{
+	list-style: none;
+	margin: 14px 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+.saved-place{
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	background: var(--ivory);
+	border: 1px solid var(--line);
+	border-radius: 14px;
+}
+.saved-place-icon{
+	flex: 0 0 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: var(--rose-soft);
+	color: var(--plum);
+}
+.saved-place-icon svg{
+	width: 20px;
+	height: 20px;
+}
+.saved-place-text{
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+.saved-place-text strong{
+	color: var(--plum);
+	font-family: var(--serif);
+	font-size: 1rem;
+}
+.saved-place-text span{
+	font-size: .8rem;
+	color: var(--ink-soft);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.saved-place-actions{
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+.saved-place-actions a{
+	font-size: .8rem;
+	font-weight: 600;
+	color: var(--gold);
+	text-decoration: none;
+}
+.saved-place-actions button{
+	padding: 5px 10px;
+	border: 1.5px solid var(--line);
+	border-radius: 999px;
+	background: var(--surface);
+	color: var(--ink-soft);
+	font-family: var(--sans);
+	font-size: .78rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.saved-place-actions button:hover{
+	border-color: var(--plum);
+	color: var(--plum);
+}
+.saved-place-empty{
+	padding: 14px;
+	border: 1.5px dashed var(--line);
+	border-radius: 14px;
+	color: var(--ink-soft);
+	font-size: .9rem;
+	text-align: center;
+}
+
+@media (max-width: 520px){
+	.saved-place{
+		flex-wrap: wrap;
+	}
+	.saved-place-actions{
+		width: 100%;
+		justify-content: flex-end;
+	}
+}
