@@ -9,8 +9,8 @@ The pages people visit sit at the top level, along with the two files browsers e
 | `index.html`, `about.html`, `contact.html`, `login.html`, `account.html`, `updates.html` | The pages |
 | `manifest.webmanifest`, `service-worker.js` | What makes it installable and work offline. These have to stay at the top level. |
 | `css/` | Every stylesheet: the planner, the menu, the About-style pages, the intro, color themes, accounts, What's new, favorites |
-| `js/` | Scripts shared by every page: the menu, the intro, color themes, the What's new notices, and `updates.js`, the list of updates people see |
-| `map/` | The trip planner: the map, routes, scenic-stop search, place suggestions, and `maptoken-config.js` (the Mapbox token, starting map view, scenic categories, and how far a stop can be from the route) |
+| `JavaScript/` | Scripts shared by every page: the menu, the intro, color themes, the What's new notices, and `updates.js`, the list of updates people see |
+| `Map/` | The trip planner: the map, routes, scenic-stop search, place suggestions, and `maptoken-config.js` (the Mapbox token, starting map view, scenic categories, and how far a stop can be from the route) |
 | `account/` | Sign-in, the account page, saved places, and the connection to Supabase |
 | `icons/`, `images/` | App icons and artwork |
 

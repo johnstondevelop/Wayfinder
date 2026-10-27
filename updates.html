@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact · LovinglyLost</title>
+<title>What's new · LovinglyLost</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
@@ -29,7 +29,7 @@
 <div class="page">
 
 	<header class="topbar">
-		<a class="brand-link" href="HTML/index.html">
+		<a class="brand-link" href="index.html">
 			<span class="brand-mark" aria-hidden="true">
 				<svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
 					<path d="M3 24c4-3.4 4-7.6 0-11s-4-7.6 0-11" stroke-dasharray="2.4 3.4"/>
@@ -43,60 +43,38 @@
 			<span>Menu</span>
 		</button>
 		<nav class="site-nav" id="siteNav" aria-label="Main">
-			<a class="site-nav-link" href="HTML/index.html">Plan a trip</a>
-			<a class="site-nav-link" href="HTML/about.html">About</a>
-			<a class="site-nav-link" href="HTML/contact.html" aria-current="page">Contact</a>
-			<a class="site-nav-link" href="HTML/login.html" id="accountNavLink">Sign in</a>
+			<a class="site-nav-link" href="index.html">Plan a trip</a>
+			<a class="site-nav-link" href="about.html">About</a>
+			<a class="site-nav-link" href="contact.html">Contact</a>
+				<a class="site-nav-link" href="login.html" id="accountNavLink">Sign in</a>
 		</nav>
 	</header>
 
-	<main class="page-main">
+		<main class="page-main">
 
 		<section class="page-hero">
-			<p class="page-eyebrow">Contact</p>
-			<h1 class="page-title">Something not <em>quite right?</em></h1>
-			<p class="page-lede">LovinglyLost is brand new, and you're helping shape it. If a route looks off, a button misbehaves, or you know a stop we should all see, we'd love to hear about it.</p>
+			<p class="page-eyebrow">What's new</p>
+			<h1 class="page-title">Little changes, <em>longer drives.</em></h1>
+			<p class="page-lede">Everything that's changed in LovinglyLost, newest first.</p>
 		</section>
 
-		<div class="contact-options">
-			<section class="page-card contact-option">
-				<h2>Report a problem</h2>
-				<p>Tell us what happened and we'll look into it. It helps a lot to include:</p>
-				<ul class="checklist">
-					<li>What you were trying to do</li>
-					<li>What happened instead</li>
-					<li>Your phone or computer, and browser</li>
-					<li>A screenshot, if you can</li>
-				</ul>
-				<a class="page-btn" id="reportProblemBtn" href="#">Email us about a problem</a>
-			</section>
+		<div id="updatesList"></div>
 
-			<section class="page-card contact-option">
-				<h2>Share an idea</h2>
-				<p>A favorite scenic spot, a feature you wish existed, or just a hello. Every note gets read.</p>
-				<ul class="checklist">
-					<li>Places worth a detour</li>
-					<li>Things you'd love it to do</li>
-					<li>What you enjoyed</li>
-				</ul>
-				<a class="page-btn page-btn-secondary" id="shareIdeaBtn" href="#">Send us a note</a>
-			</section>
+		<div class="page-cta">
+			<a class="page-btn" href="index.html">Plan a trip</a>
+			<a class="page-btn page-btn-secondary" href="contact.html">Suggest an idea</a>
 		</div>
-
-		<section class="page-card contact-direct">
-			<p>The buttons above open your email app with a message ready to go. If that doesn't work on your device, you can write to us at <a id="contactEmailLink" href="#">our email</a>.</p>
-		</section>
 
 	</main>
 
+
 	<footer class="site-footer">
-		Made with &hearts; for long drives &middot; <a href="about.html">About LovinglyLost</a>
+		Made with &hearts; for long drives &middot; <a href="contact.html">Found a problem? Let us know</a>
 	</footer>
 
 </div>
 
-<script src="JavaScript/contact-page.js"></script>
-<script src="JavScript/site-nav.js"></script>
+<script src="JavaScript/site-nav.js"></script>
 <script src="JavaScript/updates.js"></script>
 <script src="JavaScript/whats-new.js"></script>
 <script src="account/account-nav.js"></script>

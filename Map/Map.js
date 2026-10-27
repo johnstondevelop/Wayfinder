@@ -67,11 +67,11 @@ export function initMap(){
 		if (lastScenicPlaces.length) renderRomanticStops(lastScenicPlaces);
 	});
 
-	map = newmapboxgl.Map({
+	map = new mapboxgl.Map({
 		container: 'map',
 		style: 'mapbox://styles/mapbox/light-v11',
 		center: DEFAULT_CENTER,
-		zoom: DEFUALT_ZOOM
+		zoom: DEFAULT_ZOOM
 	});
 
 
