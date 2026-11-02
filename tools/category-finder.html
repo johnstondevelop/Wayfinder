@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Category finder · LovinglyLost</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/app-style.css">
+<link rel="stylesheet" href="../css/site-pages.css">
+<link rel="stylesheet" href="../css/theme.css">
+<script src="../JavaScript/theme.js"></script>
+
+<style>
+	/* Just for this page */
+	.finder-table{
+		width: 100%;
+		border-collapse: collapse;
+		font-size: .9rem;
+	}
+	.finder-table th,
+	.finder-table td{
+		padding: 8px 6px;
+		border-bottom: 1px solid var(--line);
+		text-align: left;
+		vertical-align: top;
+	}
+	.finder-table th{
+		font-size: .75rem;
+		letter-spacing: .06em;
+		text-transform: uppercase;
+		color: var(--ink-soft);
+	}
+	.finder-id{
+		font-family: 'JetBrains Mono', monospace;
+		font-size: .82rem;
+		color: var(--plum);
+		word-break: break-all;
+	}
+	.finder-ok{ color: #2F5A2B; font-weight: 600; }
+	.finder-missing{ color: #8A2638; font-weight: 600; }
+	.finder-search{
+		width: 100%;
+		padding: 12px 14px;
+		border: 1.5px solid var(--line);
+		border-radius: 10px;
+		background: var(--ivory);
+		font-family: var(--sans);
+		font-size: 16px;
+	}
+	.finder-list{
+		list-style: none;
+		margin: 14px 0 0;
+		padding: 0;
+		max-height: 60vh;
+		overflow-y: auto;
+	}
+	.finder-list li{
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 9px 4px;
+		border-bottom: 1px solid var(--line);
+	}
+	.finder-list .finder-name{
+		flex: 1;
+		min-width: 0;
+	}
+	.finder-copy{
+		flex: none;
+		padding: 5px 10px;
+		border: 1.5px solid var(--line);
+		border-radius: 999px;
+		background: var(--surface);
+		color: var(--plum);
+		font-family: var(--sans);
+		font-size: .78rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+</style>
+</head>
+<body class="site-page">
+
+<div class="page">
+	<main class="page-main">
+
+		<section class="page-hero">
+			<p class="page-eyebrow">Behind the scenes</p>
+			<h1 class="page-title">Category <em>finder</em></h1>
+			<p class="page-lede" id="finderStatus">Asking Mapbox for its list of place categories...</p>
+		</section>
+
+		<section class="page-card">
+			<h2>Your stop types</h2>
+			<p>Each stop type in the planner, and the Mapbox category it searches. A ✗ means it can't be found yet: search for it below, then put the right ID in <span class="finder-id">MAPBOX_CATEGORY_IDS</span> in <span class="finder-id">Map/maptoken-config.js</span>.</p>
+			<table class="finder-table">
+				<thead><tr><th>Stop type</th><th>Searches Mapbox for</th><th></th></tr></thead>
+				<tbody id="finderYours"></tbody>
+			</table>
+		</section>
+
+		<section class="page-card">
+			<h2>Search every Mapbox category</h2>
+			<input type="search" class="finder-search" id="finderSearch" placeholder="Try castle, market, farm, steak, bar..." autocomplete="off">
+			<p id="finderCount"></p>
+			<ul class="finder-list" id="finderList"></ul>
+		</section>
+
+	</main>
+</div>
+
+<script type="module">
+	// A page just for you: lists every place category Mapbox has, and checks
+	// which of LovinglyLost's stop types it can find. It isn't in the menu.
+	import { ROMANTIC_POI_CATEGORIES, ROMANTIC_POI_CATEGORY_LABELS } from '../Map/maptoken-config.js';
+	import { mapboxIdsFor } from '../Map/category-check.js';
+
+	const status = document.getElementById('finderStatus');
+	const yours = document.getElementById('finderYours');
+	const search = document.getElementById('finderSearch');
+	const list = document.getElementById('finderList');
+	const count = document.getElementById('finderCount');
+
+	// Forget the saved copy so this page, and the planner after it, use Mapbox's latest list.
+	try { localStorage.removeItem('lovinglylost-mapbox-categories'); } catch (err){}
+	const ids = await mapboxIdsFor(ROMANTIC_POI_CATEGORIES);
+
+	let items = [];
+	try {
+		items = JSON.parse(localStorage.getItem('lovinglylost-mapbox-categories')).items;
+	} catch (err){}
+
+	if (!items.length){
+		status.textContent = "Couldn't get the list from Mapbox. This page only works on the live site (your Mapbox token is limited to it), so open it there.";
+	} else {
+		status.textContent = `Mapbox has ${items.length} place categories.`;
+	}
+
+	function cell(row, text, className){
+		const td = document.createElement('td');
+		td.textContent = text;
+		if (className) td.className = className;
+		row.appendChild(td);
+	}
+
+	ROMANTIC_POI_CATEGORIES.forEach(category => {
+		const row = document.createElement('tr');
+		cell(row, ROMANTIC_POI_CATEGORY_LABELS[category] || category);
+		cell(row, ids[category] || '(not found)', 'finder-id');
+		cell(row, ids[category] ? '✓' : '✗', ids[category] ? 'finder-ok' : 'finder-missing');
+		yours.appendChild(row);
+	});
+
+	function showMatches(){
+		const words = search.value.toLowerCase().trim();
+		const matches = items
+			.filter(item => !words || `${item.id} ${item.name}`.toLowerCase().includes(words))
+			.sort((a, b) => a.name.localeCompare(b.name));
+		count.textContent = words ? `${matches.length} match${matches.length === 1 ? '' : 'es'}` : `All ${items.length}:`;
+		list.innerHTML = '';
+		matches.forEach(item => {
+			const li = document.createElement('li');
+			const name = document.createElement('span');
+			name.className = 'finder-name';
+			name.innerHTML = '<strong></strong><br><span class="finder-id"></span>';
+			name.querySelector('strong').textContent = item.name;
+			name.querySelector('.finder-id').textContent = item.id;
+			const copy = document.createElement('button');
+			copy.type = 'button';
+			copy.className = 'finder-copy';
+			copy.textContent = 'Copy ID';
+			copy.addEventListener('click', async () => {
+				try {
+					await navigator.clipboard.writeText(item.id);
+					copy.textContent = 'Copied';
+				} catch (err){
+					copy.textContent = item.id;
+				}
+			});
+			li.append(name, copy);
+			list.appendChild(li);
+		});
+	}
+
+	search.addEventListener('input', showMatches);
+	showMatches();
+</script>
+</body>
+</html>

@@ -58,3 +58,9 @@ export const ROMANTIC_POI_CATEGORY_LABELS = {
      italian_restaurant: 'Italian Restaurant',
      cocktail_bar: 'Cocktail Bar'
 };
+// If a stop type shows a x in tools/category-filter.html, find the right
+// Mapbox category there and write it here, like castle: 'historic_site',
+// The planner then searches that ID for it. Leave it empty otherwise.
+export const MAPBOX_CATEGORY_IDS = {
+
+}; 

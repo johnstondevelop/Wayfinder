@@ -3,7 +3,7 @@
 // IDs it has (once a week; the answer is saved on the device), so a stop
 // type whose ID is spelled a little differently on Mapbox's side still gets
 // found, and one Mapbox doesn't have is skipped instead of failing quietly.
-import { MAPBOX_TOKEN, ROMANTIC_POI_CATEGORY_LABELS } from './maptoken-config.js';
+import { MAPBOX_TOKEN, ROMANTIC_POI_CATEGORY_LABELS, MAPBOX_CATEGORY_IDS } from './maptoken-config.js';
 
 const LIST_URL = 'https://api.mapbox.com/search/searchbox/v1/list/category';
 const STORAGE_KEY = 'lovinglylost-mapbox-categories';
@@ -52,6 +52,11 @@ export async function mapboxIdsFor(categories){
 	const items = await mapboxCategories();
 	const ids = {};
 	categories.forEach(category => {
+		// One youve chosen yourself in maptoken-config.js always wins.
+		if (MAPBOX_CATEGORY_IDS[category]){
+			ids[category] = MAPBOX_CATEGORY_IDS[category];
+			return;
+		}
 		if (!items){
 			ids[category] = category;
 			return;
