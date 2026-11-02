@@ -1,4 +1,4 @@
-import { MAPBOX_TOKEN, DEFAULT_CENTER, DEFAULT_ZOOM } from './maptoken-config.js';
+import { MAPBOX_TOKEN, DEFAULT_CENTER, DEFAULT_ZOOM, SCENIC_NAME_ZOOM, SCENIC_ADDRESS_ZOOM } from './maptoken-config.js';
 import { ROMANTIC_POI_CATEGORY_ICONS } from './CategoryIcons.js';
 import { loadPlaceLists, isAvoided, togglePlace, placeListButtonsHTML } from '../account/place-lists.js';
 
@@ -33,6 +33,7 @@ window.addEventListener('themechange', () => {
 		['romantic-clusters', 'circle-color', '--rose'],
 		['romantic-cluster-count', 'text-color', '--plum'],
 		['romantic-unclustered', 'circle-color', '--rose'],
+		['romantic-labels', 'text-color', '--plum'],
 		['route-line', 'line-color', '--gold']
 	];
 	layers.forEach(([layerId, property, color]) => {
@@ -164,6 +165,42 @@ export function initMap(){
 		}))
 			.addTo(map);
 		});
+		// Each scenic stop's name appears beside it once you've zoomed in to
+		// SCENIC_NAME_ZOOM, and its address under the name from
+		// SCENIC_ADDRESS_ZOOM (both set in maptoken-config.js). Labels that
+		// would run into each other wait until you zoom in a little more.
+		const nameOnly = ['format', ['get', 'name'], {}];
+		const nameAndAddress = ['case',
+			['==', ['get', 'address'], ''], nameOnly,
+			['format',
+				['get', 'name'], {},
+				'\n', {},
+				['get', 'address'], { 'font-scale': 0.82, 'text-font': ['literal', ['DIN Pro Regular', 'Arial Unicode MS Regular']] }
+			]
+		];
+		map.addLayer({
+			id: 'romantic-labels',
+			type: 'symbol',
+			source: ROMANTIC_SOURCE_ID,
+			filter: ['!', ['has', 'point_count']],
+			minzoom: SCENIC_NAME_ZOOM,
+			layout: {
+				'text-field': ['step', ['zoom'], nameOnly, SCENIC_ADDRESS_ZOOM, nameAndAddress],
+				'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+				'text-size': 13,
+				'text-max-width': 11,
+				'text-variable-anchor': ['left', 'right', 'top', 'bottom'],
+				'text-radial-offset': 1.1,
+				'text-justify': 'auto'
+			},
+			paint: {
+				'text-color': themeColor('--plum'),
+				'text-halo-color': '#FFFFFF',
+				'text-halo-width': 1.6
+			}
+		});
+
+
 
 		['romantic-clusters', 'romantic-unclustered'].forEach(layerId => {
 			map.on('mouseenter', layerId, () => {map.getCanvas().style.cursor = 'pointer'; });

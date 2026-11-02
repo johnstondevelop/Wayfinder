@@ -11,6 +11,16 @@
 //   title:   one short line
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
+			{
+		id: '2026-11-02',
+		date: 'November 2, 2026',
+		size: 'small',
+		title: 'Stop names on the map',
+		changes: [
+			'Zoom in on your route and scenic stops now show their names, then their addresses as you get closer.'
+		]
+	},
+
 		{
 		id: '2026-10-27-2',
 		date: 'October 27, 2026',

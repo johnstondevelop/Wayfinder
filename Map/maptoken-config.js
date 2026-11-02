@@ -4,6 +4,12 @@ export const DEFAULT_CENTER = [-98.5795, 39.8283];
 export const DEFAULT_ZOOM = 3.5;
 export const ROMANTIC_STOP_MAX_DISTANCE_MILES = 20;
 
+// How far in you zoom before scenic stops show their names on the map, and
+// then their addresses too. Bigger numbers mean  closer in: 9 is about a
+// 70-mile-wide view on a phone, 11 about 18 miles, 13 about 4 miles.
+export const SCENIC_NAME_ZOOM = 9;
+export const SCENIC_ADDRESS_ZOOM = 11;
+
 export const ROMANTIC_POI_CATEGORIES = ['viewpoint',
      'waterfall',
       'lighthouse',
@@ -13,7 +19,6 @@ export const ROMANTIC_POI_CATEGORIES = ['viewpoint',
           'trailhead',
            'park',
             'historic_site',
-             'castle',
               'monument',
                'cinema',
                 'theatre',
@@ -41,7 +46,6 @@ export const ROMANTIC_POI_CATEGORY_LABELS = {
      trailhead: 'Trailhead',
      park: 'Park',
      historic_site: 'Historic Site',
-     castle: 'Castle',
      monument: 'Monument',
      cinema: 'Cinema',
      theatre: 'Theatre',
@@ -52,15 +56,14 @@ export const ROMANTIC_POI_CATEGORY_LABELS = {
      pier: "Pier",
      cafe: 'Cafe',
      wine_bar: 'Wine Bar',
-     farmers_market: 'Farmers Market',
      steakhouse: 'Steakhouse',
      french_restaurant: 'French Restaurant',
      italian_restaurant: 'Italian Restaurant',
      cocktail_bar: 'Cocktail Bar'
+     
 };
 // If a stop type shows a x in tools/category-filter.html, find the right
 // Mapbox category there and write it here, like castle: 'historic_site',
 // The planner then searches that ID for it. Leave it empty otherwise.
 export const MAPBOX_CATEGORY_IDS = {
-
 }; 
