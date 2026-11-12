@@ -8,9 +8,15 @@ import {
 	} from './Map.js';
 
 import {
-	geocodePlace, getDirections, findRomanticStopsAlongRoute, balanceDays, suggestPlaces, searchStats,
+		geocodePlace, getDirections, balanceDays, suggestPlaces,
 	locateAlongRoute, findStopInsertionIndex, flattenRouteSteps
 	} from './Routing-Location.js';
+// The scenic stop search lives in scenic-search.js. These two names let the
+// rest of this file keep calling it what it always has.
+import {
+	findScenicStops as findRomanticStopsAlongRoute, scenicSearchStats as searchStats
+	} from './scenic-search.js';
+
 import {
 	initCategoryFilter
 } from './CategoryFilter.js'

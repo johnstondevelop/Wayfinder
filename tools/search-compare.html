@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search compare · LovinglyLost</title>
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,500&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/app-style.css">
+<link rel="stylesheet" href="../css/site-pages.css">
+<link rel="stylesheet" href="../css/theme.css">
+<script src="../JavaScript/theme.js"></script>
+
+<style>
+	/* Just for this page */
+	.compare-form{
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px;
+	}
+	.compare-form input{
+		width: 100%;
+		padding: 12px 14px;
+		border: 1.5px solid var(--line);
+		border-radius: 10px;
+		background: var(--ivory);
+		font-family: var(--sans);
+		font-size: 16px;
+	}
+	.compare-form button{
+		grid-column: 1 / -1;
+	}
+	.compare-result h3{
+		margin: 0 0 6px;
+		font-family: var(--serif);
+		color: var(--plum);
+	}
+	.compare-numbers{
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 8px;
+		margin: 10px 0 14px;
+		text-align: center;
+	}
+	.compare-numbers strong{
+		display: block;
+		font-family: var(--serif);
+		font-size: 1.4rem;
+		color: var(--plum);
+	}
+	.compare-numbers span{
+		font-size: .72rem;
+		color: var(--ink-soft);
+	}
+	.compare-bars{
+		display: flex;
+		align-items: flex-end;
+		gap: 3px;
+		height: 90px;
+		padding-bottom: 4px;
+		border-bottom: 1.5px solid var(--line);
+	}
+	.compare-bars div{
+		flex: 1;
+		min-height: 2px;
+		background: var(--rose);
+		border-radius: 3px 3px 0 0;
+	}
+	.compare-bars div.is-empty{
+		background: var(--line);
+	}
+	.compare-axis{
+		display: flex;
+		justify-content: space-between;
+		font-size: .72rem;
+		color: var(--ink-soft);
+	}
+	@media (max-width: 520px){
+		.compare-form{ grid-template-columns: 1fr; }
+		.compare-numbers{ grid-template-columns: repeat(2, 1fr); }
+	}
+</style>
+</head>
+<body class="site-page">
+
+<div class="page">
+	<main class="page-main">
+
+		<section class="page-hero">
+			<p class="page-eyebrow">Behind the scenes</p>
+			<h1 class="page-title">Search <em>compare</em></h1>
+			<p class="page-lede">Runs the old and the new scenic search on the same route, with every stop type, and shows how long each took and how evenly the stops spread along the drive.</p>
+		</section>
+
+		<section class="page-card">
+			<form class="compare-form" id="compareForm">
+				<input type="text" id="compareFrom" placeholder="From, like Asheville, NC" required>
+				<input type="text" id="compareTo" placeholder="To, like Boone, NC" required>
+				<button type="submit" class="page-btn" id="compareBtn">Compare</button>
+			</form>
+			<p id="compareStatus"></p>
+		</section>
+
+		<div id="compareResults"></div>
+
+	</main>
+</div>
+
+<script type="module">
+	// Not in the menu: a page for checking the scenic search on real routes.
+	import { ROMANTIC_POI_CATEGORIES } from '../Map/maptoken-config.js';
+	import { geocodePlace, getDirections, findRomanticStopsAlongRoute, searchStats, locateAlongRoute } from '../Map/Routing-Location.js';
+	import { findScenicStops, scenicSearchStats } from '../Map/scenic-search.js';
+
+	const BARS = 20; // the route is split into this many equal stretches for the chart
+
+	const form = document.getElementById('compareForm');
+	const button = document.getElementById('compareBtn');
+	const status = document.getElementById('compareStatus');
+	const results = document.getElementById('compareResults');
+
+	function delay(ms){
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
+	// How many stops fall in each twentieth of the route.
+	function spread(stops, routeCoords, routeMiles){
+		const counts = new Array(BARS).fill(0);
+		stops.forEach(stop => {
+			const mile = locateAlongRoute([stop.lng, stop.lat], routeCoords).distanceAlongRoute;
+			counts[Math.min(BARS - 1, Math.floor(mile / routeMiles * BARS))]++;
+		});
+		return counts;
+	}
+
+	function showResult(title, seconds, stats, stops, counts, routeMiles){
+		const card = document.createElement('section');
+		card.className = 'page-card compare-result';
+		const most = Math.max(1, ...counts);
+		const emptyCount = counts.filter(c => c === 0).length;
+		card.innerHTML = `
+			<h3></h3>
+			<div class="compare-numbers">
+				<div><strong>${seconds.toFixed(1)}s</strong><span>time</span></div>
+				<div><strong>${stats.total}</strong><span>searches</span></div>
+				<div><strong>${stops.length}</strong><span>stops</span></div>
+				<div><strong>${emptyCount} of ${BARS}</strong><span>empty stretches</span></div>
+			</div>
+			<div class="compare-bars">${counts.map(c => `<div class="${c ? '' : 'is-empty'}" style="height:${Math.round(c / most * 100)}%" title="${c} stops"></div>`).join('')}</div>
+			<div class="compare-axis"><span>Start</span><span>${Math.round(routeMiles)} miles</span><span>End</span></div>
+			<p class="toggle-sub">${stats.failed} failed searches, ${stats.rateLimited} turned away for going too fast.</p>`;
+		card.querySelector('h3').textContent = title;
+		results.appendChild(card);
+	}
+
+	form.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		button.disabled = true;
+		results.innerHTML = '';
+		try {
+			status.textContent = 'Finding the route...';
+			const from = await geocodePlace(document.getElementById('compareFrom').value);
+			const to = await geocodePlace(document.getElementById('compareTo').value);
+			if (!from || !to) throw new Error("Couldn't find one of those places.");
+			const route = await getDirections([[from.lng, from.lat], [to.lng, to.lat]]);
+			const routeCoords = route.geometry.coordinates;
+			const routeMiles = locateAlongRoute(routeCoords[routeCoords.length - 1], routeCoords).distanceAlongRoute || 1;
+
+			status.textContent = 'Running the old search...';
+			let started = performance.now();
+			const oldStops = await findRomanticStopsAlongRoute(route.geometry, ROMANTIC_POI_CATEGORIES);
+			showResult('Old search', (performance.now() - started) / 1000, { ...searchStats }, oldStops, spread(oldStops, routeCoords, routeMiles), routeMiles);
+
+			// A short pause so Mapbox's speed limit starts fresh for the new search.
+			status.textContent = 'Pausing for a moment...';
+			await delay(3000);
+
+			status.textContent = 'Running the new search...';
+			started = performance.now();
+			const newStops = await findScenicStops(route.geometry, ROMANTIC_POI_CATEGORIES);
+			showResult('New search', (performance.now() - started) / 1000, { ...scenicSearchStats }, newStops, spread(newStops, routeCoords, routeMiles), routeMiles);
+
+			status.textContent = `Done: ${from.name} to ${to.name}.`;
+		} catch (err){
+			status.textContent = err.message || 'Something went wrong.';
+		} finally {
+			button.disabled = false;
+		}
+	});
+</script>
+</body>
+</html>

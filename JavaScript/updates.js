@@ -11,6 +11,17 @@
 //   title:   one short line
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
+		{
+		id: '2026-11-02-2',
+		date: 'November 2, 2026',
+		size: 'small',
+		title: 'Faster, better spread scenic stops',
+		changes: [
+			'Scenic stops are now spread along your whole drive instead of bunching up near towns.',
+			'The scenic search finishes faster, and planning the same route again is instant.'
+		]
+	},
+
 			{
 		id: '2026-11-02',
 		date: 'November 2, 2026',

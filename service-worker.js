@@ -45,6 +45,7 @@ const APP_SHELL = [
     './Map/maptoken-config.js',
     './Map/road-preferences.js',
     './Map/category-check.js',
+    './Map/scenic-search.js',
 
     './account/account-nav.js',
     './account/place-lists.js',
