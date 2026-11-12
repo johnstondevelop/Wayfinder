@@ -107,6 +107,7 @@
 			<h2>Search every Mapbox category</h2>
 			<input type="search" class="finder-search" id="finderSearch" placeholder="Try castle, market, farm, steak, bar..." autocomplete="off">
 			<p id="finderCount"></p>
+			<button type="button" class="finder-copy" id="finderCopyAll">Copy the whole list</button>
 			<ul class="finder-list" id="finderList"></ul>
 		</section>
 
@@ -185,6 +186,21 @@
 			list.appendChild(li);
 		});
 	}
+	// Copies every category, one per line, so the list can be pasted somewhere else.
+	document.getElementById('finderCopyAll').addEventListener('click', async (e) => {
+		const lines = items
+			.slice()
+			.sort((a, b) => a.name.localeCompare(b.name))
+			.map(item => `${item.id} - ${item.name}`);
+		try {
+			await navigator.clipboard.writeText(lines.join('\n'));
+			e.target.textContent = `Copied all ${lines.length}`;
+		} catch (err){
+			e.target.textContent = "Couldn't copy. Select the list below instead.";
+		}
+	});
+
+	search.addEventListener('input', showMatches);
 
 	search.addEventListener('input', showMatches);
 	showMatches();

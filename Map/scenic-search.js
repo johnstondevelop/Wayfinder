@@ -17,16 +17,24 @@ import { locateAlongRoute } from './Routing-Location.js';
 
 const CATEGORY_URL = 'https://api.mapbox.com/search/searchbox/v1/category';
 
-const MAX_STOPS = 200;           // most stops shown on the map
+const MAX_STOPS = 400;           // most stops shown on the map
 const RESULTS_PER_SEARCH = 25;   // the most Mapbox gives per search
 const SEARCH_BUDGET = 120;       // most searches in the main pass (fewer = faster)
 const MILES_PER_STRETCH = 25;    // aim for one search stretch per this many miles
 const MILES_PER_PIECE = 10;      // stops are shared out between pieces this long
-const GAP_FILL_PIECES = 6;       // most empty pieces that get a second look
+const THIN_PIECE_STOPS = 2;      // a piece with fewer stops than this gets a second look
+const GAP_FILL_PIECES = 8;       // most empty pieces that get a second look
 const GAP_FILL_KINDS = 3;        // kinds of stop tried in each of those
 const FASTEST_GAP_MS = 50;       // shortest time between starting searches (20 a second)
 const SLOWEST_GAP_MS = 120;      // longest, if Mapbox keeps saying we're going too fast
 const SEARCH_RETRIES = 3;
+
+// Mapbox gives the places nearest a point first. Kinds of stop take turns
+// aiming at the middle, the start and the end of each stretch (these are
+// how far along the stretch, from 0 to 1), so a busy town in the middle
+// doesn't use up every search and leave the ends of the stretch bare.
+const AIM_POINTS = [0.5, 0.15, 0.85];
+
 
 // Broad kinds of stop that are most likely to fill an empty piece of road.
 const GAP_FILL_FAVORITES = ['viewpoint', 'park', 'historic_site', 'trailhead', 'cafe', 'museum'];
@@ -241,14 +249,20 @@ export async function findScenicStops(routeGeometry, categories = ROMANTIC_POI_C
 	const stretches = [];
 	for (let s = 0; s < stretchCount; s++){
 		const points = routeBetween(route, miles, s * stretchMiles, (s + 1) * stretchMiles);
-		stretches.push({ box: boxAround(points, ROMANTIC_STOP_MAX_DISTANCE_MILES), center: pointAtMile(route, miles, (s + 0.5) * stretchMiles) });
+				stretches.push({
+			box: boxAround(points, ROMANTIC_STOP_MAX_DISTANCE_MILES),
+			aims: AIM_POINTS.map(howFar => pointAtMile(route, miles, (s + howFar) * stretchMiles))
+		});
+
 	}
 	// Kinds on the outside and stretches on the inside, so the whole route
 	// starts filling in right away instead of from the start of the trip.
 	const jobs = [];
-	kinds.forEach(kind => stretches.forEach(stretch => {
-		jobs.push({ kind, address: searchAddress(mapboxIds[kind], stretch.box, stretch.center) });
+		kinds.forEach((kind, k) => stretches.forEach((stretch, s) => {
+		const aim = stretch.aims[(k + s) % AIM_POINTS.length];
+		jobs.push({ kind, address: searchAddress(mapboxIds[kind], stretch.box, aim) });
 	}));
+
 
 	const fillJobsEstimate = GAP_FILL_PIECES * GAP_FILL_KINDS;
 	const expected = jobs.length + fillJobsEstimate;
@@ -262,13 +276,14 @@ export async function findScenicStops(routeGeometry, categories = ROMANTIC_POI_C
 	await runSearches(jobs, (job, places) => { keep(places, job.kind); report(); });
 
 	// ---- Second look: pieces of road that are still empty ----
-	const empty = [];
-	stopsByPiece().forEach((piece, i) => { if (!piece.length) empty.push(i); });
-	if (empty.length){
-		// Spread the second looks out if there are more empty pieces than we'll check.
-		const step = Math.max(1, empty.length / GAP_FILL_PIECES);
+		// ---- Second look: pieces of road that are still empty, or nearly ----
+	const thin = [];
+	stopsByPiece().forEach((piece, i) => { if (piece.length < THIN_PIECE_STOPS) thin.push(i); });
+	if (thin.length){
+		// Spread the second looks out if there are more thin pieces than we'll check.
+		const step = Math.max(1, thin.length / GAP_FILL_PIECES);
 		const chosen = [];
-		for (let i = 0; i < empty.length && chosen.length < GAP_FILL_PIECES; i += step) chosen.push(empty[Math.floor(i)]);
+		for (let i = 0; i < thin.length && chosen.length < GAP_FILL_PIECES; i += step) chosen.push(thin[Math.floor(i)]);
 		const fillKinds = [...GAP_FILL_FAVORITES.filter(k => kinds.includes(k)), ...kinds.filter(k => !GAP_FILL_FAVORITES.includes(k))].slice(0, GAP_FILL_KINDS);
 
 		const fillJobs = [];
