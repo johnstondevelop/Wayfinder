@@ -405,7 +405,33 @@ export function fitToCoordinates(coords){
 
 const LIVE_MARKER_ICON = '<svg viewBox="0 0 24 24" width="22" height="22"><path transform="rotate(180 12 12)" d ="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.43 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" stroke="white" stroke-width="1.4" stroke-linejoin="round"/></svg>';
 
+// Slides the heart from where it is to its new GPS position (and turns it
+// to its new heading) over LIVE_GLIDE_MS, by moving its spot on the map a
+// little each frame. Because it's the spot on the map that moves, the heart
+// stays glued to the map when you drag or zoom it.
+const LIVE_GLIDE_MS = 800;
+let liveGlideFrame = null;
+
+function glideLiveMarker(lng, lat, heading){
+	cancelAnimationFrame(liveGlideFrame);
+	const from = liveMarker.getLngLat();
+	const fromHeading = liveMarker.getRotation();
+	// The shortest way round to the new heading, so 350 to 10 turns 20 degrees, not 340.
+	const turn = heading === null ? 0 : (((heading - fromHeading) % 360) + 540) % 360 - 180;
+	const startedAt = performance.now();
+
+	function step(now){
+		if (!liveMarker) return;
+		const t = Math.min(1, (now - startedAt) / LIVE_GLIDE_MS);
+		liveMarker.setLngLat([from.lng + (lng - from.lng) * t, from.lat + (lat - from.lat) * t]);
+		if (turn) liveMarker.setRotation(fromHeading + turn * t);
+		if (t < 1) liveGlideFrame = requestAnimationFrame(step);
+	}
+	liveGlideFrame = requestAnimationFrame(step);
+}
+
 export function setLiveMarker(lng, lat, heading){
+	const hasHeading = typeof heading === 'number' && !Number.isNaN(heading);
 	if (!liveMarker){
 		const el = createMarkerEl('live');
 		el.innerHTML = LIVE_MARKER_ICON;
@@ -413,13 +439,12 @@ export function setLiveMarker(lng, lat, heading){
 		liveMarker = new mapboxgl.Marker({element: el, anchor: 'center', rotationAlignment: 'map' })
 			.setLngLat([lng, lat])
 			.addTo(map);
+		if (hasHeading) liveMarker.setRotation(heading);
 	} else {
-		liveMarker.setLngLat([lng, lat])
-	}
-	if (typeof heading === 'number' && !Number.isNaN(heading)){
-		liveMarker.setRotation(heading);
+		glideLiveMarker(lng, lat, hasHeading ? heading : null);
 	}
 }
+
 export function clearLiveMarker(){
 	if (liveMarker){
 		liveMarker.remove();

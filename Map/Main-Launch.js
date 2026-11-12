@@ -236,7 +236,7 @@ async function addScenicStopToTrip(place){
 
 		const stopId = insertStops(insertIndex, place);
 	renderStops();
-	await refreshRouteAfterEdit('Adding this stop to your route...', { fitCamera: true });
+	await refreshRouteAfterEdit('Adding this stop to your route...', { fitCamera: false });
 	return stopId;
 }
 

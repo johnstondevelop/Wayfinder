@@ -601,10 +601,7 @@ body{
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	transition: transform .2s var(--ease);
-}
-.map-marker:hover{
-	transform: scale(1.12);
+	
 }
 
 .map-marker-origin{
@@ -643,17 +640,12 @@ body{
 	height: 26px;
 	color: var(--plum);
 	filter: drop-shadow(0 2px 5px rgba(92, 33, 53, 0.55));
-	transition: transform 0.8s linear;
 }
 .map-marker-live svg{
 	width: 100%;
 	height: 100%;
 	display: block;
 }
-.map-marker-live:hover{
-	transform: none;
-}
-
 /* Popup styling to match the palette (Mapbox default popups are plain white/black) */
 .mapboxgl-popup-content{
 	background: var(--surface);
