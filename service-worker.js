@@ -25,12 +25,14 @@ const APP_SHELL = [
     './css/theme.css',
     './css/whats-new.css',
     './css/saved-places.css',
+    './css/tour.css',
 
     './JavaScript/site-nav.js',
     './JavaScript/intro.js',
     './JavaScript/theme.js',
     './JavaScript/updates.js',
     './JavaScript/whats-new.js',
+    './JavaScript/tour.js',
     './JavaScript/contact-page.js',
     './JavaScript/ProgressiveWebApp-Register.js',
 

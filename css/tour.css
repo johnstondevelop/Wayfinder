@@ -1,0 +1,214 @@
+/* ================ FIRST-TIME TOUR ================
+   The walkthrough from tour.js: the darkened page, the clear window
+   around whatever is being shown, the plum arrow with a heart at its tip,
+   and the card with the step's words. Colors follow the theme. */
+
+.tour{
+	position: fixed;
+	inset: 0;
+	z-index: 950;
+	opacity: 0;
+	transition: opacity .3s var(--ease);
+}
+.tour.is-open{
+	opacity: 1;
+}
+/* Covers the page so nothing under the tour gets tapped by accident. */
+.tour-blocker{
+	position: absolute;
+	inset: 0;
+}
+
+/* ---- The spotlight: its huge shadow is what darkens the rest ---- */
+.tour-spot{
+	position: fixed;
+	border-radius: 14px;
+	box-shadow: 0 0 0 2px var(--gold-soft), 0 0 0 200vmax rgba(26, 10, 18, .68);
+	pointer-events: none;
+	transition: left .4s var(--ease), top .4s var(--ease), width .4s var(--ease), height .4s var(--ease);
+}
+.tour-spot.is-empty{
+	box-shadow: 0 0 0 200vmax rgba(26, 10, 18, .68);
+}
+
+/* ---- The arrow ---- */
+.tour-arrow{
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+.tour-arrow-halo,
+.tour-arrow-line{
+	fill: none;
+	stroke-linecap: round;
+}
+/* A light edge so the plum shows up against the dark. */
+.tour-arrow-halo{
+	stroke: var(--ivory);
+	stroke-width: 8;
+	opacity: .9;
+}
+.tour-arrow-line{
+	stroke: var(--plum);
+	stroke-width: 3.5;
+}
+.tour-arrow-heart{
+	fill: var(--plum);
+	stroke: var(--ivory);
+	stroke-width: 2.5;
+	stroke-linejoin: round;
+	vector-effect: non-scaling-stroke;
+}
+/* Each step, the line draws itself in and then the heart appears. */
+.tour-arrow.is-drawing .tour-arrow-halo,
+.tour-arrow.is-drawing .tour-arrow-line{
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	animation: tourDraw .5s var(--ease) .15s forwards;
+}
+.tour-arrow.is-drawing .tour-arrow-heart{
+	opacity: 0;
+	animation: tourHeart .3s var(--ease) .55s forwards;
+}
+@keyframes tourDraw{
+	to{ stroke-dashoffset: 0; }
+}
+@keyframes tourHeart{
+	to{ opacity: 1; }
+}
+
+/* ---- The card ---- */
+.tour-card{
+	position: fixed;
+	width: min(360px, calc(100vw - 32px));
+	padding: 20px 20px 16px;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: 18px;
+	box-shadow: 0 18px 40px rgba(26, 10, 18, .35);
+	transition: left .4s var(--ease), top .4s var(--ease);
+}
+.tour-count{
+	margin: 0 0 6px;
+	font-size: .72rem;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	color: var(--gold);
+}
+.tour-title{
+	margin: 0 0 8px;
+	font-family: var(--serif);
+	font-size: 1.3rem;
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--plum);
+}
+.tour-text{
+	margin: 0;
+	font-size: .93rem;
+	color: var(--ink);
+}
+.tour-list{
+	list-style: none;
+	margin: 12px 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-size: .88rem;
+	color: var(--ink);
+}
+.tour-list li::before{
+	content: '♥';
+	margin-right: 8px;
+	color: var(--rose);
+}
+.tour-list[hidden]{
+	display: none;
+}
+
+/* The row of dots, one per step. */
+.tour-dots{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin-top: 16px;
+}
+.tour-dot{
+	width: 7px;
+	height: 7px;
+	border-radius: 999px;
+	background: var(--line);
+	transition: width .25s var(--ease), background .25s var(--ease);
+}
+.tour-dot.is-done{
+	background: var(--rose);
+}
+.tour-dot.is-current{
+	width: 18px;
+	background: var(--plum);
+}
+
+/* ---- Buttons ---- */
+.tour-actions{
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 14px;
+}
+.tour-skip{
+	margin-right: auto;
+	padding: 6px 2px;
+	border: none;
+	background: none;
+	color: var(--ink-soft);
+	font-family: var(--sans);
+	font-size: .85rem;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.tour-back,
+.tour-next{
+	padding: 9px 16px;
+	border-radius: 999px;
+	font-family: var(--sans);
+	font-size: .88rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.tour-back{
+	border: 1.5px solid var(--line);
+	background: transparent;
+	color: var(--plum);
+}
+.tour-back[hidden]{
+	display: none;
+}
+.tour-next{
+	border: 1.5px solid var(--plum);
+	background: var(--plum);
+	color: var(--ivory);
+}
+.tour-next:hover{
+	background: var(--plum-deep);
+}
+
+@media (prefers-reduced-motion: reduce){
+	.tour,
+	.tour-spot,
+	.tour-card,
+	.tour-dot{
+		transition: none;
+	}
+	.tour-arrow.is-drawing .tour-arrow-halo,
+	.tour-arrow.is-drawing .tour-arrow-line,
+	.tour-arrow.is-drawing .tour-arrow-heart{
+		animation: none;
+		stroke-dashoffset: 0;
+		opacity: 1;
+	}
+}
