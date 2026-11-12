@@ -848,3 +848,61 @@ body{
 .category-chip-action-btn:hover{
 	text-decoration: underLine;
 }
+/* ---- Stop type groups (the tabs above the category chips) ---- */
+.category-groups{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 12px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--line);
+}
+.category-group-tab{
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 7px 12px;
+	border: 1.5px solid var(--line);
+	border-radius: 10px;
+	background: var(--surface);
+	color: var(--plum);
+	font-family: var(--serif);
+	font-size: .86rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
+}
+.category-group-tab:hover{
+	border-color: var(--gold-soft);
+}
+.category-group-tab.active{
+	background: var(--plum);
+	border-color: var(--plum);
+	color: var(--ivory);
+}
+.category-group-count{
+	min-width: 18px;
+	padding: 1px 5px;
+	border-radius: 999px;
+	background: var(--rose-soft);
+	color: var(--plum);
+	font-family: var(--sans);
+	font-size: .7rem;
+	font-weight: 700;
+	text-align: center;
+}
+.category-group-tab.active .category-group-count{
+	background: var(--gold-soft);
+	color: var(--plum-deep);
+}
+.category-tip{
+	margin: 10px 0 0;
+	font-size: .78rem;
+	color: var(--ink-soft);
+}
+.category-tip[hidden]{
+	display: none;
+}
+.category-chips-actions{
+	flex-wrap: wrap;
+}

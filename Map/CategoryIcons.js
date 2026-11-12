@@ -3,6 +3,7 @@
 // tinted from CSS just by setting `color` on a wrapping element. Used by the
 // category filter chips and by the scenic-stop map popups so every category
 // gets its own little "badge" at a glance.
+import { CATEGORY_GROUPS } from "./maptoken-config";
 
 const ICON_DEFAULTS = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
 
@@ -58,4 +59,24 @@ export const ROMANTIC_POI_CATEGORY_ICONS = {
 	cocktail_bar: `<svg ${ICON_DEFAULTS}><path d="M4.5 4.5h15L12 12.5z"/><path d="M12 12.5V20"/><path d="M8.5 20h7"/><path d="M14.6 7.6l3.6-4.4"/><circle cx="18.8" cy="2.9" r="1"/></svg>`,
 
 };
+// One icon per group of stop types (the groups are in maptoken-config.js).
+// Any stop type that doesn't have its own icon above uses its group's.
+const GROUP_ICONS = {
+	scenery: `<svg ${ICON_DEFAULTS}><path d="M2.5 19.5l6-9.5 4 6 2.5-3.5 6.5 7z"/><circle cx="17" cy="6" r="2"/></svg>`,
+
+	food: `<svg ${ICON_DEFAULTS}><path d="M6 3v6a2 2 0 004 0V3M8 9v12"/><path d="M17.5 3c-2.2 1.6-3 4.6-2.5 8.5h2.5V21"/></svg>`,
+
+	together: `<svg ${ICON_DEFAULTS}><path d="M9.5 20.5s-6.5-4-6.5-8.9A3.6 3.6 0 019.5 9.3a3.6 3.6 0 016.5 2.3c0 4.9-6.5 8.9-6.5 8.9z"/><path d="M17.6 8.6s-3-1.9-3-4.1a1.7 1.7 0 013-1 1.7 1.7 0 013 1c0 2.2-3 4.1-3 4.1z"/></svg>`,
+
+	stay: `<svg ${ICON_DEFAULTS}><path d="M3 19V7"/><path d="M3 15h18v4"/><path d="M21 15v-2.5a3 3 0 00-3-3h-7V15"/><circle cx="7" cy="11.5" r="1.7"/></svg>`,
+
+	practical: `<svg ${ICON_DEFAULTS}><path d="M12 3v18"/><path d="M12 5h6l2 2-2 2h-6z"/><path d="M12 11.5H6l-2 2 2 2h6z"/></svg>`
+};
+
+CATEGORY_GROUPS.forEach(group => {
+	Object.keys(group.categories).forEach(category => {
+		if (!ROMANTIC_POI_CATEGORY_ICONS[category]) ROMANTIC_POI_CATEGORY_ICONS[category] = GROUP_ICONS[group.id];
+	});
+});
+
 

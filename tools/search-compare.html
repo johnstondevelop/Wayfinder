@@ -92,7 +92,7 @@
 		<section class="page-hero">
 			<p class="page-eyebrow">Behind the scenes</p>
 			<h1 class="page-title">Search <em>compare</em></h1>
-			<p class="page-lede">Runs the old and the new scenic search on the same route, with every stop type, and shows how long each took and how evenly the stops spread along the drive.</p>
+			<p class="page-lede">Runs the old and the new scenic search on the same route, with every suggested stop type, and shows how long each took and how evenly the stops spread along the drive.</p>
 		</section>
 
 		<section class="page-card">
@@ -111,7 +111,7 @@
 
 <script type="module">
 	// Not in the menu: a page for checking the scenic search on real routes.
-	import { ROMANTIC_POI_CATEGORIES } from '../Map/maptoken-config.js';
+	import { DEFAULT_SELECTED_CATEGORIES } from '../Map/maptoken-config.js';
 	import { geocodePlace, getDirections, findRomanticStopsAlongRoute, searchStats, locateAlongRoute } from '../Map/Routing-Location.js';
 	import { findScenicStops, scenicSearchStats } from '../Map/scenic-search.js';
 
@@ -171,7 +171,7 @@
 
 			status.textContent = 'Running the old search...';
 			let started = performance.now();
-			const oldStops = await findRomanticStopsAlongRoute(route.geometry, ROMANTIC_POI_CATEGORIES);
+			const oldStops = await findRomanticStopsAlongRoute(route.geometry, DEFAULT_SELECTED_CATEGORIES);
 			showResult('Old search', (performance.now() - started) / 1000, { ...searchStats }, oldStops, spread(oldStops, routeCoords, routeMiles), routeMiles);
 
 			// A short pause so Mapbox's speed limit starts fresh for the new search.
@@ -180,7 +180,7 @@
 
 			status.textContent = 'Running the new search...';
 			started = performance.now();
-			const newStops = await findScenicStops(route.geometry, ROMANTIC_POI_CATEGORIES);
+			const newStops = await findScenicStops(route.geometry, DEFAULT_SELECTED_CATEGORIES);
 			showResult('New search', (performance.now() - started) / 1000, { ...scenicSearchStats }, newStops, spread(newStops, routeCoords, routeMiles), routeMiles);
 
 			status.textContent = `Done: ${from.name} to ${to.name}.`;

@@ -12,6 +12,18 @@
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
 		{
+		id: '2026-11-12',
+		date: 'November 12, 2026',
+		size: 'big',
+		title: 'Pick your kind of trip',
+		changes: [
+			'Stop types now come in groups: Scenery, Food & drink, Things to do together, Places to stay and Along the way.',
+			'Over 75 new stop types, from national parks and breweries to aquariums, bookstores and bed & breakfasts.',
+			'Your picks are remembered for next time.'
+		]
+	},
+
+		{
 		id: '2026-11-02-2',
 		date: 'November 2, 2026',
 		size: 'small',
