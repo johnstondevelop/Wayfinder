@@ -3,7 +3,7 @@
 // tinted from CSS just by setting `color` on a wrapping element. Used by the
 // category filter chips and by the scenic-stop map popups so every category
 // gets its own little "badge" at a glance.
-import { CATEGORY_GROUPS } from "./maptoken-config";
+import { CATEGORY_GROUPS } from "./maptoken-config.js";
 
 const ICON_DEFAULTS = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
 

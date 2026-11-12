@@ -1,4 +1,4 @@
-import { ROMANTIC_POI_CATEGORIES, DEFAULY_SELECTED_CATEGORIES } from './maptoken-config.js';
+import { ROMANTIC_POI_CATEGORIES, DEFAULT_SELECTED_CATEGORIES } from './maptoken-config.js';
 
 export const tripState = {
 	origin: null,     // { name: string, lng: number, lat: number }
@@ -6,7 +6,7 @@ export const tripState = {
 	days: 1,
 	multiDay: false,
 	findRomanticStops: true,
-	selectedCategories: [...DEFAULY_SELECTED_CATEGORIES],
+	selectedCategories: [...DEFAULT_SELECTED_CATEGORIES],
 	route: null,      // filled in once routing.js gets a result
 	};
 	
