@@ -1,7 +1,7 @@
 // The one place to set the email address the Contact page uses. Whatever
 // you put here is visible to anyone whop opens the page, so use an address
 // your happy to share publicly.
-const CONTACT_EMAIL = 'you@example.com';
+const CONTACT_EMAIL = 'johnstondevelop@gmail.com';
 
 const PROBLEM_SUBJECT = "LovinglyLost: somethings not working";
 const PROBLEM_BODY = [

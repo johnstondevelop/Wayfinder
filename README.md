@@ -1,14 +1,18 @@
 <p align="center">
   <img src="icons/icon-192.png" alt="LovinglyLost heart and winding road logo" width="96" height="96">
 </p>
+
 <h1 align="center">LovinglyLost</h1>
+
 <p align="center">
   <em>Plan a drive worth remembering.</em><br>
   A romantic road-trip planner that maps your route and finds the scenic, cozy and unforgettable stops along the way.
 </p>
+
 <p align="center">
   <a href="https://johnstondevelop.github.io/Wayfinder/"><strong>Open the app &rarr;</strong></a>
 </p>
+
 <p align="center">
   <img alt="HTML, CSS and JavaScript" src="https://img.shields.io/badge/HTML%20%C2%B7%20CSS%20%C2%B7%20JS-no%20build%20step-5C2135">
   <img alt="Maps by Mapbox" src="https://img.shields.io/badge/maps-Mapbox-5C2135">
@@ -194,31 +198,37 @@ How do I…
 
 <details>
 <summary><strong>Add a new stop type?</strong></summary>
+
 	1.	Open tools/category-finder.html and search for the kind of place to find its Mapbox ID.
 	2.	In Map/maptoken-config.js, add one line to the right group in CATEGORY_GROUPS, with the ID on the left and the name people see on the right:
 
 lake: 'Lake',
 
 	3.	That's it. It gets its group's icon automatically. To give it its own icon, add it to Map/CategoryIcons.js.
+
 </details>
+
 <details>
 <summary><strong>Tell people about an update?</strong></summary>
 
 Add a new entry at the top of the list in JavaScript/updates.js. Use size: 'big' for a card that pops up, or size: 'small' for a short note that fades away. Behind-the-scenes fixes don't need one.
 
 </details>
+
 <details>
 <summary><strong>Show the tour to everyone again?</strong></summary>
 
 In JavaScript/tour.js, change TOUR_VERSION from '1' to '2'. The steps are listed in STEPS near the top of the same file.
 
 </details>
+
 <details>
 <summary><strong>Add a color theme?</strong></summary>
 
 Add its colors to css/theme.css under a new html[data-theme="..."] block, then add it to the THEMES list in JavaScript/theme.js.
 
 </details>
+
 <details>
 <summary><strong>Make sure an update reaches phones that installed the app?</strong></summary>
 
@@ -259,7 +269,3 @@ What's next
 	☐︎	Save this trip: keep planned trips in your account and open them again later
 	☐︎	Set the real Contact email
 
-<p align="center">
-  Made with ♥ by Patrick Johnston<br>
-  <sub>Maps &copy; Mapbox &copy; OpenStreetMap contributors</sub>
-</p>
