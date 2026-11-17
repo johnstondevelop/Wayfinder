@@ -11,6 +11,17 @@
 //   title:   one short line
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
+	{
+		id: '2026-11-17-3',
+		date: 'November 17, 2026',
+		size: 'big',
+		title: 'Share trips and plan together',
+		changes: [
+			'Tap the share button on a planned trip to send it to your partner or anyone that you\'d like to join.',
+			'Once they open the link and sign in, yo ucan both add and remove stops, and each of your changes is kept',
+			'If your partner changes a trip you have open, a note lets you see their changes.'
+		]
+	},
 		{
 		id: '2026-11-17-2',
 		date: 'November 17, 2026',
