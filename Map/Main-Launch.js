@@ -35,7 +35,6 @@ import {
 	const stopsList = document.getElementById('stopsList');
 	const addStopBtn = document.getElementById('addStopBtn');
 	const daysInput = document.getElementById('daysInput');
-	const scenicToggle = document.getElementById('scenicToggle');
 	const multiDayToggle = document.getElementById('multiDayToggle');
 	const daysFieldWrap = document.getElementById('daysFieldWrap');
 	const planBtn = document.getElementById('planBtn');
@@ -105,7 +104,6 @@ attachPlaceAutocomplete(originInput, originSuggestions, (place) => {
 });
 
 daysInput.addEventListener('input', () => setDays(daysInput.value));
-scenicToggle.addEventListener('change', () => setRomanticStops(scenicToggle.checked));
 multiDayToggle.addEventListener('change', () => {
 	setMultiDay(multiDayToggle.checked);
 	daysFieldWrap.hidden = !multiDayToggle.checked;
@@ -501,8 +499,6 @@ async function openSavedTrip(trip){
 	daysFieldWrap.hidden = !tripState.multiDay;
 	setDays(trip.days);
 	daysInput.value = tripState.days;
-	setRomanticStops(trip.findRomanticStops !== false);
-	scenicToggle.checked = tripState.findRomanticStops;
 
 	await planRoute();
 }

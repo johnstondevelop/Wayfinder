@@ -67,11 +67,6 @@
 			target: () => panelOf('multiDayToggle')
 		},
 		{
-			title: 'Romantic stops',
-			text: "Leave this on and we'll find overlooks, waterfalls, cafes, wineries and more along your way.",
-			target: () => panelOf('scenicToggle')
-		},
-		{
 			title: 'Find our route',
 			text: "When you're ready, tap here. Your drive and the stops along it show up on the map.",
 			target: () => byId('planBtn')
