@@ -163,7 +163,26 @@
 					<p class="account-message" id="passwordMessage" role="status"></p>
 				</form>
 			</details>
-				</section>
+						<details class="account-details account-danger">
+				<summary>Delete my account</summary>
+				<form class="account-form" id="deleteForm">
+					<p class="account-danger-text">This permanently deletes your account and everything saved in it: your saved trips, favorite stops, places to avoid and personal information. It can't be undone.</p>
+					<label class="account-field">
+						<span>Your password</span>
+						<input type="password" id="deletePassword" autocomplete="current-password" required>
+					</label>
+					<label class="account-check">
+						<input type="checkbox" id="deleteConfirm">
+						<span>I understand this can't be undone.</span>
+					</label>
+					<div class="account-actions">
+						<button type="submit" class="page-btn account-danger-btn" id="deleteAccountBtn">Delete my account</button>
+					</div>
+					<p class="account-message" id="deleteMessage" role="status"></p>
+				</form>
+			</details>
+
+
 
 			<div class="account-actions account-signout">
 				<button type="button" class="page-btn page-btn-secondary" id="signOutBtn">Sign out</button>

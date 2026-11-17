@@ -5,6 +5,7 @@ import { attachHometownSuggestions } from './hometown-suggest.js';
 import { showSavedPlaces } from './account-places.js';
 import { showSavedTrips } from './account-trips.js';
 import { initAccountSecurity } from './account-security.js';
+import { initAccountDelete } from './account-delete.js';
 
 const loading = document.getElementById('accountLoading');
 const sections = document.querySelectorAll('.account-section');
@@ -73,6 +74,7 @@ async function loadAccount(){
 	showSavedPlaces();
 	showSavedTrips();
 	initAccountSecurity(user);
+	initAccountDelete(user);
 }
 
 profileForm.addEventListener('submit', async (e) => {

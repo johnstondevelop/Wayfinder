@@ -176,3 +176,36 @@
 	margin-top: 18px;
 }
 
+/* ---- Delete my account ---- */
+.account-danger summary{
+	color: #8A2638;
+}
+.account-danger-text{
+	margin: 0;
+	font-size: .9rem;
+	color: var(--ink);
+}
+.account-check{
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	font-size: .9rem;
+	color: var(--ink);
+	cursor: pointer;
+}
+.account-check input{
+	width: 18px;
+	height: 18px;
+	margin: 2px 0 0;
+	accent-color: #8A2638;
+}
+.page-btn.account-danger-btn{
+	border-color: #8A2638;
+	background: #8A2638;
+}
+.page-btn.account-danger-btn:hover{
+	border-color: #6E1D2C;
+	background: #6E1D2C;
+	box-shadow: 0 6px 18px rgba(138, 38, 56, .25);
+}
+

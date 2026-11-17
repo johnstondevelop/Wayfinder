@@ -126,7 +126,9 @@ if (emailLinkType === 'recovery'){
 	const params = new URLSearchParams(location.search);
 	setMode(params.get('mode') === 'signup' ? 'signup' : 'signin');
 
-	if (emailLinkError){
+	if (params.has('deleted')){
+		showMessage('Your account and everything saved in it have been deleted. You can still plan trips anytime without an account.', 'success');
+	} else if (emailLinkError){
 		showMessage(`That email link didn't work (${emailLinkError}). Links expire after a while and only work once, so try again for a fresh one.`, 'error');
 	} else if (await getSignedInUser()){
 		// Already signed in: nothing to do here.
