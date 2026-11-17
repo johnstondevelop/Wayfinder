@@ -55,7 +55,8 @@ export function initAccountDelete(user){
 		}
 
 		showMessage(message, 'Deleting your account...');
-		const { data, error } = await supabase.functions.invoke('delete-account', { method: 'POST' });
+        // The function's name in Supabase (the end of its URL, after /functions/v1/).
+		const { data, error } = await supabase.functions.invoke('dynamic-handler', { method: 'POST' });
 		// Only a clear "deleted" from the function counts as done.
 		if (error || !data || data.deleted !== true){
 			deleteBtn.disabled = false;
