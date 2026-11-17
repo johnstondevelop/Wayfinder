@@ -15,11 +15,13 @@ const APP_SHELL = [
     './about.html',
     './contact.html',
     './updates.html',
+    './privacy.html',
     './manifest.webmanifest',
 
     './css/app-style.css',
     './css/site-nav.css',
     './css/site-pages.css',
+    './css/privacy.css',
     './css/map-reveal.css',
     './css/intro.css',
     './css/theme.css',

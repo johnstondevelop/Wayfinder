@@ -290,3 +290,9 @@ body.site-page::before{
 		flex: 1 1 100%;
 	}
 }
+
+/* ---- "Read the full privacy policy" on the About page ---- */
+.privacy-link{
+	color: var(--plum);
+	font-weight: 600;
+}

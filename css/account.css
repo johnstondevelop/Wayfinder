@@ -209,3 +209,15 @@
 	box-shadow: 0 6px 18px rgba(138, 38, 56, .25);
 }
 
+/* ---- "By creating an account..." on the sign-up form ---- */
+.account-terms{
+	margin: 0;
+	font-size: .82rem;
+	color: var(--ink-soft);
+	text-align: center;
+}
+.account-terms a{
+	color: var(--plum);
+	font-weight: 600;
+}
+

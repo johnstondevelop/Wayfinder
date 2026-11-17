@@ -12,6 +12,16 @@
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
 		{
+		id: '2026-11-17-2',
+		date: 'November 17, 2026',
+		size: 'small',
+		title: 'Delete your account, and privacy policy',
+		changes: [
+			'You can now delete your account, and everything saved in it, from My Account.',
+			'A new privacy page explains what LovinglyLost keeps and how to remove it. It\'s linked at tge bottom of every page.'
+		]
+		}
+		{
 		id: '2026-11-17',
 		date: 'November 17, 2026',
 		size: 'big',

@@ -1,0 +1,68 @@
+/* ================ PRIVACY PAGE ================
+   The extra bits on privacy.html: the date under the heading, links in
+   the cards, and the boxes for each outside service. Colors follow the theme. */
+
+.privacy-updated{
+	margin: 14px 0 0;
+	font-size: .85rem;
+	color: var(--ink-soft);
+}
+.page-hero a,
+.page-card p a{
+	color: var(--plum);
+	font-weight: 600;
+}
+.page-card .checklist{
+	margin-bottom: 12px;
+	font-size: .95rem;
+	color: var(--ink);
+}
+.page-card .checklist:last-child{
+	margin-bottom: 0;
+}
+.privacy-short{
+	border-color: var(--gold-soft);
+}
+
+/* ---- The services, two to a row on a computer ---- */
+.privacy-services{
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+	margin-top: 14px;
+}
+.privacy-service{
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 16px;
+	background: var(--ivory);
+	border: 1px solid var(--line);
+	border-radius: 14px;
+}
+.privacy-service h3{
+	margin: 0;
+	font-family: var(--serif);
+	font-size: 1.05rem;
+	color: var(--plum);
+}
+.privacy-service p{
+	margin: 0;
+	font-size: .88rem;
+	color: var(--ink-soft);
+}
+.privacy-service a{
+	font-size: .82rem;
+	font-weight: 600;
+	color: var(--gold);
+	text-decoration: none;
+}
+.privacy-service a:hover{
+	text-decoration: underline;
+}
+
+@media (max-width: 860px){
+	.privacy-services{
+		grid-template-columns: 1fr;
+	}
+}
