@@ -17,7 +17,7 @@ window.LOVINGLYLOST_UPDATES = [
 		size: 'big',
 		title: 'Save your trips',
 		changes: [
-			'Tape ♡ to save a trip once the route is planned if you want to revisit it and its kept in your account!',
+			'Tap ♡ to save a trip once the route is planned if you want to revisit it and it\'s kept in your account!',
 			'Open any saved trip from My Account to see it on the map again.',
 			'You can now change your password within your My Account section.'
 		]

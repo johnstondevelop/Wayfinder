@@ -83,9 +83,9 @@ export function initMap(){
 		container: 'map',
 		style: 'mapbox://styles/mapbox/light-v11',
 		center: DEFAULT_CENTER,
-		zoom: DEFAULT_ZOOM,
-		map.once('style.load', () => { mapStyleReady = true; });
+		zoom: DEFAULT_ZOOM
 	});
+	map.once('style.load', () => { mapStyleReady = true; });
 
 
 		

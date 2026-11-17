@@ -72,7 +72,7 @@ async function loadAccount(){
 	sections.forEach(section => { section.hidden = false; });
 	showSavedPlaces();
 	showSavedTrips();
-	initAccountSecurity();
+	initAccountSecurity(user);
 }
 
 profileForm.addEventListener('submit', async (e) => {
