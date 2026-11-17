@@ -18,9 +18,9 @@ window.LOVINGLYLOST_UPDATES = [
 		title: 'Delete your account, and privacy policy',
 		changes: [
 			'You can now delete your account, and everything saved in it, from My Account.',
-			'A new privacy page explains what LovinglyLost keeps and how to remove it. It\'s linked at tge bottom of every page.'
+			'A new privacy page explains what LovinglyLost keeps and how to remove it. It\'s linked at the bottom of every page.'
 		]
-		}
+	},
 		{
 		id: '2026-11-17',
 		date: 'November 17, 2026',

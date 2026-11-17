@@ -107,7 +107,7 @@
 		},
 		signedIn ? {
 			title: 'Your account',
-			text: 'Your favorite stops, places to avoid, home town, road preferences and colors live here, and follow you to any phone or computer you sign in on.',
+			text: 'Your saved trips, favorite stops, places to avoid and personal information live here, and follow you to any phone or computer you sign in on.',
 			target: () => byId('accountNavLink'),
 			menu: true
 		} : {

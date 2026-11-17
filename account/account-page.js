@@ -20,10 +20,8 @@ const saveBtn = document.getElementById('profileSaveBtn');
 const profileMessage = document.getElementById('profileMessage');
 const welcomeMessage = document.getElementById('accountWelcome');
 const signOutBtn = document.getElementById('signOutBtn');
-const themeOptions = document.getElementById('accountThemeOptions');
 
 attachHometownSuggestions(homeTownInput, document.getElementById('homeTownSuggestions'));
-if (window.LovinglyTheme) window.LovinglyTheme.fillThemeOptions(themeOptions);
 
 let user = null;
 
