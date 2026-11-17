@@ -4,7 +4,8 @@ import {
 	} from './state-and-data.js';
 import {
 	initMap, setOriginMarker, clearStopMarkers, addStopMarker, renderRomanticStops, drawRoute, fitToCoordinates, showStatus, hideStatus,
-	setAddToTripHandler, setLiveMarker, clearLiveMarker, followCamera, exitFollowCamera, setOnUserPanHandler, setRemoveFromTripHandler
+	setAddToTripHandler, setLiveMarker, clearLiveMarker, followCamera, exitFollowCamera, setOnUserPanHandler, setRemoveFromTripHandler,
+	whenMapReady
 	} from './Map.js';
 
 import {
@@ -26,6 +27,9 @@ import {
 import {
 	attachPlaceAutocomplete, waitForPendingLookups
 } from './PlaceAutocomplete.js';
+import {
+	initSaveTrip, updateSaveTripButton
+} from './save-trip.js';
 	
 	const originInput = document.getElementById('originInput');
 	const stopsList = document.getElementById('stopsList');
@@ -334,6 +338,7 @@ let isFollowing = true;
 
 function updateStartDriveAvailability(){
 	startDriveBtn.disabled = !tripState.route;
+	updateSaveTripButton();
 }
 
 function formatDistanceImperial(miles){
@@ -477,7 +482,34 @@ startDriveBtn.addEventListener('click', startNavigation);
 stopDriveBtn.addEventListener('click', stopNavigation);
 recenterBtn.addEventListener('click', recenterOnLiveMarker);
 
+/* ============== SAVED TRIPS ================ */
+// Fills the planner with a saved trip (its starting point, stops and days)
+// and plans the route. save-trip.js calls this when a trip is opened.
+async function openSavedTrip(trip){
+	await whenMapReady();
+
+	setOrigin(trip.origin);
+	originInput.value = trip.origin.name;
+	setOriginMarker(trip.origin.lng, trip.origin.lat, trip.origin.name);
+
+	tripState.stops = [];
+	trip.stops.forEach((place, i) => insertStops(i, place));
+	renderStops();
+
+	setMultiDay(Boolean(trip.multiDay));
+	multiDayToggle.checked = tripState.multiDay;
+	daysFieldWrap.hidden = !tripState.multiDay;
+	setDays(trip.days);
+	daysInput.value = tripState.days;
+	setRomanticStops(trip.findRomanticStops !== false);
+	scenicToggle.checked = tripState.findRomanticStops;
+
+	await planRoute();
+}
+
 /* ============== INITIAL STATE ================ */
 addStop();
 renderStops();
 initCategoryFilter();
+initSaveTrip(openSavedTrip);
+

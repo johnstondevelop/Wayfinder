@@ -61,6 +61,17 @@ export function setFitPaddingProvider(fn){
 	fitPaddingProvider = fn;
 }
 
+// Waits until the map can be drawn on. A saved trip that opens the moment
+// the page loads uses this, so its route isn't drawn before the map exists.
+let mapStyleReady = false;
+export function whenMapReady(){
+	return new Promise(resolve => {
+		if (mapStyleReady) resolve();
+		else map.once('style.load', resolve);
+	});
+}
+
+
 export function initMap(){
 	// Signed in? Fetch their favorites and avoided places, then redraw any
 	// scenic stops already on the map so avoided ones disappear.
@@ -72,7 +83,8 @@ export function initMap(){
 		container: 'map',
 		style: 'mapbox://styles/mapbox/light-v11',
 		center: DEFAULT_CENTER,
-		zoom: DEFAULT_ZOOM
+		zoom: DEFAULT_ZOOM,
+		map.once('style.load', () => { mapStyleReady = true; });
 	});
 
 

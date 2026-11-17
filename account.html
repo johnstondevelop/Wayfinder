@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="css/site-pages.css">
 <link rel="stylesheet" href="css/account.css">
 <link rel="stylesheet" href="css/saved-places.css">
+<link rel="stylesheet" href="css/saved-trips.css">
 <link rel="stylesheet" href="css/theme.css">
 <script src="JavaScript/theme.js"></script>
 <link rel="stylesheet" href="css/whats-new.css">
@@ -65,7 +66,7 @@
 		<p class="account-message" id="accountWelcome" role="status"></p>
 
 		<section class="page-card account-section" hidden>
-			<h2>About you</h2>
+			<h2>Personal Information</h2>
 			<form class="account-form" id="profileForm">
 				<label class="account-field">
 					<span>Your name</span>
@@ -89,6 +90,14 @@
 				</div>
 			</form>
 		</section>
+				<section class="page-card account-section" hidden>
+			<h2>Saved trips</h2>
+			<p>Trips you've kept with ♡ Save this trip on the planner. Open one to see it on the map again.</p>
+			<p class="account-message is-success" id="waitingTripNote" hidden>The trip you were planning is waiting for you. <a href="index.html">Go back to it</a>, then tap ♡ Save this trip.</p>
+			<ul class="saved-places" id="savedTrips"></ul>
+		</section>
+
+
 		<section class="page-card account-section" hidden>
 			<h2>Favorite stops</h2>
 			<p>Places you've saved with ♡ Save on the map</p>
@@ -113,13 +122,52 @@
 			<div class="theme-options theme-options-inline" id="accountThemeOptions"></div>
 		</section>
 
-		<section class="page-card account-section" hidden>
-			<h2>Sign-in details</h2>
+					<h2>Sign-in &amp; security</h2>
 
 			<p>You're signed in as <strong id="accountEmail"></strong>.</p>
-			<div class="account-actions">
+			<p class="account-message" id="securityMessage" role="status"></p>
+
+			<details class="account-details">
+				<summary>Change email</summary>
+				<form class="account-form" id="emailForm">
+					<label class="account-field">
+						<span>New email address</span>
+						<input type="email" id="newEmail" autocomplete="email" required>
+					</label>
+					<div class="account-actions">
+						<button type="submit" class="page-btn" id="emailSaveBtn">Send confirmation link</button>
+					</div>
+					<p class="account-message" id="emailMessage" role="status"></p>
+				</form>
+			</details>
+
+			<details class="account-details">
+				<summary>Change password</summary>
+				<form class="account-form" id="passwordForm">
+					<label class="account-field">
+						<span>Current password</span>
+						<input type="password" id="currentPassword" autocomplete="current-password" required>
+					</label>
+					<label class="account-field">
+						<span>New password</span>
+						<input type="password" id="newPassword" autocomplete="new-password" minlength="8" required>
+						<small>At least 8 characters.</small>
+					</label>
+					<label class="account-field">
+						<span>New password again</span>
+						<input type="password" id="repeatPassword" autocomplete="new-password" minlength="8" required>
+					</label>
+					<div class="account-actions">
+						<button type="submit" class="page-btn" id="passwordSaveBtn">Change password</button>
+					</div>
+					<p class="account-message" id="passwordMessage" role="status"></p>
+				</form>
+			</details>
+
+			<div class="account-actions account-signout">
 				<button type="button" class="page-btn page-btn-secondary" id="signOutBtn">Sign out</button>
 			</div>
+
 		</section>
 
 	</main>

@@ -17,6 +17,7 @@ export const SIGN_IN_STORAGE_KEY = 'lovinglylost-auth';
 const linkInfo = new URLSearchParams(location.hash.slice(1));
 export const emailLinkType = linkInfo.get('type'); // signup or recovery
 export const emailLinkError = linkInfo.get('error_description');
+export const emailLinkMessage = linksInfo.get('message'); // a note from Supabase, part-way through an email change
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: {

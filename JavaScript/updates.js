@@ -12,6 +12,17 @@
 //   changes: a list of short sentences
 window.LOVINGLYLOST_UPDATES = [
 		{
+		id: '2026-11-17',
+		date: 'November 17, 2026',
+		size: 'big',
+		title: 'Save your trips',
+		changes: [
+			'Tape ♡ to save a trip once the route is planned if you want to revisit it and its kept in your account!',
+			'Open any saved trip from My Account to see it on the map again.',
+			'You can now change your password within your My Account section.'
+		]
+	},
+		{
 		id: '2026-11-12',
 		date: 'November 12, 2026',
 		size: 'big',

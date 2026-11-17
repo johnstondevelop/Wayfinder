@@ -3,6 +3,8 @@
 import { supabase, getSignedInUser, emailLinkType } from './supabase-client.js';
 import { attachHometownSuggestions } from './hometown-suggest.js';
 import { showSavedPlaces } from './account-places.js';
+import { showSavedTrips } from './account-trips.js';
+import { initAccountSecurity } from './account-security.js';
 
 const loading = document.getElementById('accountLoading');
 const sections = document.querySelectorAll('.account-section');
@@ -69,6 +71,8 @@ async function loadAccount(){
 	loading.hidden = true;
 	sections.forEach(section => { section.hidden = false; });
 	showSavedPlaces();
+	showSavedTrips();
+	initAccountSecurity();
 }
 
 profileForm.addEventListener('submit', async (e) => {

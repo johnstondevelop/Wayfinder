@@ -145,3 +145,34 @@
 	color: var(--plum);
 	font-weight: 600;
 }
+
+/* ---- Change email / Change password (they fold open when tapped) ---- */
+.account-details{
+	margin-top: 12px;
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	background: var(--ivory);
+}
+.account-details summary{
+	padding: 13px 16px;
+	font-size: .92rem;
+	font-weight: 600;
+	color: var(--plum);
+	cursor: pointer;
+}
+.account-details[open] summary{
+	border-bottom: 1px solid var(--line);
+}
+.account-details .account-form{
+	padding: 16px;
+}
+.account-details .account-field input{
+	background: var(--surface);
+}
+#securityMessage{
+	margin-top: 12px;
+}
+.account-signout{
+	margin-top: 18px;
+}
+
